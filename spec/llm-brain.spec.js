@@ -19,6 +19,24 @@ describe('LLM brain', () => {
     expect(result).toEqual({ to: [alice, bob], message: 'hey everyone!' });
   });
 
+  it('returns null if the last message is from the speaker', async () => {
+    const fakeClient = {
+      messages: {
+        create: jasmine.createSpy('create')
+      }
+    };
+
+    const brain = makeLlmBrain({ personality: 'friendly', client: fakeClient, model: 'test-model' });
+    const chat = [
+      { from: 'Alice', message: 'hi Chad' },
+      { from: 'Chad', message: 'hey!' }
+    ];
+    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat });
+
+    expect(result).toBeNull();
+    expect(fakeClient.messages.create).not.toHaveBeenCalled();
+  });
+
   it('returns null and logs to stderr on API error', async () => {
     const fakeClient = {
       messages: {

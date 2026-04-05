@@ -1,5 +1,7 @@
 function makeLlmBrain({ personality, client, model }) {
   return async function({ name, others, chat }) {
+    if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
+
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
 
