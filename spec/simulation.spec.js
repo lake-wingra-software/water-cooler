@@ -48,35 +48,6 @@ describe('Simulation', () => {
   });
 
   describe('water cooler', () => {
-    it('alice and bob should greet each other when both at the water cooler', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
-
-      const sim = new Simulation();
-      sim.addPerson(alice);
-      sim.addPerson(bob);
-
-      // tick to 15:29 (one minute before water cooler)
-      for (let i = 0; i < ticksUntil(15, 29); i++) {
-        sim.tick();
-      }
-
-      const aliceMessages = [];
-      const bobMessages = [];
-      alice.on('messageReceived', (msg) => aliceMessages.push(msg));
-      bob.on('messageReceived', (msg) => bobMessages.push(msg));
-
-      sim.tick();  // they arrive at water cooler at 15:30, greet each other
-
-      expect(aliceMessages.length).toEqual(1);
-      expect(aliceMessages[0].from).toEqual('Bob');
-      expect(aliceMessages[0].message).toEqual('hi Alice');
-
-      expect(bobMessages.length).toEqual(1);
-      expect(bobMessages[0].from).toEqual('Alice');
-      expect(bobMessages[0].message).toEqual('hi Bob');
-    });
-
     it('people should not greet when moving to cubicles', () => {
       const alice = new Person('Alice', defaultSchedule);
       const bob = new Person('Bob', defaultSchedule);
@@ -124,7 +95,7 @@ describe('Simulation', () => {
       expect(wallyMessages.length).toEqual(0);
     });
 
-    it('alice and bob should have chat history when greeting at water cooler', () => {
+    it('alice arriving at water cooler should initiate, bob should respond', () => {
       const alice = new Person('Alice', defaultSchedule);
       const bob = new Person('Bob', defaultSchedule);
 
@@ -132,16 +103,25 @@ describe('Simulation', () => {
       sim.addPerson(alice);
       sim.addPerson(bob);
 
+      // Tick to just before water cooler
       for (let i = 0; i < ticksUntil(15, 29); i++) {
         sim.tick();
       }
 
-      sim.tick();  // greet at water cooler
+      // Alice initiates at 15:30
+      sim.tick();
 
+      expect(alice.chat.length).toEqual(1);
       expect(alice.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
-      expect(alice.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
-
+      expect(bob.chat.length).toEqual(1);
       expect(bob.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+
+      // Bob responds at 15:31
+      sim.tick();
+
+      expect(alice.chat.length).toEqual(2);
+      expect(alice.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
+      expect(bob.chat.length).toEqual(2);
       expect(bob.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
     });
   });

@@ -10,37 +10,12 @@ class Simulation {
   constructor() {
     this.currentTime = new Time(9, 0);
     this.people = [];
+    this.locationLists = {};   // { locationName: [person, ...] }
+    this.locationTokens = {};  // { locationName: index }
   }
 
   addPerson(person) {
     this.people.push(person);
-  }
-
-  handleActivityChange(person, change) {
-    const location = change.to;
-
-    // Only greet at shared locations
-    if (!isSharedLocation(location)) {
-      return;
-    }
-
-    // Find others at the same location
-    const othersAtLocation = this.people.filter(p =>
-      p !== person && p.currentActivity() === location
-    );
-
-    // If others are here, greet them
-    othersAtLocation.forEach(other => {
-      const greeting = {
-        from: person.name,
-        message: `hi ${other.name}`
-      };
-      // Add message to both people's chat
-      person.addMessageToChat(greeting);
-      other.addMessageToChat(greeting);
-      // Also emit event for observers
-      other.emit('messageReceived', greeting);
-    });
   }
 
   tick() {
@@ -49,14 +24,41 @@ class Simulation {
     // Phase 1: update all people
     this.people.forEach(person => person.tick());
 
-    // Phase 2: process activity changes
+    // Phase 2: process activity changes - maintain location lists
     this.people.forEach(person => {
       const change = person.getActivityChange();
       if (change && change.to !== undefined) {
-        this.handleActivityChange(person, change);
+        if (isSharedLocation(change.from)) {
+          const list = this.locationLists[change.from];
+          if (list) {
+            list.splice(list.indexOf(person), 1);
+          }
+        }
+        if (isSharedLocation(change.to)) {
+          if (!this.locationLists[change.to]) {
+            this.locationLists[change.to] = [];
+            this.locationTokens[change.to] = 0;
+          }
+          this.locationLists[change.to].push(person);
+        }
         person.previousActivity = change.to;
       }
     });
+
+    // Phase 3: process speaking token per location
+    for (const [location, list] of Object.entries(this.locationLists)) {
+      if (list.length < 2) continue;
+      const index = this.locationTokens[location];
+      const tokenHolder = list[index];
+      const others = list.filter(p => p !== tokenHolder);
+      others.forEach(other => {
+        const message = { from: tokenHolder.name, message: `hi ${other.name}` };
+        tokenHolder.addMessageToChat(message);
+        other.addMessageToChat(message);
+        other.emit('messageReceived', message);
+      });
+      this.locationTokens[location] = (index + 1) % list.length;
+    }
   }
 
   isActiveWorkday() {
