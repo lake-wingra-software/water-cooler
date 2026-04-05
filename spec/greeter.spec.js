@@ -21,4 +21,19 @@ describe('greeter brain', () => {
     const action = greeter({ name: 'Alice', others: [bob, carol], chat });
     expect(action).toEqual({ to: [carol], message: 'hi Carol' });
   });
+
+  it('returns null when everyone was greeted in a combined message', () => {
+    const alice = { name: 'Alice' };
+    const bob = { name: 'Bob' };
+    const chat = [{ from: 'Chad', message: 'hi Alice, hi Bob' }];
+    const action = greeter({ name: 'Chad', others: [alice, bob], chat });
+    expect(action).toBeNull();
+  });
+
+  it('greets all ungreeted people in one message', () => {
+    const alice = { name: 'Alice' };
+    const bob = { name: 'Bob' };
+    const action = greeter({ name: 'Chad', others: [alice, bob], chat: [] });
+    expect(action).toEqual({ to: [alice, bob], message: 'hi Alice, hi Bob' });
+  });
 });
