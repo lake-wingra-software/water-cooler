@@ -1,5 +1,6 @@
 const Simulation = require('../src/simulation');
 const Person = require('../src/person');
+const Time = require('../src/time');
 const { defaultSchedule } = require('../src/schedules');
 
 function ticksUntil(hour, minute) {
@@ -97,6 +98,30 @@ describe('Simulation', () => {
       sim.tick();
 
       expect(messages.length).toEqual(0);
+    });
+
+    it('wally working all day should not receive messages from the water cooler', () => {
+      const wallySchedule = [
+        { startTime: new Time(9, 0), endTime: new Time(17, 0), activity: 'working' }
+      ];
+      const wally = new Person('Wally', wallySchedule);
+      const alice = new Person('Alice', defaultSchedule);
+
+      const sim = new Simulation();
+      sim.addPerson(wally);
+      sim.addPerson(alice);
+
+      // Tick to just before water cooler time (15:29)
+      for (let i = 0; i < ticksUntil(15, 29); i++) {
+        sim.tick();
+      }
+
+      const wallyMessages = [];
+      wally.on('messageReceived', (msg) => wallyMessages.push(msg));
+
+      sim.tick();  // Alice arrives at water cooler at 15:30
+
+      expect(wallyMessages.length).toEqual(0);
     });
   });
 });
