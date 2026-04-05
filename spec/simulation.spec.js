@@ -1,19 +1,9 @@
 const Simulation = require('../src/simulation');
 const Person = require('../src/person');
-const Time = require('../src/time');
+const { defaultSchedule } = require('../src/schedules');
 
 function ticksUntil(hour, minute) {
   return (hour * 60 + minute) - (9 * 60);
-}
-
-function createDefaultSchedule() {
-  return [
-    { startTime: new Time(9, 0), endTime: new Time(12, 0), activity: 'working' },
-    { startTime: new Time(12, 0), endTime: new Time(13, 0), activity: 'cafeteria' },
-    { startTime: new Time(13, 0), endTime: new Time(15, 30), activity: 'working' },
-    { startTime: new Time(15, 30), endTime: new Time(16, 30), activity: 'water cooler' },
-    { startTime: new Time(16, 30), endTime: new Time(17, 0), activity: 'working' }
-  ];
 }
 
 describe('Simulation', () => {
@@ -58,8 +48,8 @@ describe('Simulation', () => {
 
   describe('water cooler', () => {
     it('alice and bob should greet each other when both at the water cooler', () => {
-      const alice = new Person('Alice', createDefaultSchedule());
-      const bob = new Person('Bob', createDefaultSchedule());
+      const alice = new Person('Alice', defaultSchedule);
+      const bob = new Person('Bob', defaultSchedule);
 
       const sim = new Simulation();
       sim.addPerson(alice);
@@ -87,8 +77,8 @@ describe('Simulation', () => {
     });
 
     it('people should not greet when moving to cubicles', () => {
-      const alice = new Person('Alice', createDefaultSchedule());
-      const bob = new Person('Bob', createDefaultSchedule());
+      const alice = new Person('Alice', defaultSchedule);
+      const bob = new Person('Bob', defaultSchedule);
 
       const sim = new Simulation();
       sim.addPerson(alice);
