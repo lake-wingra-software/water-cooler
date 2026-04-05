@@ -11,11 +11,18 @@ const schedule = [
 ];
 
 const sim = new Simulation();
-const person = new Person(schedule);
-sim.addPerson(person);
+const alice = new Person('Alice', schedule);
+sim.addPerson(alice);
+
+// Log initial state
+console.log(`${sim.currentTime.toString()}: Alice ${alice.currentActivity()}`);
+
+// Listen for activity changes
+alice.on('activityChanged', (data) => {
+  console.log(`${data.time.toString()}: ${data.name} ${data.activity}`);
+});
 
 while (sim.isActiveWorkday()) {
-  console.log(`${sim.currentTime.toString()}: ${person.currentActivity()}`);
   sim.tick();
 }
 
