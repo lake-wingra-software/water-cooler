@@ -35,10 +35,10 @@ for (const location of Object.values(sim.locations)) {
   });
 }
 
-// TICKS_PER_SEC: simulated minutes per real millisecond. Default: 1 hour per second (1/16.67)
+// TICKS_PER_SEC: ticks per second. Default: 10 (1 hour = 6 seconds).
 // Set TICKS_PER_SEC=0 for instant execution.
 const ticksPerSec = process.env.TICKS_PER_SEC;
-const tickInterval = ticksPerSec === '0' ? 0 : Math.round(1000 / (parseFloat(ticksPerSec) || 60));
+const tickInterval = ticksPerSec === '0' ? 0 : Math.round(1000 / (parseFloat(ticksPerSec) || 10));
 
 if (tickInterval === 0) {
   while (sim.isActiveWorkday()) {

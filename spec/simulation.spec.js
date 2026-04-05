@@ -8,6 +8,14 @@ function ticksUntil(hour, minute) {
   return (hour * 60 + minute) - (9 * 60);
 }
 
+const cubicleStartSchedule = [
+  { startTime: new Time(9, 0), endTime: new Time(12, 0), location: 'cubicle' },
+  { startTime: new Time(12, 0), endTime: new Time(13, 0), location: 'cafeteria' },
+  { startTime: new Time(13, 0), endTime: new Time(15, 30), location: 'cubicle' },
+  { startTime: new Time(15, 30), endTime: new Time(16, 30), location: 'water cooler' },
+  { startTime: new Time(16, 30), endTime: new Time(17, 0), location: 'cubicle' }
+];
+
 describe('Simulation', () => {
   describe('time', () => {
     it('should start at 9am', () => {
@@ -48,9 +56,19 @@ describe('Simulation', () => {
     });
   });
 
+  describe('addPerson', () => {
+    it('places person in their starting shared location', () => {
+      const alice = new Person('Alice', defaultSchedule);
+      const sim = new Simulation();
+      sim.addPerson(alice);
+
+      expect(sim.locations['water cooler'].occupants).toEqual([alice]);
+    });
+  });
+
   describe('events', () => {
     it('emits locationChanged when a person changes location', () => {
-      const alice = new Person('Alice', defaultSchedule);
+      const alice = new Person('Alice', cubicleStartSchedule);
       const sim = new Simulation();
       sim.addPerson(alice);
 
@@ -69,8 +87,8 @@ describe('Simulation', () => {
 
   describe('water cooler', () => {
     it('people should not greet when moving to cubicles', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
+      const alice = new Person('Alice', cubicleStartSchedule);
+      const bob = new Person('Bob', cubicleStartSchedule);
 
       const sim = new Simulation();
       sim.addPerson(alice);
@@ -96,7 +114,7 @@ describe('Simulation', () => {
         { startTime: new Time(9, 0), endTime: new Time(17, 0), location: 'cubicle' }
       ];
       const wally = new Person('Wally', wallySchedule);
-      const alice = new Person('Alice', defaultSchedule);
+      const alice = new Person('Alice', cubicleStartSchedule);
 
       const sim = new Simulation();
       sim.addPerson(wally);
@@ -116,8 +134,8 @@ describe('Simulation', () => {
     });
 
     it('should only greet once — no more messages after the exchange', () => {
-      const alice = new Person('Alice', defaultSchedule, greeter);
-      const bob = new Person('Bob', defaultSchedule, greeter);
+      const alice = new Person('Alice', cubicleStartSchedule, greeter);
+      const bob = new Person('Bob', cubicleStartSchedule, greeter);
 
       const sim = new Simulation();
       sim.addPerson(alice);
@@ -136,8 +154,8 @@ describe('Simulation', () => {
     });
 
     it('alice arriving at water cooler should initiate, bob should respond', () => {
-      const alice = new Person('Alice', defaultSchedule, greeter);
-      const bob = new Person('Bob', defaultSchedule, greeter);
+      const alice = new Person('Alice', cubicleStartSchedule, greeter);
+      const bob = new Person('Bob', cubicleStartSchedule, greeter);
 
       const sim = new Simulation();
       sim.addPerson(alice);

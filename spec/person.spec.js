@@ -8,9 +8,9 @@ function ticksUntil(hour, minute) {
 
 describe('Person', () => {
   describe('location', () => {
-    it('a person should be at their cubicle at 9am', () => {
+    it('a person should be at the water cooler at 9am', () => {
       const person = new Person('Alice', defaultSchedule);
-      expect(person.currentLocation()).toEqual('cubicle');
+      expect(person.currentLocation()).toEqual('water cooler');
     });
 
     it('a person should be at the cafeteria at 12pm', () => {
@@ -22,7 +22,7 @@ describe('Person', () => {
     it('tick returns location change when location changes', () => {
       const person = new Person('Alice', defaultSchedule);
       const change = person.tick(new Time(12, 0));
-      expect(change).toEqual({ from: 'cubicle', to: 'cafeteria' });
+      expect(change).toEqual({ from: 'water cooler', to: 'cafeteria' });
     });
 
     it('tick returns null when location stays the same', () => {

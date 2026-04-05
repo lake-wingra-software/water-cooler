@@ -120,6 +120,59 @@ describe('Location', () => {
       expect(events[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
     });
 
+    it('resets token index when occupants leave and re-enter', () => {
+      const location = new Location('water cooler');
+      const tokenCalls = [];
+      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); done(null); }, receiveMessage() {} };
+      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); done(null); }, receiveMessage() {} };
+      const chad = { name: 'Chad', receiveToken(others, done) { tokenCalls.push('Chad'); done(null); }, receiveMessage() {} };
+
+      location.arrive(alice);
+      location.arrive(bob);
+      location.arrive(chad);
+
+      location.tick(); // Alice
+      location.tick(); // Bob
+      location.tick(); // Chad — tokenIndex now wraps to 0
+
+      location.depart(alice);
+      location.depart(bob);
+      location.depart(chad);
+
+      // Re-enter with only 2 people
+      location.arrive(alice);
+      location.arrive(bob);
+
+      location.tick(); // should not crash
+
+      expect(tokenCalls.length).toEqual(4);
+    });
+
+    it('handles done callback after occupants have departed', () => {
+      const location = new Location('water cooler');
+      let savedDone;
+      const alice = { name: 'Alice', receiveToken(others, done) { savedDone = done; }, receiveMessage() {} };
+      const bob = { name: 'Bob', receiveToken(others, done) { done(null); }, receiveMessage() {} };
+
+      location.arrive(alice);
+      location.arrive(bob);
+
+      location.tick(); // Alice gets token, holds it (async)
+
+      location.depart(alice);
+      location.depart(bob);
+
+      // done fires after everyone left
+      expect(() => savedDone(null)).not.toThrow();
+
+      // New people arrive — should still work
+      location.arrive(alice);
+      location.arrive(bob);
+      location.tick();
+
+      expect(location.tokenHeld).toEqual(true); // token was handed out
+    });
+
     it('does nothing with fewer than 2 occupants', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];

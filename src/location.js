@@ -20,6 +20,7 @@ class Location extends EventEmitter {
     if (this.occupants.length < 2) return;
     if (this.tokenHeld) return;
     this.tokenHeld = true;
+    this.tokenIndex = this.tokenIndex % this.occupants.length;
     const tokenHolder = this.occupants[this.tokenIndex];
     const others = this.occupants.filter(p => p !== tokenHolder);
     tokenHolder.receiveToken(others, (action) => {
@@ -28,7 +29,11 @@ class Location extends EventEmitter {
         this.occupants.forEach(p => p.receiveMessage(outgoing));
         this.emit('messageSent', outgoing);
       }
-      this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
+      if (this.occupants.length > 0) {
+        this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
+      } else {
+        this.tokenIndex = 0;
+      }
       this.tokenHeld = false;
     });
   }
