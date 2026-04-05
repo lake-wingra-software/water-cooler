@@ -64,6 +64,37 @@ describe('Location', () => {
       expect(tokenCalls).toEqual(['Alice']);
     });
 
+    it('broadcasts the message to all occupants when token holder speaks', () => {
+      const location = new Location('water cooler');
+      const messages = { alice: [], bob: [], chad: [] };
+      const alice = {
+        name: 'Alice',
+        receiveToken(others, done) { done({ to: [bob], message: 'hi Bob' }); },
+        receiveMessage(msg) { messages.alice.push(msg); }
+      };
+      const bob = {
+        name: 'Bob',
+        receiveToken(others, done) { done(null); },
+        receiveMessage(msg) { messages.bob.push(msg); }
+      };
+      const chad = {
+        name: 'Chad',
+        receiveToken(others, done) { done(null); },
+        receiveMessage(msg) { messages.chad.push(msg); }
+      };
+
+      location.arrive(alice);
+      location.arrive(bob);
+      location.arrive(chad);
+
+      location.tick(); // Alice speaks
+
+      const expected = { from: 'Alice', message: 'hi Bob' };
+      expect(messages.alice).toEqual([expected]);
+      expect(messages.bob).toEqual([expected]);
+      expect(messages.chad).toEqual([expected]);
+    });
+
     it('does nothing with fewer than 2 occupants', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];

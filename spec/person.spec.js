@@ -47,29 +47,16 @@ describe('Person', () => {
       expect(received[0]).toEqual({ from: 'Bob', message: 'hi Alice' });
     });
 
-    it('sendMessage adds to own chat and delivers to recipients', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
 
-      alice.sendMessage({ to: [bob], message: 'hi Bob' });
-
-      expect(alice.chat.length).toEqual(1);
-      expect(alice.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
-      expect(bob.chat.length).toEqual(1);
-      expect(bob.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
-    });
-
-    it('receiveToken delegates to brain and sends the result', () => {
+    it('receiveToken delegates to brain and passes action to done', () => {
       const bob = new Person('Bob', defaultSchedule);
       const fakeBrain = () => ({ to: [bob], message: 'hey!' });
       const alice = new Person('Alice', defaultSchedule, fakeBrain);
 
-      alice.receiveToken([bob], () => {});
+      let receivedAction;
+      alice.receiveToken([bob], (action) => { receivedAction = action; });
 
-      expect(alice.chat.length).toEqual(1);
-      expect(alice.chat[0].message).toEqual('hey!');
-      expect(bob.chat.length).toEqual(1);
-      expect(bob.chat[0].message).toEqual('hey!');
+      expect(receivedAction).toEqual({ to: [bob], message: 'hey!' });
     });
 
     it('receiveToken does nothing when brain returns null', () => {

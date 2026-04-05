@@ -19,7 +19,11 @@ class Location {
     this.tokenHeld = true;
     const tokenHolder = this.occupants[this.tokenIndex];
     const others = this.occupants.filter(p => p !== tokenHolder);
-    tokenHolder.receiveToken(others, () => {
+    tokenHolder.receiveToken(others, (action) => {
+      if (action) {
+        const outgoing = { from: tokenHolder.name, message: action.message };
+        this.occupants.forEach(p => p.receiveMessage(outgoing));
+      }
       this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
       this.tokenHeld = false;
     });

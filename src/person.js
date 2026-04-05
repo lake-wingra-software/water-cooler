@@ -36,20 +36,13 @@ class Person extends EventEmitter {
     this.emit('messageReceived', message);
   }
 
-  sendMessage({ to, message }) {
-    const outgoing = { from: this.name, message };
-    this.chat.push(outgoing);
-    to.forEach(recipient => recipient.receiveMessage(outgoing));
-  }
-
   receiveToken(others, done) {
-    if (!this.brain) { done(); return; }
+    if (!this.brain) { done(null); return; }
     const result = this.brain({ name: this.name, others, chat: this.chat });
     if (result && typeof result.then === 'function') {
-      result.then(action => { if (action) this.sendMessage(action); done(); });
+      result.then(action => done(action));
     } else {
-      if (result) this.sendMessage(result);
-      done();
+      done(result);
     }
   }
 }
