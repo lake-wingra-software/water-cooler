@@ -1,12 +1,15 @@
 const Simulation = require('../src/simulation');
 const Person = require('../src/person');
 const Time = require('../src/time');
-const { defaultSchedule } = require('../src/schedules');
 const greeter = require('../src/greeter');
 
 function ticksUntil(hour, minute) {
   return (hour * 60 + minute) - (9 * 60);
 }
+
+const waterCoolerStartSchedule = [
+  { startTime: new Time(9, 0), endTime: new Time(17, 0), location: 'water cooler' },
+];
 
 const cubicleStartSchedule = [
   { startTime: new Time(9, 0), endTime: new Time(12, 0), location: 'cubicle' },
@@ -58,7 +61,7 @@ describe('Simulation', () => {
 
   describe('addPerson', () => {
     it('places person in their starting shared location', () => {
-      const alice = new Person('Alice', defaultSchedule);
+      const alice = new Person('Alice', waterCoolerStartSchedule);
       const sim = new Simulation();
       sim.addPerson(alice);
 
