@@ -34,8 +34,22 @@ chad.on('messageReceived', (msg) => {
   console.log(`${sim.currentTime.toString()}: ${msg.from} → Chad: "${msg.message}"`);
 });
 
-while (sim.isActiveWorkday()) {
-  sim.tick();
-}
+// SIM_SPEED: simulated minutes per real millisecond. Default: 1 hour per second (1/16.67)
+// Set SIM_SPEED=0 for instant execution.
+const speed = process.env.SIM_SPEED;
+const tickInterval = speed === '0' ? 0 : Math.round(1000 / (parseFloat(speed) || 60));
 
-console.log(`${sim.currentTime.toString()}: workday ended`);
+if (tickInterval === 0) {
+  while (sim.isActiveWorkday()) {
+    sim.tick();
+  }
+  console.log(`${sim.currentTime.toString()}: workday ended`);
+} else {
+  const timer = setInterval(() => {
+    sim.tick();
+    if (!sim.isActiveWorkday()) {
+      clearInterval(timer);
+      console.log(`${sim.currentTime.toString()}: workday ended`);
+    }
+  }, tickInterval);
+}
