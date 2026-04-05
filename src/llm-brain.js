@@ -15,7 +15,7 @@ function makeLlmBrain({ characterSheet, client, model }) {
     lines.push(
       `Others present: ${otherNames}`,
       chatHistory ? `Conversation so far:\n${chatHistory}` : 'No one has spoken yet.',
-      'Say something brief and casual. Reply with just your message, nothing else.'
+      'Say something brief and casual. Reply with spoken words only — no stage directions, actions, or text in asterisks.'
     );
 
     const prompt = lines.join('\n\n');
