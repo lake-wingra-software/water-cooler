@@ -95,6 +95,31 @@ describe('Location', () => {
       expect(messages.chad).toEqual([expected]);
     });
 
+    it('emits messageSent when the token holder speaks', () => {
+      const location = new Location('water cooler');
+      const events = [];
+      location.on('messageSent', (data) => events.push(data));
+
+      const alice = {
+        name: 'Alice',
+        receiveToken(others, done) { done({ to: others, message: 'hi Bob' }); },
+        receiveMessage() {}
+      };
+      const bob = {
+        name: 'Bob',
+        receiveToken(others, done) { done(null); },
+        receiveMessage() {}
+      };
+
+      location.arrive(alice);
+      location.arrive(bob);
+
+      location.tick();
+
+      expect(events.length).toEqual(1);
+      expect(events[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+    });
+
     it('does nothing with fewer than 2 occupants', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];

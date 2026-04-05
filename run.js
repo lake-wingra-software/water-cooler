@@ -28,18 +28,12 @@ sim.on('locationChanged', ({ person, to }) => {
   console.log(`${sim.currentTime.toString()}: ${person.name} → ${to}`);
 });
 
-// Listen for messages
-alice.on('messageReceived', (msg) => {
-  console.log(`${sim.currentTime.toString()}: ${msg.from} → Alice: "${msg.message}"`);
-});
-
-bob.on('messageReceived', (msg) => {
-  console.log(`${sim.currentTime.toString()}: ${msg.from} → Bob: "${msg.message}"`);
-});
-
-chad.on('messageReceived', (msg) => {
-  console.log(`${sim.currentTime.toString()}: ${msg.from} → Chad: "${msg.message}"`);
-});
+// Listen for messages at each shared location
+for (const location of Object.values(sim.locations)) {
+  location.on('messageSent', ({ from, message }) => {
+    console.log(`${sim.currentTime.toString()}: [${location.name}] ${from}: "${message}"`);
+  });
+}
 
 // TICKS_PER_SEC: simulated minutes per real millisecond. Default: 1 hour per second (1/16.67)
 // Set TICKS_PER_SEC=0 for instant execution.

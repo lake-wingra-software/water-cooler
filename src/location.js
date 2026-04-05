@@ -1,5 +1,8 @@
-class Location {
+const { EventEmitter } = require('events');
+
+class Location extends EventEmitter {
   constructor(name) {
+    super();
     this.name = name;
     this.occupants = [];
     this.tokenIndex = 0;
@@ -23,6 +26,7 @@ class Location {
       if (action) {
         const outgoing = { from: tokenHolder.name, message: action.message };
         this.occupants.forEach(p => p.receiveMessage(outgoing));
+        this.emit('messageSent', outgoing);
       }
       this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
       this.tokenHeld = false;
