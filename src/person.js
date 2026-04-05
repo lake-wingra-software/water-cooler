@@ -7,36 +7,36 @@ class Person extends EventEmitter {
     this.name = name;
     this.currentTime = new Time(9, 0);
     this.schedule = schedule;
-    this.previousActivity = this.currentActivity();
+    this.previousLocation = this.currentLocation();
     this.chat = [];
   }
 
   tick() {
     this.currentTime = this.currentTime.addMinutes(1);
 
-    const newActivity = this.currentActivity();
-    if (newActivity !== this.previousActivity && newActivity !== undefined) {
+    const newLocation = this.currentLocation();
+    if (newLocation !== this.previousLocation && newLocation !== undefined) {
       this.chat = [];  // Reset chat when moving to new location
-      this.emit('activityChanged', {
+      this.emit('locationChanged', {
         name: this.name,
-        activity: newActivity,
+        location: newLocation,
         time: this.currentTime
       });
     }
   }
 
-  currentActivity() {
+  currentLocation() {
     for (const slot of this.schedule) {
       if (!this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)) {
-        return slot.activity;
+        return slot.location;
       }
     }
   }
 
-  getActivityChange() {
-    const current = this.currentActivity();
-    if (current !== this.previousActivity) {
-      return { from: this.previousActivity, to: current };
+  getLocationChange() {
+    const current = this.currentLocation();
+    if (current !== this.previousLocation) {
+      return { from: this.previousLocation, to: current };
     }
     return null;
   }

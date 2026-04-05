@@ -71,9 +71,9 @@ describe('Simulation', () => {
       expect(messages.length).toEqual(0);
     });
 
-    it('wally working all day should not receive messages from the water cooler', () => {
+    it('wally at his cubicle all day should not receive messages from the water cooler', () => {
       const wallySchedule = [
-        { startTime: new Time(9, 0), endTime: new Time(17, 0), activity: 'working' }
+        { startTime: new Time(9, 0), endTime: new Time(17, 0), location: 'cubicle' }
       ];
       const wally = new Person('Wally', wallySchedule);
       const alice = new Person('Alice', defaultSchedule);

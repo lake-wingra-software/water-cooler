@@ -6,10 +6,10 @@ function ticksUntil(hour, minute) {
 }
 
 describe('Person', () => {
-  describe('activity', () => {
-    it('a person should be working at 9am', () => {
+  describe('location', () => {
+    it('a person should be at their cubicle at 9am', () => {
       const person = new Person('Alice', defaultSchedule);
-      expect(person.currentActivity()).toEqual('working');
+      expect(person.currentLocation()).toEqual('cubicle');
     });
 
     it('a person should be at the cafeteria at 12pm', () => {
@@ -17,21 +17,21 @@ describe('Person', () => {
       for (let i = 0; i < ticksUntil(12, 0); i++) {
         person.tick();
       }
-      expect(person.currentActivity()).toEqual('cafeteria');
+      expect(person.currentLocation()).toEqual('cafeteria');
     });
 
-    it('should emit activityChanged event when activity changes', () => {
+    it('should emit locationChanged event when location changes', () => {
       const person = new Person('Alice', defaultSchedule);
 
       const events = [];
-      person.on('activityChanged', (data) => events.push(data));
+      person.on('locationChanged', (data) => events.push(data));
 
       for (let i = 0; i < ticksUntil(12, 0); i++) {
         person.tick();
       }
 
       expect(events.length).toEqual(1);
-      expect(events[0].activity).toEqual('cafeteria');
+      expect(events[0].location).toEqual('cafeteria');
       expect(events[0].name).toEqual('Alice');
     });
   });

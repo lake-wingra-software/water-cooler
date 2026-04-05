@@ -27,9 +27,9 @@ class Simulation {
     // Phase 1: update all people
     this.people.forEach(person => person.tick());
 
-    // Phase 2: process activity changes - maintain location lists
+    // Phase 2: process location changes - maintain location lists
     this.people.forEach(person => {
-      const change = person.getActivityChange();
+      const change = person.getLocationChange();
       if (change && change.to !== undefined) {
         if (isSharedLocation(change.from)) {
           const list = this.locationLists[change.from];
@@ -44,7 +44,7 @@ class Simulation {
           }
           this.locationLists[change.to].push(person);
         }
-        person.previousActivity = change.to;
+        person.previousLocation = change.to;
       }
     });
 
