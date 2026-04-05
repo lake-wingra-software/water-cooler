@@ -36,7 +36,6 @@ describe('Person', () => {
       const events = [];
       person.on('activityChanged', (data) => events.push(data));
 
-      // Tick to just before the activity change
       for (let i = 0; i < ticksUntil(12, 0); i++) {
         person.tick();
       }
