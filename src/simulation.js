@@ -24,13 +24,10 @@ class Simulation {
   tick() {
     this.currentTime = this.currentTime.addMinutes(1);
 
-    // Phase 1: update all people
-    this.people.forEach(person => person.tick(this.currentTime));
-
-    // Phase 2: process location changes - maintain location lists
+    // Phase 1: tick people and process location changes
     this.people.forEach(person => {
-      const change = person.getLocationChange();
-      if (change && change.to !== undefined) {
+      const change = person.tick(this.currentTime);
+      if (change) {
         if (isSharedLocation(change.from)) {
           const list = this.locationLists[change.from];
           if (list) {
@@ -44,7 +41,6 @@ class Simulation {
           }
           this.locationLists[change.to].push(person);
         }
-        person.previousLocation = change.to;
       }
     });
 

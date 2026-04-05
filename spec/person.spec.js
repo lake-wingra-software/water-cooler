@@ -19,17 +19,16 @@ describe('Person', () => {
       expect(person.currentLocation()).toEqual('cafeteria');
     });
 
-    it('should emit locationChanged event when location changes', () => {
+    it('tick returns location change when location changes', () => {
       const person = new Person('Alice', defaultSchedule);
+      const change = person.tick(new Time(12, 0));
+      expect(change).toEqual({ from: 'cubicle', to: 'cafeteria' });
+    });
 
-      const events = [];
-      person.on('locationChanged', (data) => events.push(data));
-
-      person.tick(new Time(12, 0));
-
-      expect(events.length).toEqual(1);
-      expect(events[0].location).toEqual('cafeteria');
-      expect(events[0].name).toEqual('Alice');
+    it('tick returns null when location stays the same', () => {
+      const person = new Person('Alice', defaultSchedule);
+      const change = person.tick(new Time(9, 1));
+      expect(change).toBeNull();
     });
   });
 

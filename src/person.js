@@ -12,16 +12,14 @@ class Person extends EventEmitter {
 
   tick(time) {
     this.currentTime = time;
-
-    const newLocation = this.currentLocation();
-    if (newLocation !== this.previousLocation && newLocation !== undefined) {
-      this.chat = [];  // Reset chat when moving to new location
-      this.emit('locationChanged', {
-        name: this.name,
-        location: newLocation,
-        time: this.currentTime
-      });
+    const prev = this.previousLocation;
+    const curr = this.currentLocation();
+    if (curr !== prev && curr !== undefined) {
+      this.chat = [];
+      this.previousLocation = curr;
+      return { from: prev, to: curr };
     }
+    return null;
   }
 
   currentLocation() {
@@ -30,14 +28,6 @@ class Person extends EventEmitter {
         return slot.location;
       }
     }
-  }
-
-  getLocationChange() {
-    const current = this.currentLocation();
-    if (current !== this.previousLocation) {
-      return { from: this.previousLocation, to: current };
-    }
-    return null;
   }
 
   receiveMessage(message) {
