@@ -1,4 +1,4 @@
-function makeLlmBrain({ personality, client }) {
+function makeLlmBrain({ personality, client, model }) {
   return async function({ name, others, chat }) {
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
@@ -13,7 +13,7 @@ function makeLlmBrain({ personality, client }) {
 
     try {
       const response = await client.messages.create({
-        model: 'claude-3-haiku-20240307',
+        model,
         max_tokens: 256,
         messages: [{ role: 'user', content: prompt }]
       });

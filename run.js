@@ -13,7 +13,7 @@ const sim = new Simulation();
 const alice = new Person('Alice', defaultSchedule, greeter);
 const bob = new Person('Bob', defaultSchedule, greeter);
 
-const chadBrain = makeLlmBrain({ personality: 'friendly but a bit sarcastic, keeps it brief', client });
+const chadBrain = makeLlmBrain({ personality: 'friendly but a bit sarcastic, keeps it brief', client, model: process.env.LLM_MODEL || 'claude-haiku-4-5' });
 const chad = new Person('Chad', chadSchedule, chadBrain);
 
 sim.addPerson(alice);
@@ -41,10 +41,10 @@ chad.on('messageReceived', (msg) => {
   console.log(`${sim.currentTime.toString()}: ${msg.from} → Chad: "${msg.message}"`);
 });
 
-// SIM_SPEED: simulated minutes per real millisecond. Default: 1 hour per second (1/16.67)
-// Set SIM_SPEED=0 for instant execution.
-const speed = process.env.SIM_SPEED;
-const tickInterval = speed === '0' ? 0 : Math.round(1000 / (parseFloat(speed) || 60));
+// TICKS_PER_SEC: simulated minutes per real millisecond. Default: 1 hour per second (1/16.67)
+// Set TICKS_PER_SEC=0 for instant execution.
+const ticksPerSec = process.env.TICKS_PER_SEC;
+const tickInterval = ticksPerSec === '0' ? 0 : Math.round(1000 / (parseFloat(ticksPerSec) || 60));
 
 if (tickInterval === 0) {
   while (sim.isActiveWorkday()) {

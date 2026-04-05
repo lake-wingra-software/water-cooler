@@ -10,7 +10,7 @@ describe('LLM brain', () => {
       }
     };
 
-    const brain = makeLlmBrain({ personality: 'friendly', client: fakeClient });
+    const brain = makeLlmBrain({ personality: 'friendly', client: fakeClient, model: 'test-model' });
     const alice = { name: 'Alice' };
     const bob = { name: 'Bob' };
     const result = await brain({ name: 'Chad', others: [alice, bob], chat: [] });
@@ -27,7 +27,7 @@ describe('LLM brain', () => {
     };
     spyOn(console, 'error');
 
-    const brain = makeLlmBrain({ personality: 'friendly', client: fakeClient });
+    const brain = makeLlmBrain({ personality: 'friendly', client: fakeClient, model: 'test-model' });
     const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] });
 
     expect(result).toBeNull();
