@@ -1,17 +1,16 @@
 const Time = require('./time');
+const Location = require('./location');
 
 const SHARED_LOCATIONS = ['cafeteria', 'water cooler'];
-
-function isSharedLocation(location) {
-  return SHARED_LOCATIONS.includes(location);
-}
 
 class Simulation {
   constructor() {
     this.currentTime = new Time(9, 0);
     this.people = [];
-    this.locationLists = {};   // { locationName: [person, ...] }
-    this.locationTokens = {};  // { locationName: index }
+    this.locations = {};
+    SHARED_LOCATIONS.forEach(name => {
+      this.locations[name] = new Location(name);
+    });
   }
 
   addPerson(person) {
@@ -24,34 +23,20 @@ class Simulation {
   tick() {
     this.currentTime = this.currentTime.addMinutes(1);
 
-    // Phase 1: tick people and process location changes
     this.people.forEach(person => {
       const change = person.tick(this.currentTime);
       if (change) {
-        if (isSharedLocation(change.from)) {
-          const list = this.locationLists[change.from];
-          if (list) {
-            list.splice(list.indexOf(person), 1);
-          }
+        if (this.locations[change.from]) {
+          this.locations[change.from].depart(person);
         }
-        if (isSharedLocation(change.to)) {
-          if (!this.locationLists[change.to]) {
-            this.locationLists[change.to] = [];
-            this.locationTokens[change.to] = 0;
-          }
-          this.locationLists[change.to].push(person);
+        if (this.locations[change.to]) {
+          this.locations[change.to].arrive(person);
         }
       }
     });
 
-    // Phase 3: process speaking token per location
-    for (const [location, list] of Object.entries(this.locationLists)) {
-      if (list.length < 2) continue;
-      const index = this.locationTokens[location];
-      const tokenHolder = list[index];
-      const others = list.filter(p => p !== tokenHolder);
-      tokenHolder.receiveToken(others);
-      this.locationTokens[location] = (index + 1) % list.length;
+    for (const location of Object.values(this.locations)) {
+      location.tick();
     }
   }
 
