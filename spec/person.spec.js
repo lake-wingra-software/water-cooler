@@ -1,0 +1,33 @@
+const Person = require('../src/person');
+const Time = require('../src/time');
+
+function ticksUntil(hour, minute) {
+  return (hour * 60 + minute) - (9 * 60);
+}
+
+function createDefaultSchedule() {
+  return [
+    { startTime: new Time(9, 0), endTime: new Time(12, 0), activity: 'working' },
+    { startTime: new Time(12, 0), endTime: new Time(13, 0), activity: 'cafeteria' },
+    { startTime: new Time(13, 0), endTime: new Time(15, 30), activity: 'working' },
+    { startTime: new Time(15, 30), endTime: new Time(16, 30), activity: 'water cooler' },
+    { startTime: new Time(16, 30), endTime: new Time(17, 0), activity: 'working' }
+  ];
+}
+
+describe('Person', () => {
+  describe('activity', () => {
+    it('a person should be working at 9am', () => {
+      const person = new Person(createDefaultSchedule());
+      expect(person.currentActivity()).toEqual('working');
+    });
+
+    it('a person should be at the cafeteria at 12pm', () => {
+      const person = new Person(createDefaultSchedule());
+      for (let i = 0; i < ticksUntil(12, 0); i++) {
+        person.tick();
+      }
+      expect(person.currentActivity()).toEqual('cafeteria');
+    });
+  });
+});
