@@ -62,30 +62,38 @@ describe('Person', () => {
       expect(sent[0]).toEqual({ to: [bob], from: 'Alice', message: 'hi Bob' });
     });
 
-    it('receiveToken sends a greeting to ungreeted people', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
+    it('receiveToken delegates to brain and sends the result', () => {
+      const fakeBrain = () => ({ to: ['bob'], message: 'hey!' });
+      const alice = new Person('Alice', defaultSchedule, fakeBrain);
 
       const sent = [];
       alice.on('messageSent', (event) => sent.push(event));
 
-      alice.receiveToken([bob]);
+      alice.receiveToken([]);
 
       expect(sent.length).toEqual(1);
-      expect(sent[0].message).toEqual('hi Bob');
-      expect(sent[0].to).toEqual([bob]);
+      expect(sent[0].message).toEqual('hey!');
     });
 
-    it('receiveToken does not greet someone already greeted', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
-
-      alice.receiveToken([bob]);  // greets Bob
+    it('receiveToken does nothing when brain returns null', () => {
+      const fakeBrain = () => null;
+      const alice = new Person('Alice', defaultSchedule, fakeBrain);
 
       const sent = [];
       alice.on('messageSent', (event) => sent.push(event));
 
-      alice.receiveToken([bob]);  // already greeted — nothing sent
+      alice.receiveToken([]);
+
+      expect(sent.length).toEqual(0);
+    });
+
+    it('receiveToken does nothing when person has no brain', () => {
+      const alice = new Person('Alice', defaultSchedule);
+
+      const sent = [];
+      alice.on('messageSent', (event) => sent.push(event));
+
+      alice.receiveToken([]);
 
       expect(sent.length).toEqual(0);
     });

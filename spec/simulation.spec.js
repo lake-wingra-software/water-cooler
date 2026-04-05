@@ -2,6 +2,7 @@ const Simulation = require('../src/simulation');
 const Person = require('../src/person');
 const Time = require('../src/time');
 const { defaultSchedule } = require('../src/schedules');
+const greeter = require('../src/greeter');
 
 function ticksUntil(hour, minute) {
   return (hour * 60 + minute) - (9 * 60);
@@ -96,8 +97,8 @@ describe('Simulation', () => {
     });
 
     it('should only greet once — no more messages after the exchange', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
+      const alice = new Person('Alice', defaultSchedule, greeter);
+      const bob = new Person('Bob', defaultSchedule, greeter);
 
       const sim = new Simulation();
       sim.addPerson(alice);
@@ -116,8 +117,8 @@ describe('Simulation', () => {
     });
 
     it('alice arriving at water cooler should initiate, bob should respond', () => {
-      const alice = new Person('Alice', defaultSchedule);
-      const bob = new Person('Bob', defaultSchedule);
+      const alice = new Person('Alice', defaultSchedule, greeter);
+      const bob = new Person('Bob', defaultSchedule, greeter);
 
       const sim = new Simulation();
       sim.addPerson(alice);

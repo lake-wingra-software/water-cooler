@@ -1,10 +1,11 @@
 const { EventEmitter } = require('events');
 
 class Person extends EventEmitter {
-  constructor(name, schedule) {
+  constructor(name, schedule, brain) {
     super();
     this.name = name;
     this.schedule = schedule;
+    this.brain = brain;
     this.currentTime = schedule[0].startTime;
     this.previousLocation = this.currentLocation();
     this.chat = [];
@@ -42,12 +43,9 @@ class Person extends EventEmitter {
   }
 
   receiveToken(others) {
-    const ungreeted = others.filter(other =>
-      !this.chat.some(m => m.from === this.name && m.message === `hi ${other.name}`)
-    );
-    if (ungreeted.length > 0) {
-      this.sendMessage({ to: ungreeted, message: `hi ${ungreeted[0].name}` });
-    }
+    if (!this.brain) return;
+    const action = this.brain({ name: this.name, others, chat: this.chat });
+    if (action) this.sendMessage(action);
   }
 }
 
