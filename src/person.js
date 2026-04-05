@@ -41,8 +41,24 @@ class Person extends EventEmitter {
     return null;
   }
 
-  addMessageToChat(message) {
+  receiveMessage(message) {
     this.chat.push(message);
+    this.emit('messageReceived', message);
+  }
+
+  sendMessage({ to, message }) {
+    const outgoing = { from: this.name, message };
+    this.chat.push(outgoing);
+    this.emit('messageSent', { to, from: this.name, message });
+  }
+
+  receiveToken(others) {
+    const ungreeted = others.filter(other =>
+      !this.chat.some(m => m.from === this.name && m.message === `hi ${other.name}`)
+    );
+    if (ungreeted.length > 0) {
+      this.sendMessage({ to: ungreeted, message: `hi ${ungreeted[0].name}` });
+    }
   }
 }
 
