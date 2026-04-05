@@ -1,18 +1,17 @@
-const Time = require('./time');
 const { EventEmitter } = require('events');
 
 class Person extends EventEmitter {
   constructor(name, schedule) {
     super();
     this.name = name;
-    this.currentTime = new Time(9, 0);
     this.schedule = schedule;
+    this.currentTime = schedule[0].startTime;
     this.previousLocation = this.currentLocation();
     this.chat = [];
   }
 
-  tick() {
-    this.currentTime = this.currentTime.addMinutes(1);
+  tick(time) {
+    this.currentTime = time;
 
     const newLocation = this.currentLocation();
     if (newLocation !== this.previousLocation && newLocation !== undefined) {

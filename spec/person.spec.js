@@ -1,4 +1,5 @@
 const Person = require('../src/person');
+const Time = require('../src/time');
 const { defaultSchedule } = require('../src/schedules');
 
 function ticksUntil(hour, minute) {
@@ -14,9 +15,7 @@ describe('Person', () => {
 
     it('a person should be at the cafeteria at 12pm', () => {
       const person = new Person('Alice', defaultSchedule);
-      for (let i = 0; i < ticksUntil(12, 0); i++) {
-        person.tick();
-      }
+      person.tick(new Time(12, 0));
       expect(person.currentLocation()).toEqual('cafeteria');
     });
 
@@ -26,9 +25,7 @@ describe('Person', () => {
       const events = [];
       person.on('locationChanged', (data) => events.push(data));
 
-      for (let i = 0; i < ticksUntil(12, 0); i++) {
-        person.tick();
-      }
+      person.tick(new Time(12, 0));
 
       expect(events.length).toEqual(1);
       expect(events[0].location).toEqual('cafeteria');

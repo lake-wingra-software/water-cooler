@@ -25,7 +25,7 @@ class Simulation {
     this.currentTime = this.currentTime.addMinutes(1);
 
     // Phase 1: update all people
-    this.people.forEach(person => person.tick());
+    this.people.forEach(person => person.tick(this.currentTime));
 
     // Phase 2: process location changes - maintain location lists
     this.people.forEach(person => {
