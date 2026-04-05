@@ -14,7 +14,14 @@ const sim = new Simulation();
 const alice = new Person('Alice', defaultSchedule, greeter);
 const bob = new Person('Bob', defaultSchedule, yeahMan());
 
-const chadBrain = makeLlmBrain({ personality: 'friendly but a bit sarcastic, keeps it brief', client, model: process.env.LLM_MODEL || 'claude-haiku-4-5' });
+const chadBrain = makeLlmBrain({
+  characterSheet: {
+    traits: 'friendly but a bit sarcastic, keeps it brief',
+    role: 'software engineer',
+  },
+  client,
+  model: process.env.LLM_MODEL || 'claude-haiku-4-5'
+});
 const chad = new Person('Chad', chadSchedule, chadBrain);
 
 sim.addPerson(alice);

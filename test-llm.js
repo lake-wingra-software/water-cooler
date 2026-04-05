@@ -10,7 +10,7 @@ const client = new Anthropic({
 console.log('Base URL:', process.env.ANTHROPIC_URL);
 console.log('API Key:', process.env.ANTHROPIC_API_KEY ? '(set)' : '(not set)');
 
-const brain = makeLlmBrain({ personality: 'friendly guy', client });
+const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'software engineer' }, client });
 
 brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] })
   .then(result => console.log('Result:', result))

@@ -1,17 +1,24 @@
-function makeLlmBrain({ personality, client, model }) {
+function makeLlmBrain({ characterSheet, client, model }) {
   return async function({ name, others, chat }) {
     if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
 
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
 
-    const prompt = [
-      `You are ${name}, a person at the water cooler at work.`,
-      `Your personality: ${personality}`,
+    const lines = [
+      `You are ${name}, a ${characterSheet.role} at the water cooler at work.`,
+      `Your personality traits: ${characterSheet.traits}`,
+    ];
+    if (characterSheet.goals && characterSheet.goals.length > 0) {
+      lines.push(`Your goals: ${characterSheet.goals.join(', ')}`);
+    }
+    lines.push(
       `Others present: ${otherNames}`,
       chatHistory ? `Conversation so far:\n${chatHistory}` : 'No one has spoken yet.',
       'Say something brief and casual. Reply with just your message, nothing else.'
-    ].join('\n\n');
+    );
+
+    const prompt = lines.join('\n\n');
 
     try {
       const response = await client.messages.create({
