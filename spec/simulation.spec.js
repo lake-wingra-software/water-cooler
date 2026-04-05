@@ -48,6 +48,25 @@ describe('Simulation', () => {
     });
   });
 
+  describe('events', () => {
+    it('emits locationChanged when a person changes location', () => {
+      const alice = new Person('Alice', defaultSchedule);
+      const sim = new Simulation();
+      sim.addPerson(alice);
+
+      const events = [];
+      sim.on('locationChanged', (data) => events.push(data));
+
+      // Tick to 12:00 — Alice moves from cubicle to cafeteria
+      for (let i = 0; i < ticksUntil(12, 0); i++) {
+        sim.tick();
+      }
+
+      expect(events.length).toEqual(1);
+      expect(events[0]).toEqual({ person: alice, from: 'cubicle', to: 'cafeteria' });
+    });
+  });
+
   describe('water cooler', () => {
     it('people should not greet when moving to cubicles', () => {
       const alice = new Person('Alice', defaultSchedule);

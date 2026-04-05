@@ -1,10 +1,12 @@
+const { EventEmitter } = require('events');
 const Time = require('./time');
 const Location = require('./location');
 
 const SHARED_LOCATIONS = ['cafeteria', 'water cooler'];
 
-class Simulation {
+class Simulation extends EventEmitter {
   constructor() {
+    super();
     this.currentTime = new Time(9, 0);
     this.people = [];
     this.locations = {};
@@ -29,6 +31,7 @@ class Simulation {
         if (this.locations[change.to]) {
           this.locations[change.to].arrive(person);
         }
+        this.emit('locationChanged', { person, from: change.from, to: change.to });
       }
     });
 
