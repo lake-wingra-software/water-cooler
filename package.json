@@ -4,7 +4,7 @@
   "description": "Water cooler simulation",
   "main": "src/index.js",
   "scripts": {
-    "test": "jasmine",
+    "test": "jasmine spec/*.spec.js",
     "ci": "npm run test"
   },
   "devDependencies": {
