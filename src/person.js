@@ -39,7 +39,7 @@ class Person extends EventEmitter {
   sendMessage({ to, message }) {
     const outgoing = { from: this.name, message };
     this.chat.push(outgoing);
-    this.emit('messageSent', { to, from: this.name, message });
+    to.forEach(recipient => recipient.receiveMessage(outgoing));
   }
 
   receiveToken(others) {

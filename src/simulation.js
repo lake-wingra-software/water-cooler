@@ -15,9 +15,6 @@ class Simulation {
 
   addPerson(person) {
     this.people.push(person);
-    person.on('messageSent', ({ to, from, message }) => {
-      to.forEach(recipient => recipient.receiveMessage({ from, message }));
-    });
   }
 
   tick() {

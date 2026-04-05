@@ -47,32 +47,29 @@ describe('Person', () => {
       expect(received[0]).toEqual({ from: 'Bob', message: 'hi Alice' });
     });
 
-    it('sendMessage adds to own chat and emits messageSent', () => {
+    it('sendMessage adds to own chat and delivers to recipients', () => {
       const alice = new Person('Alice', defaultSchedule);
       const bob = new Person('Bob', defaultSchedule);
-
-      const sent = [];
-      alice.on('messageSent', (event) => sent.push(event));
 
       alice.sendMessage({ to: [bob], message: 'hi Bob' });
 
       expect(alice.chat.length).toEqual(1);
       expect(alice.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
-      expect(sent.length).toEqual(1);
-      expect(sent[0]).toEqual({ to: [bob], from: 'Alice', message: 'hi Bob' });
+      expect(bob.chat.length).toEqual(1);
+      expect(bob.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
     });
 
     it('receiveToken delegates to brain and sends the result', () => {
-      const fakeBrain = () => ({ to: ['bob'], message: 'hey!' });
+      const bob = new Person('Bob', defaultSchedule);
+      const fakeBrain = () => ({ to: [bob], message: 'hey!' });
       const alice = new Person('Alice', defaultSchedule, fakeBrain);
 
-      const sent = [];
-      alice.on('messageSent', (event) => sent.push(event));
+      alice.receiveToken([bob]);
 
-      alice.receiveToken([]);
-
-      expect(sent.length).toEqual(1);
-      expect(sent[0].message).toEqual('hey!');
+      expect(alice.chat.length).toEqual(1);
+      expect(alice.chat[0].message).toEqual('hey!');
+      expect(bob.chat.length).toEqual(1);
+      expect(bob.chat[0].message).toEqual('hey!');
     });
 
     it('receiveToken does nothing when brain returns null', () => {
