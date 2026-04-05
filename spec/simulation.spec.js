@@ -123,5 +123,26 @@ describe('Simulation', () => {
 
       expect(wallyMessages.length).toEqual(0);
     });
+
+    it('alice and bob should have chat history when greeting at water cooler', () => {
+      const alice = new Person('Alice', defaultSchedule);
+      const bob = new Person('Bob', defaultSchedule);
+
+      const sim = new Simulation();
+      sim.addPerson(alice);
+      sim.addPerson(bob);
+
+      for (let i = 0; i < ticksUntil(15, 29); i++) {
+        sim.tick();
+      }
+
+      sim.tick();  // greet at water cooler
+
+      expect(alice.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+      expect(alice.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
+
+      expect(bob.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+      expect(bob.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
+    });
   });
 });

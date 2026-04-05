@@ -35,6 +35,10 @@ class Simulation {
         from: person.name,
         message: `hi ${other.name}`
       };
+      // Add message to both people's chat
+      person.addMessageToChat(greeting);
+      other.addMessageToChat(greeting);
+      // Also emit event for observers
       other.emit('messageReceived', greeting);
     });
   }

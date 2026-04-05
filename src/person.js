@@ -8,6 +8,7 @@ class Person extends EventEmitter {
     this.currentTime = new Time(9, 0);
     this.schedule = schedule;
     this.previousActivity = this.currentActivity();
+    this.chat = [];
   }
 
   tick() {
@@ -15,6 +16,7 @@ class Person extends EventEmitter {
 
     const newActivity = this.currentActivity();
     if (newActivity !== this.previousActivity && newActivity !== undefined) {
+      this.chat = [];  // Reset chat when moving to new location
       this.emit('activityChanged', {
         name: this.name,
         activity: newActivity,
@@ -37,6 +39,10 @@ class Person extends EventEmitter {
       return { from: this.previousActivity, to: current };
     }
     return null;
+  }
+
+  addMessageToChat(message) {
+    this.chat.push(message);
   }
 }
 
