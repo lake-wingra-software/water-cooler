@@ -18,25 +18,38 @@ describe('Location', () => {
 
   describe('speaking token', () => {
     it('gives the token holder a turn with the others', () => {
-      const location = new Location('water cooler');
+      const loc = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push({ holder: 'Alice', others }); done(); } };
-      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push({ holder: 'Bob', others }); done(); } };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push({ holder: 'Alice', others }); done(); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push({ holder: 'Bob', others }); done(); } };
 
-      location.arrive(alice);
-      location.arrive(bob);
+      loc.arrive(alice);
+      loc.arrive(bob);
 
-      location.tick();
+      loc.tick();
       expect(tokenCalls.length).toEqual(1);
       expect(tokenCalls[0].holder).toEqual('Alice');
       expect(tokenCalls[0].others).toEqual([bob]);
     });
 
+    it('passes its name as the location to the token holder', () => {
+      const loc = new Location('cafeteria');
+      let receivedLocation;
+      const alice = { name: 'Alice', receiveToken(others, location, done) { receivedLocation = location; done(); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { done(); } };
+
+      loc.arrive(alice);
+      loc.arrive(bob);
+      loc.tick();
+
+      expect(receivedLocation).toEqual('cafeteria');
+    });
+
     it('rotates the token each tick', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); done(); } };
-      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); done(); } };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); done(); } };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -51,8 +64,8 @@ describe('Location', () => {
     it('does not hand out the token while it is held', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); } };
-      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); } };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); } };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -69,17 +82,17 @@ describe('Location', () => {
       const messages = { alice: [], bob: [], chad: [] };
       const alice = {
         name: 'Alice',
-        receiveToken(others, done) { done({ to: [bob], message: 'hi Bob' }); },
+        receiveToken(others, location, done) { done({ to: [bob], message: 'hi Bob' }); },
         receiveMessage(msg) { messages.alice.push(msg); }
       };
       const bob = {
         name: 'Bob',
-        receiveToken(others, done) { done(null); },
+        receiveToken(others, location, done) { done(null); },
         receiveMessage(msg) { messages.bob.push(msg); }
       };
       const chad = {
         name: 'Chad',
-        receiveToken(others, done) { done(null); },
+        receiveToken(others, location, done) { done(null); },
         receiveMessage(msg) { messages.chad.push(msg); }
       };
 
@@ -102,12 +115,12 @@ describe('Location', () => {
 
       const alice = {
         name: 'Alice',
-        receiveToken(others, done) { done({ to: others, message: 'hi Bob' }); },
+        receiveToken(others, location, done) { done({ to: others, message: 'hi Bob' }); },
         receiveMessage() {}
       };
       const bob = {
         name: 'Bob',
-        receiveToken(others, done) { done(null); },
+        receiveToken(others, location, done) { done(null); },
         receiveMessage() {}
       };
 
@@ -123,9 +136,9 @@ describe('Location', () => {
     it('resets token index when occupants leave and re-enter', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); done(null); }, receiveMessage() {} };
-      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); done(null); }, receiveMessage() {} };
-      const chad = { name: 'Chad', receiveToken(others, done) { tokenCalls.push('Chad'); done(null); }, receiveMessage() {} };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(null); }, receiveMessage() {} };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); done(null); }, receiveMessage() {} };
+      const chad = { name: 'Chad', receiveToken(others, location, done) { tokenCalls.push('Chad'); done(null); }, receiveMessage() {} };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -151,8 +164,8 @@ describe('Location', () => {
     it('handles done callback after occupants have departed', () => {
       const location = new Location('water cooler');
       let savedDone;
-      const alice = { name: 'Alice', receiveToken(others, done) { savedDone = done; }, receiveMessage() {} };
-      const bob = { name: 'Bob', receiveToken(others, done) { done(null); }, receiveMessage() {} };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { savedDone = done; }, receiveMessage() {} };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { done(null); }, receiveMessage() {} };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -177,8 +190,8 @@ describe('Location', () => {
       const location = new Location('water cooler');
       let savedDone;
       const messages = [];
-      const alice = { name: 'Alice', receiveToken(others, done) { savedDone = done; }, receiveMessage(msg) { messages.push(msg); } };
-      const bob = { name: 'Bob', receiveToken(others, done) { done(null); }, receiveMessage(msg) { messages.push(msg); } };
+      const alice = { name: 'Alice', receiveToken(others, location, done) { savedDone = done; }, receiveMessage(msg) { messages.push(msg); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { done(null); }, receiveMessage(msg) { messages.push(msg); } };
 
       location.arrive(alice);
       location.arrive(bob);

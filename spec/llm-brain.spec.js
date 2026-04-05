@@ -20,7 +20,7 @@ describe('LLM brain', () => {
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
     const alice = { name: 'Alice' };
     const bob = { name: 'Bob' };
-    const result = await brain({ name: 'Chad', others: [alice, bob], chat: [] });
+    const result = await brain({ name: 'Chad', others: [alice, bob], chat: [], location: 'water cooler' });
 
     expect(client.messages.create).toHaveBeenCalled();
     expect(result).toEqual({ to: [alice, bob], message: 'hey everyone!' });
@@ -29,7 +29,7 @@ describe('LLM brain', () => {
   it('includes role and traits in the prompt', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'sarcastic', role: 'senior engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
     const prompt = capturePrompt(client);
     expect(prompt).toContain('senior engineer');
@@ -43,17 +43,26 @@ describe('LLM brain', () => {
       client,
       model: 'test-model'
     });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
     const prompt = capturePrompt(client);
     expect(prompt).toContain('get promoted');
     expect(prompt).toContain('avoid meetings');
   });
 
+  it('includes location in the prompt', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'cafeteria' });
+
+    const prompt = capturePrompt(client);
+    expect(prompt).toContain('cafeteria');
+  });
+
   it('omits goals section when not provided', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
     const prompt = capturePrompt(client);
     expect(prompt).not.toContain('goals');
@@ -66,7 +75,7 @@ describe('LLM brain', () => {
       { from: 'Alice', message: 'hi Chad' },
       { from: 'Chad', message: 'hey!' }
     ];
-    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat });
+    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat, location: 'water cooler' });
 
     expect(result).toBeNull();
     expect(client.messages.create).not.toHaveBeenCalled();
@@ -81,7 +90,7 @@ describe('LLM brain', () => {
     spyOn(console, 'error');
 
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [] });
+    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
     expect(result).toBeNull();
     expect(console.error).toHaveBeenCalledWith('[Chad] LLM error: credit balance too low');

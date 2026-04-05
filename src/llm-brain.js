@@ -1,12 +1,12 @@
 function makeLlmBrain({ characterSheet, client, model }) {
-  return async function({ name, others, chat }) {
+  return async function({ name, others, chat, location }) {
     if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
 
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
 
     const lines = [
-      `You are ${name}, a ${characterSheet.role} at the water cooler at work.`,
+      `You are ${name}, a ${characterSheet.role} at the ${location} at work.`,
       `Your personality traits: ${characterSheet.traits}`,
     ];
     if (characterSheet.goals && characterSheet.goals.length > 0) {

@@ -36,9 +36,9 @@ class Person extends EventEmitter {
     this.emit('messageReceived', message);
   }
 
-  receiveToken(others, done) {
+  receiveToken(others, location, done) {
     if (!this.brain) { done(null); return; }
-    const result = this.brain({ name: this.name, others, chat: this.chat });
+    const result = this.brain({ name: this.name, others, chat: this.chat, location });
     if (result && typeof result.then === 'function') {
       result.then(action => done(action));
     } else {
