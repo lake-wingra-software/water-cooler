@@ -1,13 +1,20 @@
+require('dotenv').config()
+
 const Simulation = require('./src/simulation');
 const Person = require('./src/person');
 const { defaultSchedule, chadSchedule } = require('./src/schedules');
 const greeter = require('./src/greeter');
+const makeLlmBrain = require('./src/llm-brain');
+const Anthropic = require('@anthropic-ai/sdk');
+
+const client = new Anthropic();
 
 const sim = new Simulation();
 const alice = new Person('Alice', defaultSchedule, greeter);
 const bob = new Person('Bob', defaultSchedule, greeter);
 
-const chad = new Person('Chad', chadSchedule, greeter);
+const chadBrain = makeLlmBrain({ personality: 'friendly but a bit sarcastic, keeps it brief', client });
+const chad = new Person('Chad', chadSchedule, chadBrain);
 
 sim.addPerson(alice);
 sim.addPerson(bob);
