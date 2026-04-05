@@ -64,7 +64,7 @@ describe('Person', () => {
       const fakeBrain = () => ({ to: [bob], message: 'hey!' });
       const alice = new Person('Alice', defaultSchedule, fakeBrain);
 
-      alice.receiveToken([bob]);
+      alice.receiveToken([bob], () => {});
 
       expect(alice.chat.length).toEqual(1);
       expect(alice.chat[0].message).toEqual('hey!');
@@ -79,7 +79,7 @@ describe('Person', () => {
       const sent = [];
       alice.on('messageSent', (event) => sent.push(event));
 
-      alice.receiveToken([]);
+      alice.receiveToken([], () => {});
 
       expect(sent.length).toEqual(0);
     });
@@ -90,7 +90,7 @@ describe('Person', () => {
       const sent = [];
       alice.on('messageSent', (event) => sent.push(event));
 
-      alice.receiveToken([]);
+      alice.receiveToken([], () => {});
 
       expect(sent.length).toEqual(0);
     });

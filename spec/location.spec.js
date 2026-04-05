@@ -20,8 +20,8 @@ describe('Location', () => {
     it('gives the token holder a turn with the others', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others) { tokenCalls.push({ holder: 'Alice', others }); } };
-      const bob = { name: 'Bob', receiveToken(others) { tokenCalls.push({ holder: 'Bob', others }); } };
+      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push({ holder: 'Alice', others }); done(); } };
+      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push({ holder: 'Bob', others }); done(); } };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -35,8 +35,8 @@ describe('Location', () => {
     it('rotates the token each tick', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
-      const alice = { name: 'Alice', receiveToken(others) { tokenCalls.push('Alice'); } };
-      const bob = { name: 'Bob', receiveToken(others) { tokenCalls.push('Bob'); } };
+      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); done(); } };
+      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); done(); } };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -46,6 +46,22 @@ describe('Location', () => {
       location.tick();
 
       expect(tokenCalls).toEqual(['Alice', 'Bob', 'Alice']);
+    });
+
+    it('does not hand out the token while it is held', () => {
+      const location = new Location('water cooler');
+      const tokenCalls = [];
+      const alice = { name: 'Alice', receiveToken(others, done) { tokenCalls.push('Alice'); } };
+      const bob = { name: 'Bob', receiveToken(others, done) { tokenCalls.push('Bob'); } };
+
+      location.arrive(alice);
+      location.arrive(bob);
+
+      location.tick();  // Alice gets token, doesn't call done
+      location.tick();  // should be a no-op
+      location.tick();  // still no-op
+
+      expect(tokenCalls).toEqual(['Alice']);
     });
 
     it('does nothing with fewer than 2 occupants', () => {

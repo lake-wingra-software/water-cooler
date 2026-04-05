@@ -15,10 +15,14 @@ class Location {
 
   tick() {
     if (this.occupants.length < 2) return;
+    if (this.tokenHeld) return;
+    this.tokenHeld = true;
     const tokenHolder = this.occupants[this.tokenIndex];
     const others = this.occupants.filter(p => p !== tokenHolder);
-    tokenHolder.receiveToken(others);
-    this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
+    tokenHolder.receiveToken(others, () => {
+      this.tokenIndex = (this.tokenIndex + 1) % this.occupants.length;
+      this.tokenHeld = false;
+    });
   }
 }
 

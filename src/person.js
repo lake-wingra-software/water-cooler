@@ -42,10 +42,15 @@ class Person extends EventEmitter {
     to.forEach(recipient => recipient.receiveMessage(outgoing));
   }
 
-  receiveToken(others) {
-    if (!this.brain) return;
-    const action = this.brain({ name: this.name, others, chat: this.chat });
-    if (action) this.sendMessage(action);
+  receiveToken(others, done) {
+    if (!this.brain) { done(); return; }
+    const result = this.brain({ name: this.name, others, chat: this.chat });
+    if (result && typeof result.then === 'function') {
+      result.then(action => { if (action) this.sendMessage(action); done(); });
+    } else {
+      if (result) this.sendMessage(result);
+      done();
+    }
   }
 }
 
