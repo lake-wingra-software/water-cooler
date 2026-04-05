@@ -12,14 +12,30 @@ const schedule = [
 
 const sim = new Simulation();
 const alice = new Person('Alice', schedule);
+const bob = new Person('Bob', schedule);
+
 sim.addPerson(alice);
+sim.addPerson(bob);
 
 // Log initial state
-console.log(`${sim.currentTime.toString()}: Alice ${alice.currentActivity()}`);
+console.log(`${sim.currentTime.toString()}: Alice ${alice.currentActivity()}, Bob ${bob.currentActivity()}`);
 
 // Listen for activity changes
 alice.on('activityChanged', (data) => {
   console.log(`${data.time.toString()}: ${data.name} ${data.activity}`);
+});
+
+bob.on('activityChanged', (data) => {
+  console.log(`${data.time.toString()}: ${data.name} ${data.activity}`);
+});
+
+// Listen for messages
+alice.on('messageReceived', (msg) => {
+  console.log(`${sim.currentTime.toString()}: ${msg.from} → ${msg.from === 'Alice' ? 'Bob' : 'Alice'}: "${msg.message}"`);
+});
+
+bob.on('messageReceived', (msg) => {
+  console.log(`${sim.currentTime.toString()}: ${msg.from} → ${msg.from === 'Alice' ? 'Bob' : 'Alice'}: "${msg.message}"`);
 });
 
 while (sim.isActiveWorkday()) {
