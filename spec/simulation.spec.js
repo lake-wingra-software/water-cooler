@@ -95,6 +95,26 @@ describe('Simulation', () => {
       expect(wallyMessages.length).toEqual(0);
     });
 
+    it('should only greet once — no more messages after the exchange', () => {
+      const alice = new Person('Alice', defaultSchedule);
+      const bob = new Person('Bob', defaultSchedule);
+
+      const sim = new Simulation();
+      sim.addPerson(alice);
+      sim.addPerson(bob);
+
+      for (let i = 0; i < ticksUntil(15, 29); i++) {
+        sim.tick();
+      }
+
+      sim.tick();  // 15:30 — Alice greets Bob
+      sim.tick();  // 15:31 — Bob responds
+      sim.tick();  // 15:32 — nothing more to say
+
+      expect(alice.chat.length).toEqual(2);
+      expect(bob.chat.length).toEqual(2);
+    });
+
     it('alice arriving at water cooler should initiate, bob should respond', () => {
       const alice = new Person('Alice', defaultSchedule);
       const bob = new Person('Bob', defaultSchedule);

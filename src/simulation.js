@@ -50,7 +50,10 @@ class Simulation {
       if (list.length < 2) continue;
       const index = this.locationTokens[location];
       const tokenHolder = list[index];
-      const others = list.filter(p => p !== tokenHolder);
+      const others = list.filter(p =>
+        p !== tokenHolder &&
+        !tokenHolder.chat.some(m => m.from === tokenHolder.name && m.message === `hi ${p.name}`)
+      );
       others.forEach(other => {
         const message = { from: tokenHolder.name, message: `hi ${other.name}` };
         tokenHolder.addMessageToChat(message);
