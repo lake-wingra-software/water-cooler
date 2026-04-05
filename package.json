@@ -1,0 +1,13 @@
+{
+  "name": "water-cooler",
+  "version": "1.0.0",
+  "description": "Water cooler simulation",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jasmine",
+    "ci": "npm run test"
+  },
+  "devDependencies": {
+    "jasmine": "^5.1.0"
+  }
+}
