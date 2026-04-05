@@ -1,5 +1,11 @@
 const Time = require('./time');
 
+const SHARED_LOCATIONS = ['cafeteria', 'water cooler'];
+
+function isSharedLocation(location) {
+  return SHARED_LOCATIONS.includes(location);
+}
+
 class Simulation {
   constructor() {
     this.currentTime = new Time(9, 0);
@@ -12,6 +18,11 @@ class Simulation {
 
   handleActivityChange(person, change) {
     const location = change.to;
+
+    // Only greet at shared locations
+    if (!isSharedLocation(location)) {
+      return;
+    }
 
     // Find others at the same location
     const othersAtLocation = this.people.filter(p =>

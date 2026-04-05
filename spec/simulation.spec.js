@@ -85,5 +85,28 @@ describe('Simulation', () => {
       expect(bobMessages[0].from).toEqual('Alice');
       expect(bobMessages[0].message).toEqual('hi Bob');
     });
+
+    it('people should not greet when moving to cubicles', () => {
+      const alice = new Person('Alice', createDefaultSchedule());
+      const bob = new Person('Bob', createDefaultSchedule());
+
+      const sim = new Simulation();
+      sim.addPerson(alice);
+      sim.addPerson(bob);
+
+      // Skip to just before 13:00
+      for (let i = 0; i < ticksUntil(12, 59); i++) {
+        sim.tick();
+      }
+
+      const messages = [];
+      alice.on('messageReceived', (msg) => messages.push(msg));
+      bob.on('messageReceived', (msg) => messages.push(msg));
+
+      // Both transition to working at 13:00
+      sim.tick();
+
+      expect(messages.length).toEqual(0);
+    });
   });
 });
