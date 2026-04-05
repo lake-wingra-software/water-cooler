@@ -24,7 +24,7 @@ class Location extends EventEmitter {
     const tokenHolder = this.occupants[this.tokenIndex];
     const others = this.occupants.filter(p => p !== tokenHolder);
     tokenHolder.receiveToken(others, (action) => {
-      if (action) {
+      if (action && this.occupants.includes(tokenHolder)) {
         const outgoing = { from: tokenHolder.name, message: action.message };
         this.occupants.forEach(p => p.receiveMessage(outgoing));
         this.emit('messageSent', outgoing);

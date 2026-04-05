@@ -173,6 +173,25 @@ describe('Location', () => {
       expect(location.tokenHeld).toEqual(true); // token was handed out
     });
 
+    it('does not broadcast if speaker has departed before done fires', () => {
+      const location = new Location('water cooler');
+      let savedDone;
+      const messages = [];
+      const alice = { name: 'Alice', receiveToken(others, done) { savedDone = done; }, receiveMessage(msg) { messages.push(msg); } };
+      const bob = { name: 'Bob', receiveToken(others, done) { done(null); }, receiveMessage(msg) { messages.push(msg); } };
+
+      location.arrive(alice);
+      location.arrive(bob);
+
+      location.tick(); // Alice gets token
+
+      location.depart(alice); // Alice leaves before responding
+
+      savedDone({ to: [bob], message: 'hey bob!' }); // response arrives late
+
+      expect(messages).toEqual([]);
+    });
+
     it('does nothing with fewer than 2 occupants', () => {
       const location = new Location('water cooler');
       const tokenCalls = [];
