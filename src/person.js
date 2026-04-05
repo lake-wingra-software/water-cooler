@@ -12,10 +12,9 @@ class Person extends EventEmitter {
 
   tick() {
     this.currentTime = this.currentTime.addMinutes(1);
-    const newActivity = this.currentActivity();
 
+    const newActivity = this.currentActivity();
     if (newActivity !== this.previousActivity && newActivity !== undefined) {
-      this.previousActivity = newActivity;
       this.emit('activityChanged', {
         name: this.name,
         activity: newActivity,
@@ -30,6 +29,14 @@ class Person extends EventEmitter {
         return slot.activity;
       }
     }
+  }
+
+  getActivityChange() {
+    const current = this.currentActivity();
+    if (current !== this.previousActivity) {
+      return { from: this.previousActivity, to: current };
+    }
+    return null;
   }
 }
 

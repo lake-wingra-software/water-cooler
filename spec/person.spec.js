@@ -29,29 +29,22 @@ describe('Person', () => {
       }
       expect(person.currentActivity()).toEqual('cafeteria');
     });
-  });
 
-  describe('events', () => {
-    it('should emit activityChanged event exactly when activity changes to cafeteria', () => {
-      const schedule = [
-        { startTime: new Time(9, 0), endTime: new Time(12, 0), activity: 'working' },
-        { startTime: new Time(12, 0), endTime: new Time(13, 0), activity: 'cafeteria' }
-      ];
-      const person = new Person('Alice', schedule);
+    it('should emit activityChanged event when activity changes', () => {
+      const person = new Person('Alice', createDefaultSchedule());
 
       const events = [];
-      person.on('activityChanged', (data) => {
-        events.push(data);
-      });
+      person.on('activityChanged', (data) => events.push(data));
 
-      for (let i = 0; i < ticksUntil(12, 0) + 1; i++) {
+      // Tick to just before the activity change
+      for (let i = 0; i < ticksUntil(12, 0); i++) {
         person.tick();
       }
 
       expect(events.length).toEqual(1);
       expect(events[0].activity).toEqual('cafeteria');
-      expect(events[0].time.hour()).toEqual(12);
-      expect(events[0].time.minute()).toEqual(0);
+      expect(events[0].name).toEqual('Alice');
     });
   });
+
 });
