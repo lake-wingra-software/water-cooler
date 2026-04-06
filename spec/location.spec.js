@@ -1,9 +1,11 @@
 const Location = require('../src/location');
 
+const inOrder = arr => [...arr];
+
 describe('Location', () => {
   describe('occupants', () => {
     it('tracks who is present via arrive and depart', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const alice = { name: 'Alice' };
       const bob = { name: 'Bob' };
 
@@ -18,7 +20,7 @@ describe('Location', () => {
 
   describe('speaking token', () => {
     it('gives the token holder a turn with the others', () => {
-      const loc = new Location('water cooler');
+      const loc = new Location('water cooler', inOrder);
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push({ holder: 'Alice', others }); done(); } };
       const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push({ holder: 'Bob', others }); done(); } };
@@ -33,7 +35,7 @@ describe('Location', () => {
     });
 
     it('passes its name as the location to the token holder', () => {
-      const loc = new Location('cafeteria');
+      const loc = new Location('cafeteria', inOrder);
       let receivedLocation;
       const alice = { name: 'Alice', receiveToken(others, location, done) { receivedLocation = location; done(); } };
       const bob = { name: 'Bob', receiveToken(others, location, done) { done(); } };
@@ -46,7 +48,7 @@ describe('Location', () => {
     });
 
     it('rotates the token each tick', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(); } };
       const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); done(); } };
@@ -62,7 +64,7 @@ describe('Location', () => {
     });
 
     it('does not hand out the token while it is held', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); } };
       const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); } };
@@ -78,7 +80,7 @@ describe('Location', () => {
     });
 
     it('broadcasts the message to all occupants when token holder speaks', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const messages = { alice: [], bob: [], chad: [] };
       const alice = {
         name: 'Alice',
@@ -109,7 +111,7 @@ describe('Location', () => {
     });
 
     it('emits messageSent when the token holder speaks', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const events = [];
       location.on('messageSent', (data) => events.push(data));
 
@@ -134,7 +136,7 @@ describe('Location', () => {
     });
 
     it('resets token index when occupants leave and re-enter', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(null); }, receiveMessage() {} };
       const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); done(null); }, receiveMessage() {} };
@@ -162,7 +164,7 @@ describe('Location', () => {
     });
 
     it('handles done callback after occupants have departed', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       let savedDone;
       const alice = { name: 'Alice', receiveToken(others, location, done) { savedDone = done; }, receiveMessage() {} };
       const bob = { name: 'Bob', receiveToken(others, location, done) { done(null); }, receiveMessage() {} };
@@ -187,7 +189,7 @@ describe('Location', () => {
     });
 
     it('does not broadcast if speaker has departed before done fires', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       let savedDone;
       const messages = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { savedDone = done; }, receiveMessage(msg) { messages.push(msg); } };
@@ -206,7 +208,7 @@ describe('Location', () => {
     });
 
     it('does nothing with fewer than 2 occupants', () => {
-      const location = new Location('water cooler');
+      const location = new Location('water cooler', inOrder);
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken() { tokenCalls.push('Alice'); } };
 
@@ -214,6 +216,38 @@ describe('Location', () => {
       location.tick();
 
       expect(tokenCalls.length).toEqual(0);
+    });
+  });
+
+  describe('speaking order', () => {
+    it('uses buildQueue to determine order each round', () => {
+      const loc = new Location('water cooler', arr => [...arr].reverse());
+      const tokenCalls = [];
+      const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { tokenCalls.push('Bob'); done(); } };
+
+      loc.arrive(alice);
+      loc.arrive(bob);
+
+      loc.tick();
+      loc.tick();
+
+      expect(tokenCalls).toEqual(['Bob', 'Alice']);
+    });
+
+    it('calls buildQueue once per round', () => {
+      let buildCount = 0;
+      const loc = new Location('water cooler', arr => { buildCount++; return [...arr]; });
+      const alice = { name: 'Alice', receiveToken(others, location, done) { done(); } };
+      const bob = { name: 'Bob', receiveToken(others, location, done) { done(); } };
+
+      loc.arrive(alice);
+      loc.arrive(bob);
+
+      loc.tick(); loc.tick(); // round 1
+      loc.tick(); loc.tick(); // round 2
+
+      expect(buildCount).toEqual(2);
     });
   });
 });
