@@ -36,9 +36,21 @@ class Person extends EventEmitter {
     this.emit('messageReceived', message);
   }
 
+  minutesRemainingAtLocation() {
+    for (const slot of this.schedule) {
+      if (!this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)) {
+        const end = slot.endTime.hour() * 60 + slot.endTime.minute();
+        const now = this.currentTime.hour() * 60 + this.currentTime.minute();
+        return end - now;
+      }
+    }
+    return 0;
+  }
+
   receiveToken(others, location, done) {
     if (!this.brain) { done(null); return; }
-    const result = this.brain({ name: this.name, others, chat: this.chat, location });
+    const minutesRemaining = this.minutesRemainingAtLocation();
+    const result = this.brain({ name: this.name, others, chat: this.chat, location, minutesRemaining });
     if (result && typeof result.then === 'function') {
       result.then(action => done(action));
     } else {

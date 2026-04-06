@@ -5,13 +5,13 @@ const Location = require('./location');
 const SHARED_LOCATIONS = ['cafeteria', 'water cooler'];
 
 class Simulation extends EventEmitter {
-  constructor() {
+  constructor({ speakerQueue } = {}) {
     super();
     this.currentTime = new Time(9, 0);
     this.people = [];
     this.locations = {};
     SHARED_LOCATIONS.forEach(name => {
-      this.locations[name] = new Location(name);
+      this.locations[name] = new Location(name, speakerQueue);
     });
   }
 

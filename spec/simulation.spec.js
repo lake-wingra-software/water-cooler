@@ -3,6 +3,8 @@ const Person = require('../src/person');
 const Time = require('../src/time');
 const greeter = require('../src/greeter');
 
+const inOrder = arr => [...arr];
+
 function ticksUntil(hour, minute) {
   return (hour * 60 + minute) - (9 * 60);
 }
@@ -22,20 +24,20 @@ const cubicleStartSchedule = [
 describe('Simulation', () => {
   describe('time', () => {
     it('should start at 9am', () => {
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       expect(sim.currentTime.hour()).toEqual(9);
       expect(sim.currentTime.minute()).toEqual(0);
     });
 
     it('should advance time by 1 minute when tick() is called', () => {
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.tick();
       expect(sim.currentTime.hour()).toEqual(9);
       expect(sim.currentTime.minute()).toEqual(1);
     });
 
     it('should advance multiple ticks', () => {
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.tick();
       sim.tick();
       sim.tick();
@@ -45,12 +47,12 @@ describe('Simulation', () => {
 
   describe('workday', () => {
     it('should be an active workday at 9am', () => {
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       expect(sim.isActiveWorkday()).toEqual(true);
     });
 
     it('should not be an active workday at 5pm', () => {
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       // advance to 5pm (8 hours * 60 minutes = 480 minutes)
       for (let i = 0; i < 480; i++) {
         sim.tick();
@@ -62,7 +64,7 @@ describe('Simulation', () => {
   describe('addPerson', () => {
     it('places person in their starting shared location', () => {
       const alice = new Person('Alice', waterCoolerStartSchedule);
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
       expect(sim.locations['water cooler'].occupants).toEqual([alice]);
@@ -72,7 +74,7 @@ describe('Simulation', () => {
   describe('events', () => {
     it('emits locationChanged when a person changes location', () => {
       const alice = new Person('Alice', cubicleStartSchedule);
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
       const events = [];
@@ -93,7 +95,7 @@ describe('Simulation', () => {
       const alice = new Person('Alice', cubicleStartSchedule);
       const bob = new Person('Bob', cubicleStartSchedule);
 
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
       sim.addPerson(bob);
 
@@ -119,7 +121,7 @@ describe('Simulation', () => {
       const wally = new Person('Wally', wallySchedule);
       const alice = new Person('Alice', cubicleStartSchedule);
 
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(wally);
       sim.addPerson(alice);
 
@@ -140,7 +142,7 @@ describe('Simulation', () => {
       const alice = new Person('Alice', cubicleStartSchedule, greeter);
       const bob = new Person('Bob', cubicleStartSchedule, greeter);
 
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
       sim.addPerson(bob);
 
@@ -160,7 +162,7 @@ describe('Simulation', () => {
       const alice = new Person('Alice', cubicleStartSchedule, greeter);
       const bob = new Person('Bob', cubicleStartSchedule, greeter);
 
-      const sim = new Simulation();
+      const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
       sim.addPerson(bob);
 

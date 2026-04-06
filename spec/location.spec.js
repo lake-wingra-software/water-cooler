@@ -220,7 +220,7 @@ describe('Location', () => {
   });
 
   describe('speaking order', () => {
-    it('uses buildQueue to determine order each round', () => {
+    it('uses speakerQueue to determine order each round', () => {
       const loc = new Location('water cooler', arr => [...arr].reverse());
       const tokenCalls = [];
       const alice = { name: 'Alice', receiveToken(others, location, done) { tokenCalls.push('Alice'); done(); } };
@@ -235,7 +235,7 @@ describe('Location', () => {
       expect(tokenCalls).toEqual(['Bob', 'Alice']);
     });
 
-    it('calls buildQueue once per round', () => {
+    it('calls speakerQueue once per round', () => {
       let buildCount = 0;
       const loc = new Location('water cooler', arr => { buildCount++; return [...arr]; });
       const alice = { name: 'Alice', receiveToken(others, location, done) { done(); } };

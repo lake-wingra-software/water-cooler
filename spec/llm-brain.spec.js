@@ -50,6 +50,15 @@ describe('LLM brain', () => {
     expect(prompt).toContain('avoid meetings');
   });
 
+  it('converts minutesRemaining to turns in the prompt', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 24 });
+
+    const prompt = capturePrompt(client);
+    expect(prompt).toContain('3 turns');
+  });
+
   it('includes location in the prompt', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });

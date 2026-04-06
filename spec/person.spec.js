@@ -48,6 +48,16 @@ describe('Person', () => {
     });
 
 
+    it('receiveToken passes minutesRemaining at current location to brain', () => {
+      let receivedArgs;
+      const alice = new Person('Alice', testSchedule, (args) => { receivedArgs = args; return null; });
+
+      alice.tick(new Time(11, 0)); // 1 hour before leaving water cooler (ends at 12:00)
+      alice.receiveToken([], 'water cooler', () => {});
+
+      expect(receivedArgs.minutesRemaining).toEqual(60);
+    });
+
     it('receiveToken delegates to brain and passes action to done', () => {
       const bob = new Person('Bob', testSchedule);
       const fakeBrain = () => ({ to: [bob], message: 'hey!' });

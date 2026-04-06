@@ -10,12 +10,12 @@ function shuffle(arr) {
 }
 
 class Location extends EventEmitter {
-  constructor(name, buildQueue = shuffle) {
+  constructor(name, speakerQueue = shuffle) {
     super();
     this.name = name;
     this.occupants = [];
     this.speakingQueue = [];
-    this.buildQueue = buildQueue;
+    this.speakerQueue = speakerQueue;
     this.tokenHeld = false;
   }
 
@@ -35,7 +35,7 @@ class Location extends EventEmitter {
     if (this.tokenHeld) return;
 
     if (this.speakingQueue.length === 0) {
-      this.speakingQueue = this.buildQueue(this.occupants);
+      this.speakingQueue = this.speakerQueue(this.occupants);
     }
 
     while (this.speakingQueue.length > 0 && !this.occupants.includes(this.speakingQueue[0])) {

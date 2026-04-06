@@ -21,10 +21,13 @@ const aliceCharacter = {
   ],
 };
 
+const minutesPerTurn = 8;
+
 const aliceBrain = makeLlmBrain({
   characterSheet: aliceCharacter,
   client,
   model,
+  minutesPerTurn,
 });
 
 const chadCharacter = {
@@ -41,6 +44,7 @@ const chadBrain = makeLlmBrain({
   characterSheet: chadCharacter,
   client,
   model,
+  minutesPerTurn,
 });
 
 const sim = new Simulation();

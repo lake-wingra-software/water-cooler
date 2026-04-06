@@ -1,7 +1,8 @@
-function makeLlmBrain({ characterSheet, client, model }) {
-  return async function({ name, others, chat, location }) {
+function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
+  return async function({ name, others, chat, location, minutesRemaining }) {
     if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
 
+    const estimatedTurnsRemaining = Math.floor(minutesRemaining / minutesPerTurn);
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
 
@@ -15,6 +16,7 @@ function makeLlmBrain({ characterSheet, client, model }) {
     lines.push(
       `Others present: ${otherNames}`,
       chatHistory ? `Conversation so far:\n${chatHistory}` : 'No one has spoken yet.',
+      `You have ${estimatedTurnsRemaining} turns remaining at this location.`,
       'Say something brief and casual. Reply with spoken words only — no stage directions, actions, or text in asterisks.'
     );
 
