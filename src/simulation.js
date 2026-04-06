@@ -1,8 +1,8 @@
-const { EventEmitter } = require('events');
-const Time = require('./time');
-const Location = require('./location');
+const { EventEmitter } = require("events");
+const Time = require("./time");
+const Location = require("./location");
 
-const SHARED_LOCATIONS = ['cafeteria', 'conference room', 'water cooler'];
+const SHARED_LOCATIONS = ["cafeteria", "conference room", "water cooler"];
 
 class Simulation extends EventEmitter {
   constructor({ speakerQueue } = {}) {
@@ -10,7 +10,7 @@ class Simulation extends EventEmitter {
     this.currentTime = new Time(9, 0);
     this.people = [];
     this.locations = {};
-    SHARED_LOCATIONS.forEach(name => {
+    SHARED_LOCATIONS.forEach((name) => {
       this.locations[name] = new Location(name, speakerQueue);
     });
   }
@@ -26,7 +26,7 @@ class Simulation extends EventEmitter {
   tick() {
     this.currentTime = this.currentTime.addMinutes(1);
 
-    this.people.forEach(person => {
+    this.people.forEach((person) => {
       const change = person.tick(this.currentTime);
       if (change) {
         if (this.locations[change.from]) {
@@ -35,7 +35,11 @@ class Simulation extends EventEmitter {
         if (this.locations[change.to]) {
           this.locations[change.to].arrive(person);
         }
-        this.emit('locationChanged', { person, from: change.from, to: change.to });
+        this.emit("locationChanged", {
+          person,
+          from: change.from,
+          to: change.to,
+        });
       }
     });
 

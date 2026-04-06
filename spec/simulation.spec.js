@@ -1,42 +1,62 @@
-const Simulation = require('../src/simulation');
-const Person = require('../src/person');
-const Time = require('../src/time');
-const greeter = require('../src/greeter');
+const Simulation = require("../src/simulation");
+const Person = require("../src/person");
+const Time = require("../src/time");
+const greeter = require("../src/greeter");
 
-const inOrder = arr => [...arr];
+const inOrder = (arr) => [...arr];
 
 function ticksUntil(hour, minute) {
-  return (hour * 60 + minute) - (9 * 60);
+  return hour * 60 + minute - 9 * 60;
 }
 
 const waterCoolerStartSchedule = [
-  { startTime: new Time(9, 0), endTime: new Time(17, 0), location: 'water cooler' },
+  {
+    startTime: new Time(9, 0),
+    endTime: new Time(17, 0),
+    location: "water cooler",
+  },
 ];
 
 const cubicleStartSchedule = [
-  { startTime: new Time(9, 0), endTime: new Time(12, 0), location: 'cubicle' },
-  { startTime: new Time(12, 0), endTime: new Time(13, 0), location: 'cafeteria' },
-  { startTime: new Time(13, 0), endTime: new Time(15, 30), location: 'cubicle' },
-  { startTime: new Time(15, 30), endTime: new Time(16, 30), location: 'water cooler' },
-  { startTime: new Time(16, 30), endTime: new Time(17, 0), location: 'cubicle' }
+  { startTime: new Time(9, 0), endTime: new Time(12, 0), location: "cubicle" },
+  {
+    startTime: new Time(12, 0),
+    endTime: new Time(13, 0),
+    location: "cafeteria",
+  },
+  {
+    startTime: new Time(13, 0),
+    endTime: new Time(15, 30),
+    location: "cubicle",
+  },
+  {
+    startTime: new Time(15, 30),
+    endTime: new Time(16, 30),
+    location: "water cooler",
+  },
+  {
+    startTime: new Time(16, 30),
+    endTime: new Time(17, 0),
+    location: "cubicle",
+  },
 ];
 
-describe('Simulation', () => {
-  describe('time', () => {
-    it('should start at 9am', () => {
+describe("Simulation", () => {
+  describe("time", () => {
+    it("should start at 9am", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       expect(sim.currentTime.hour()).toEqual(9);
       expect(sim.currentTime.minute()).toEqual(0);
     });
 
-    it('should advance time by 1 minute when tick() is called', () => {
+    it("should advance time by 1 minute when tick() is called", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.tick();
       expect(sim.currentTime.hour()).toEqual(9);
       expect(sim.currentTime.minute()).toEqual(1);
     });
 
-    it('should advance multiple ticks', () => {
+    it("should advance multiple ticks", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.tick();
       sim.tick();
@@ -45,13 +65,13 @@ describe('Simulation', () => {
     });
   });
 
-  describe('workday', () => {
-    it('should be an active workday at 9am', () => {
+  describe("workday", () => {
+    it("should be an active workday at 9am", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       expect(sim.isActiveWorkday()).toEqual(true);
     });
 
-    it('should not be an active workday at 5pm', () => {
+    it("should not be an active workday at 5pm", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       // advance to 5pm (8 hours * 60 minutes = 480 minutes)
       for (let i = 0; i < 480; i++) {
@@ -61,24 +81,24 @@ describe('Simulation', () => {
     });
   });
 
-  describe('addPerson', () => {
-    it('places person in their starting shared location', () => {
-      const alice = new Person('Alice', waterCoolerStartSchedule);
+  describe("addPerson", () => {
+    it("places person in their starting shared location", () => {
+      const alice = new Person("Alice", waterCoolerStartSchedule);
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
-      expect(sim.locations['water cooler'].occupants).toEqual([alice]);
+      expect(sim.locations["water cooler"].occupants).toEqual([alice]);
     });
   });
 
-  describe('events', () => {
-    it('emits locationChanged when a person changes location', () => {
-      const alice = new Person('Alice', cubicleStartSchedule);
+  describe("events", () => {
+    it("emits locationChanged when a person changes location", () => {
+      const alice = new Person("Alice", cubicleStartSchedule);
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
       const events = [];
-      sim.on('locationChanged', (data) => events.push(data));
+      sim.on("locationChanged", (data) => events.push(data));
 
       // Tick to 12:00 — Alice moves from cubicle to cafeteria
       for (let i = 0; i < ticksUntil(12, 0); i++) {
@@ -86,14 +106,18 @@ describe('Simulation', () => {
       }
 
       expect(events.length).toEqual(1);
-      expect(events[0]).toEqual({ person: alice, from: 'cubicle', to: 'cafeteria' });
+      expect(events[0]).toEqual({
+        person: alice,
+        from: "cubicle",
+        to: "cafeteria",
+      });
     });
   });
 
-  describe('water cooler', () => {
-    it('people should not greet when moving to cubicles', () => {
-      const alice = new Person('Alice', cubicleStartSchedule);
-      const bob = new Person('Bob', cubicleStartSchedule);
+  describe("water cooler", () => {
+    it("people should not greet when moving to cubicles", () => {
+      const alice = new Person("Alice", cubicleStartSchedule);
+      const bob = new Person("Bob", cubicleStartSchedule);
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -105,8 +129,8 @@ describe('Simulation', () => {
       }
 
       const messages = [];
-      alice.on('messageReceived', (msg) => messages.push(msg));
-      bob.on('messageReceived', (msg) => messages.push(msg));
+      alice.on("messageReceived", (msg) => messages.push(msg));
+      bob.on("messageReceived", (msg) => messages.push(msg));
 
       // Both transition to working at 13:00
       sim.tick();
@@ -114,12 +138,16 @@ describe('Simulation', () => {
       expect(messages.length).toEqual(0);
     });
 
-    it('wally at his cubicle all day should not receive messages from the water cooler', () => {
+    it("wally at his cubicle all day should not receive messages from the water cooler", () => {
       const wallySchedule = [
-        { startTime: new Time(9, 0), endTime: new Time(17, 0), location: 'cubicle' }
+        {
+          startTime: new Time(9, 0),
+          endTime: new Time(17, 0),
+          location: "cubicle",
+        },
       ];
-      const wally = new Person('Wally', wallySchedule);
-      const alice = new Person('Alice', cubicleStartSchedule);
+      const wally = new Person("Wally", wallySchedule);
+      const alice = new Person("Alice", cubicleStartSchedule);
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(wally);
@@ -131,16 +159,16 @@ describe('Simulation', () => {
       }
 
       const wallyMessages = [];
-      wally.on('messageReceived', (msg) => wallyMessages.push(msg));
+      wally.on("messageReceived", (msg) => wallyMessages.push(msg));
 
-      sim.tick();  // Alice arrives at water cooler at 15:30
+      sim.tick(); // Alice arrives at water cooler at 15:30
 
       expect(wallyMessages.length).toEqual(0);
     });
 
-    it('should only greet once — no more messages after the exchange', () => {
-      const alice = new Person('Alice', cubicleStartSchedule, greeter);
-      const bob = new Person('Bob', cubicleStartSchedule, greeter);
+    it("should only greet once — no more messages after the exchange", () => {
+      const alice = new Person("Alice", cubicleStartSchedule, greeter);
+      const bob = new Person("Bob", cubicleStartSchedule, greeter);
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -150,17 +178,17 @@ describe('Simulation', () => {
         sim.tick();
       }
 
-      sim.tick();  // 15:30 — Alice greets Bob
-      sim.tick();  // 15:31 — Bob responds
-      sim.tick();  // 15:32 — nothing more to say
+      sim.tick(); // 15:30 — Alice greets Bob
+      sim.tick(); // 15:31 — Bob responds
+      sim.tick(); // 15:32 — nothing more to say
 
       expect(alice.chat.length).toEqual(2);
       expect(bob.chat.length).toEqual(2);
     });
 
-    it('alice arriving at water cooler should initiate, bob should respond', () => {
-      const alice = new Person('Alice', cubicleStartSchedule, greeter);
-      const bob = new Person('Bob', cubicleStartSchedule, greeter);
+    it("alice arriving at water cooler should initiate, bob should respond", () => {
+      const alice = new Person("Alice", cubicleStartSchedule, greeter);
+      const bob = new Person("Bob", cubicleStartSchedule, greeter);
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -175,17 +203,17 @@ describe('Simulation', () => {
       sim.tick();
 
       expect(alice.chat.length).toEqual(1);
-      expect(alice.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+      expect(alice.chat[0]).toEqual({ from: "Alice", message: "hi Bob" });
       expect(bob.chat.length).toEqual(1);
-      expect(bob.chat[0]).toEqual({ from: 'Alice', message: 'hi Bob' });
+      expect(bob.chat[0]).toEqual({ from: "Alice", message: "hi Bob" });
 
       // Bob responds at 15:31
       sim.tick();
 
       expect(alice.chat.length).toEqual(2);
-      expect(alice.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
+      expect(alice.chat[1]).toEqual({ from: "Bob", message: "hi Alice" });
       expect(bob.chat.length).toEqual(2);
-      expect(bob.chat[1]).toEqual({ from: 'Bob', message: 'hi Alice' });
+      expect(bob.chat[1]).toEqual({ from: "Bob", message: "hi Alice" });
     });
   });
 });

@@ -1,4 +1,4 @@
-const { EventEmitter } = require('events');
+const { EventEmitter } = require("events");
 
 function shuffle(arr) {
   const result = [...arr];
@@ -37,7 +37,10 @@ class Location extends EventEmitter {
       this.speakerOrder = this.orderSpeakers(this.occupants);
     }
 
-    while (this.speakerOrder.length > 0 && !this.occupants.includes(this.speakerOrder[0])) {
+    while (
+      this.speakerOrder.length > 0 &&
+      !this.occupants.includes(this.speakerOrder[0])
+    ) {
       this.speakerOrder.shift();
     }
 
@@ -47,8 +50,8 @@ class Location extends EventEmitter {
   broadcast(tokenHolder, action) {
     if (!action || !this.occupants.includes(tokenHolder)) return;
     const outgoing = { from: tokenHolder.name, message: action.message };
-    this.occupants.forEach(p => p.receiveMessage(outgoing));
-    this.emit('messageSent', outgoing);
+    this.occupants.forEach((p) => p.receiveMessage(outgoing));
+    this.emit("messageSent", outgoing);
   }
 
   tick() {
@@ -59,7 +62,7 @@ class Location extends EventEmitter {
     if (!speaker) return;
 
     this.tokenHeld = true;
-    const others = this.occupants.filter(p => p !== speaker);
+    const others = this.occupants.filter((p) => p !== speaker);
     speaker.receiveToken(others, this.name, (action) => {
       this.broadcast(speaker, action);
       this.tokenHeld = false;

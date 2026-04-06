@@ -37,7 +37,7 @@ class Time {
   }
 
   toString() {
-    const minuteStr = this._minute.toString().padStart(2, '0');
+    const minuteStr = this._minute.toString().padStart(2, "0");
     return `${this._hour}:${minuteStr}`;
   }
 }

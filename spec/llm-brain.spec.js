@@ -1,12 +1,14 @@
-const makeLlmBrain = require('../src/llm-brain');
+const makeLlmBrain = require("../src/llm-brain");
 
 function makeClient(response) {
   return {
     messages: {
-      create: jasmine.createSpy('create').and.resolveTo(
-        response ?? { content: [{ type: 'text', text: 'hey everyone!' }] }
-      )
-    }
+      create: jasmine
+        .createSpy("create")
+        .and.resolveTo(
+          response ?? { content: [{ type: "text", text: "hey everyone!" }] },
+        ),
+    },
   };
 }
 
@@ -26,149 +28,278 @@ function capturePrompt(client) {
   return lastCall(client).messages[0].content;
 }
 
-describe('LLM brain', () => {
-  it('calls the API and returns message to all others', async () => {
-    const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    const alice = { name: 'Alice' };
-    const bob = { name: 'Bob' };
-    const result = await brain({ name: 'Chad', others: [alice, bob], chat: [], location: 'water cooler' });
-
-    expect(client.messages.create).toHaveBeenCalled();
-    expect(result).toEqual({ to: [alice, bob], message: 'hey everyone!' });
-  });
-
-  it('puts role and traits in the system prompt', async () => {
-    const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'sarcastic', role: 'senior engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
-
-    const system = captureSystem(client);
-    expect(system).toContain('senior engineer');
-    expect(system).toContain('sarcastic');
-  });
-
-  it('puts goals in the system prompt when provided', async () => {
+describe("LLM brain", () => {
+  it("calls the API and returns message to all others", async () => {
     const client = makeClient();
     const brain = makeLlmBrain({
-      characterSheet: { traits: 'friendly', role: 'engineer', goals: ['get promoted', 'avoid meetings'] },
+      characterSheet: { traits: "friendly", role: "engineer" },
       client,
-      model: 'test-model'
+      model: "test-model",
     });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
+    const alice = { name: "Alice" };
+    const bob = { name: "Bob" };
+    const result = await brain({
+      name: "Chad",
+      others: [alice, bob],
+      chat: [],
+      location: "water cooler",
+    });
+
+    expect(client.messages.create).toHaveBeenCalled();
+    expect(result).toEqual({ to: [alice, bob], message: "hey everyone!" });
+  });
+
+  it("puts role and traits in the system prompt", async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "sarcastic", role: "senior engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
 
     const system = captureSystem(client);
-    expect(system).toContain('get promoted');
-    expect(system).toContain('avoid meetings');
+    expect(system).toContain("senior engineer");
+    expect(system).toContain("sarcastic");
   });
 
-  it('puts location in the system prompt', async () => {
+  it("puts goals in the system prompt when provided", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'cafeteria' });
+    const brain = makeLlmBrain({
+      characterSheet: {
+        traits: "friendly",
+        role: "engineer",
+        goals: ["get promoted", "avoid meetings"],
+      },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
 
-    expect(captureSystem(client)).toContain('cafeteria');
+    const system = captureSystem(client);
+    expect(system).toContain("get promoted");
+    expect(system).toContain("avoid meetings");
   });
 
-  it('puts turns remaining in the system prompt', async () => {
+  it("puts location in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 24 });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "cafeteria",
+    });
 
-    expect(captureSystem(client)).toContain('3 turns');
+    expect(captureSystem(client)).toContain("cafeteria");
   });
 
-  it('omits goals section when not provided', async () => {
+  it("puts turns remaining in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+      minutesPerTurn: 8,
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+      minutesRemaining: 24,
+    });
 
-    expect(captureSystem(client)).not.toContain('goals');
+    expect(captureSystem(client)).toContain("3 turns");
   });
 
-  it('formats own messages as assistant role', async () => {
+  it("omits goals section when not provided", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    const chat = [{ from: 'Alice', message: 'are we on track?' }];
-    await brain({ name: 'Bob', others: [{ name: 'Alice' }], chat: [
-      { from: 'Bob', message: 'working on it' },
-      { from: 'Alice', message: 'are we on track?' },
-    ], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
+
+    expect(captureSystem(client)).not.toContain("goals");
+  });
+
+  it("formats own messages as assistant role", async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    const chat = [{ from: "Alice", message: "are we on track?" }];
+    await brain({
+      name: "Bob",
+      others: [{ name: "Alice" }],
+      chat: [
+        { from: "Bob", message: "working on it" },
+        { from: "Alice", message: "are we on track?" },
+      ],
+      location: "water cooler",
+    });
 
     const messages = captureMessages(client);
-    expect(messages[0]).toEqual({ role: 'assistant', content: 'working on it' });
+    expect(messages[0]).toEqual({
+      role: "assistant",
+      content: "working on it",
+    });
   });
 
-  it('formats others\' messages as user role with name labels', async () => {
+  it("formats others' messages as user role with name labels", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Bob', others: [{ name: 'Alice' }], chat: [
-      { from: 'Alice', message: 'are we on track?' },
-    ], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Bob",
+      others: [{ name: "Alice" }],
+      chat: [{ from: "Alice", message: "are we on track?" }],
+      location: "water cooler",
+    });
 
     const messages = captureMessages(client);
-    expect(messages[0]).toEqual({ role: 'user', content: 'Alice: are we on track?' });
+    expect(messages[0]).toEqual({
+      role: "user",
+      content: "Alice: are we on track?",
+    });
   });
 
-  it('merges consecutive messages from others into one user turn', async () => {
+  it("merges consecutive messages from others into one user turn", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }, { name: 'Bob' }], chat: [
-      { from: 'Alice', message: 'status?' },
-      { from: 'Bob', message: 'yeah what she said' },
-    ], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }, { name: "Bob" }],
+      chat: [
+        { from: "Alice", message: "status?" },
+        { from: "Bob", message: "yeah what she said" },
+      ],
+      location: "water cooler",
+    });
 
     const messages = captureMessages(client);
     expect(messages.length).toEqual(1);
-    expect(messages[0].role).toEqual('user');
-    expect(messages[0].content).toContain('Alice: status?');
-    expect(messages[0].content).toContain('Bob: yeah what she said');
+    expect(messages[0].role).toEqual("user");
+    expect(messages[0].content).toContain("Alice: status?");
+    expect(messages[0].content).toContain("Bob: yeah what she said");
   });
 
-  it('sends a default user message when chat is empty', async () => {
+  it("sends a default user message when chat is empty", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
 
     const messages = captureMessages(client);
     expect(messages.length).toEqual(1);
-    expect(messages[0].role).toEqual('user');
+    expect(messages[0].role).toEqual("user");
   });
 
-  it('returns null without calling the API when no turns remain', async () => {
-    const client = { messages: { create: jasmine.createSpy('create') } };
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
-    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 0 });
+  it("returns null without calling the API when no turns remain", async () => {
+    const client = { messages: { create: jasmine.createSpy("create") } };
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+      minutesPerTurn: 8,
+    });
+    const result = await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+      minutesRemaining: 0,
+    });
 
     expect(result).toBeNull();
     expect(client.messages.create).not.toHaveBeenCalled();
   });
 
-  it('returns null if the last message is from the speaker', async () => {
-    const client = { messages: { create: jasmine.createSpy('create') } };
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+  it("returns null if the last message is from the speaker", async () => {
+    const client = { messages: { create: jasmine.createSpy("create") } };
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
     const chat = [
-      { from: 'Alice', message: 'hi Chad' },
-      { from: 'Chad', message: 'hey!' }
+      { from: "Alice", message: "hi Chad" },
+      { from: "Chad", message: "hey!" },
     ];
-    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat, location: 'water cooler' });
+    const result = await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat,
+      location: "water cooler",
+    });
 
     expect(result).toBeNull();
     expect(client.messages.create).not.toHaveBeenCalled();
   });
 
-  it('returns null and logs to stderr on API error', async () => {
+  it("returns null and logs to stderr on API error", async () => {
     const client = {
       messages: {
-        create: jasmine.createSpy('create').and.rejectWith(new Error('credit balance too low'))
-      }
+        create: jasmine
+          .createSpy("create")
+          .and.rejectWith(new Error("credit balance too low")),
+      },
     };
-    spyOn(console, 'error');
+    spyOn(console, "error");
 
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
+    const brain = makeLlmBrain({
+      characterSheet: { traits: "friendly", role: "engineer" },
+      client,
+      model: "test-model",
+    });
+    const result = await brain({
+      name: "Chad",
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
 
     expect(result).toBeNull();
-    expect(console.error).toHaveBeenCalledWith('[Chad] LLM error: credit balance too low');
+    expect(console.error).toHaveBeenCalledWith(
+      "[Chad] LLM error: credit balance too low",
+    );
   });
 });

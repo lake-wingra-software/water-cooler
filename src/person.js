@@ -1,4 +1,4 @@
-const { EventEmitter } = require('events');
+const { EventEmitter } = require("events");
 
 class Person extends EventEmitter {
   constructor(name, schedule, brain) {
@@ -24,8 +24,10 @@ class Person extends EventEmitter {
   }
 
   currentSlot() {
-    return this.schedule.find(slot =>
-      !this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)
+    return this.schedule.find(
+      (slot) =>
+        !this.currentTime.isBefore(slot.startTime) &&
+        this.currentTime.isBefore(slot.endTime),
     );
   }
 
@@ -36,7 +38,7 @@ class Person extends EventEmitter {
 
   receiveMessage(message) {
     this.chat.push(message);
-    this.emit('messageReceived', message);
+    this.emit("messageReceived", message);
   }
 
   minutesRemainingAtLocation() {
@@ -46,11 +48,20 @@ class Person extends EventEmitter {
   }
 
   receiveToken(others, location, done) {
-    if (!this.brain) { done(null); return; }
+    if (!this.brain) {
+      done(null);
+      return;
+    }
     const minutesRemaining = this.minutesRemainingAtLocation();
-    const result = this.brain({ name: this.name, others, chat: this.chat, location, minutesRemaining });
-    if (result && typeof result.then === 'function') {
-      result.then(action => done(action));
+    const result = this.brain({
+      name: this.name,
+      others,
+      chat: this.chat,
+      location,
+      minutesRemaining,
+    });
+    if (result && typeof result.then === "function") {
+      result.then((action) => done(action));
     } else {
       done(result);
     }

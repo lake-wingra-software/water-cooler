@@ -2,7 +2,11 @@ require("dotenv").config();
 
 const Simulation = require("./src/simulation");
 const Person = require("./src/person");
-const { alice: aliceDef, bob: bobDef, chad: chadDef } = require("./src/characters");
+const {
+  alice: aliceDef,
+  bob: bobDef,
+  chad: chadDef,
+} = require("./src/characters");
 const yeahMan = require("./src/yeah-man");
 const makeLlmBrain = require("./src/llm-brain");
 const Anthropic = require("@anthropic-ai/sdk");
@@ -16,9 +20,17 @@ function llmBrain(characterSheet) {
 }
 
 const sim = new Simulation();
-const alice = new Person(aliceDef.name, aliceDef.schedule, llmBrain(aliceDef.character));
+const alice = new Person(
+  aliceDef.name,
+  aliceDef.schedule,
+  llmBrain(aliceDef.character),
+);
 const bob = new Person(bobDef.name, bobDef.schedule, yeahMan());
-const chad = new Person(chadDef.name, chadDef.schedule, llmBrain(chadDef.character));
+const chad = new Person(
+  chadDef.name,
+  chadDef.schedule,
+  llmBrain(chadDef.character),
+);
 
 sim.addPerson(alice);
 sim.addPerson(bob);
@@ -30,12 +42,15 @@ for (const person of [alice, bob, chad]) {
   const loc = person.currentLocation();
   (byLocation[loc] = byLocation[loc] || []).push(person.name);
 }
-const locationSummary = Object.entries(byLocation).map(([loc, names]) => {
-  const listed = names.length < 3
-    ? names.join(' and ')
-    : `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
-  return `${listed} at the ${loc}`;
-}).join('; ');
+const locationSummary = Object.entries(byLocation)
+  .map(([loc, names]) => {
+    const listed =
+      names.length < 3
+        ? names.join(" and ")
+        : `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+    return `${listed} at the ${loc}`;
+  })
+  .join("; ");
 console.log(`${sim.currentTime.toString()}: ${locationSummary}`);
 
 // Listen for location changes
@@ -52,11 +67,15 @@ for (const location of Object.values(sim.locations)) {
   });
 }
 
-// TICKS_PER_SEC: ticks per second. Default: 10 (1 hour = 6 seconds).
+// TICKS_PER_SEC: ticks per second.
+// Example: 10 (1 hour = 6 seconds).
 // Set TICKS_PER_SEC=0 for instant execution.
+const DEFAULT_TICKS_PER_SEC = 8;
 const ticksPerSec = process.env.TICKS_PER_SEC;
 const tickInterval =
-  ticksPerSec === "0" ? 0 : Math.round(1000 / (parseFloat(ticksPerSec) || 10));
+  ticksPerSec === "0"
+    ? 0
+    : Math.round(1000 / (parseFloat(ticksPerSec) || DEFAULT_TICKS_PER_SEC));
 
 if (tickInterval === 0) {
   while (sim.isActiveWorkday()) {

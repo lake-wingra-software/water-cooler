@@ -1,0 +1,38 @@
+9:00: Alice, Bob, and Chad at the water cooler
+9:01: [water cooler] Bob: "hi Alice, hi Chad"
+9:13: [water cooler] Alice: "Hey Bob. Chad. Look, I've got five minutes before my next meeting. Do either of you have an update on the backend API work? We're already two days behind on sprint."
+9:24: [water cooler] Chad: "Ah man, the backend API—yeah, that's definitely a thing that exists and people are working on it. *takes a sip of water* You know what would really speed things up though? If we just built it in interpretive dance. Way more agile, literally."
+9:32: [water cooler] Alice: "Chad, I'm not in the mood. Seriously. Is it done or not?"
+9:44: [water cooler] Chad: "Dude, I respect the energy but like, I genuinely have no idea what you're talking about right now. That's a Marcus thing, isn't it? He's the one knee-deep in that stuff. I've been in meetings all morning, my brain's basically pudding at this point."
+9:45: [water cooler] Bob: "oh yeah?"
+9:55: [water cooler] Chad: "Yeah man, back-to-back standups, a sync about syncs, you know how it is. I'm just here for the water and the vibes, honestly."
+9:57: [water cooler] Bob: "for sure"
+10:00: Alice → conference room
+10:00: Bob → cubicle
+10:00: Chad → conference room
+10:07: [conference room] Chad: "Alright, so... are we waiting for someone or did we just all collectively decide meetings are better when nobody talks? Classic move."
+10:19: [conference room] Alice: "Look, Chad, I don't have time for this. We're here because the sprint deadline is in three days and I need actual status updates, not commentary. So where are we on the API integration? Done, blocked, or still in fantasy land?"
+10:39: [conference room] Chad: "Oh man, the API integration, yeah. You know what would really solve this? If we just replaced the whole thing with carrier pigeons. Think about it – they're reliable, they've got great uptime, zero latency complaints from management...
+
+But seriously, it's like... it's doing the thing, you know? The integrating. Very integrated. Very API."
+10:52: [conference room] Alice: "Chad, I'm going to stop you right there. "Doing the thing" doesn't cut it. Is it done or not? Give me a percentage, give me blockers, give me something concrete. And if you're going to waste my time with pigeon jokes when we're this far behind, we need to have a different conversation about whether you're the right fit for this team."
+11:00: Alice → cubicle
+11:00: Chad → cubicle
+12:00: Alice → cafeteria
+12:00: Bob → cafeteria
+12:09: [cafeteria] Alice: "Hey Bob, got a minute? I need a status update on the cafeteria inventory system. Where are we actually at with that integration?"
+12:10: [cafeteria] Bob: "hi Alice"
+12:22: [cafeteria] Alice: "Bob, I don't have time for pleasantries right now. The sprint ends in two days. What's the status on your tasks?"
+12:24: [cafeteria] Bob: "haha yeah, man"
+12:30: Alice → cubicle
+12:30: Chad → cafeteria
+12:36: [cafeteria] Chad: "Hey Bob, what's up? Just grabbing some coffee before the afternoon grind starts up again."
+12:37: [cafeteria] Bob: "hi Chad"
+12:47: [cafeteria] Chad: "Yeah man, what's going on? You hit up the lunch line yet or are you just here for the caffeine fix like the rest of us?"
+12:48: [cafeteria] Bob: "no, yeah..."
+13:00: Bob → cubicle
+13:19: [cafeteria] Chad: "Ha, the classic "no, yeah" — the most honest answer anyone gives at work. So which is it, buddy?"
+13:30: Chad → cubicle
+16:10: Chad → water cooler
+16:30: Chad → cubicle
+17:00: workday ended
