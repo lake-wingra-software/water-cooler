@@ -24,7 +24,9 @@ class Location extends EventEmitter {
   }
 
   depart(person) {
-    this.occupants.splice(this.occupants.indexOf(person), 1);
+    const index = this.occupants.indexOf(person);
+    if (index === -1) return;
+    this.occupants.splice(index, 1);
     if (this.occupants.length < 2) {
       this.speakerOrder = [];
     }

@@ -16,6 +16,17 @@ describe('Location', () => {
       location.depart(alice);
       expect(location.occupants).toEqual([bob]);
     });
+
+    it('depart does nothing if person is not present', () => {
+      const location = new Location('water cooler', inOrder);
+      const alice = { name: 'Alice' };
+      const bob = { name: 'Bob' };
+
+      location.arrive(alice);
+      location.depart(bob);
+
+      expect(location.occupants).toEqual([alice]);
+    });
   });
 
   describe('speaking token', () => {

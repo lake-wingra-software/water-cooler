@@ -13,9 +13,11 @@ function buildMessages(chat, name) {
   return messages;
 }
 
+const isLastSpeaker = require('./last-speaker');
+
 function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
   return async function({ name, others, chat, location, minutesRemaining }) {
-    if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
+    if (isLastSpeaker(chat, name)) return null;
 
     const estimatedTurnsRemaining = Math.floor(minutesRemaining / minutesPerTurn);
     if (estimatedTurnsRemaining === 0) return null;

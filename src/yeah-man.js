@@ -1,4 +1,5 @@
 const greeter = require('./greeter');
+const isLastSpeaker = require('./last-speaker');
 
 const responses = [
   'oh yeah?',
@@ -36,8 +37,8 @@ function yeahMan() {
     if (greeting) return greeting;
 
     if (chat.length === 0) return null;
+    if (isLastSpeaker(chat, name)) return null;
     const lastMessage = chat[chat.length - 1];
-    if (lastMessage.from === name) return null;
 
     const isQuestion = lastMessage.message.trimEnd().endsWith('?');
     let message;
