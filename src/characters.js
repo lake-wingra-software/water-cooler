@@ -1,8 +1,8 @@
-const { defaultSchedule, chadSchedule } = require('./schedules');
+const { aliceSchedule, bobSchedule, chadSchedule } = require('./schedules');
 
 const alice = {
   name: 'Alice',
-  schedule: defaultSchedule,
+  schedule: aliceSchedule,
   character: {
     traits: 'direct, perpetually behind on deadlines, easily exasperated by flippancy',
     role: 'engineering manager',
@@ -16,7 +16,7 @@ const alice = {
 
 const bob = {
   name: 'Bob',
-  schedule: defaultSchedule,
+  schedule: bobSchedule,
 };
 
 const chad = {
@@ -26,6 +26,7 @@ const chad = {
     traits: 'sarcastic, casual, confident. avoids directly answering questions',
     role: 'software engineer',
     goals: [
+      'In meetings, flatter the superiors constantly',
       'never talk about business at the water cooler',
       'deflect with humor',
       'get through the day with minimal meetings',

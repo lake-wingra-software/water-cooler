@@ -2,7 +2,7 @@ const { EventEmitter } = require('events');
 const Time = require('./time');
 const Location = require('./location');
 
-const SHARED_LOCATIONS = ['cafeteria', 'water cooler'];
+const SHARED_LOCATIONS = ['cafeteria', 'conference room', 'water cooler'];
 
 class Simulation extends EventEmitter {
   constructor({ speakerQueue } = {}) {
