@@ -30,6 +30,14 @@ describe('greeter brain', () => {
     expect(action).toBeNull();
   });
 
+  it('does not count a greeting for "Al" when "Alice" is greeted', () => {
+    const al = { name: 'Al' };
+    const alice = { name: 'Alice' };
+    const chat = [{ from: 'Bob', message: 'hi Alice' }];
+    const result = greeter({ name: 'Bob', others: [al, alice], chat });
+    expect(result).toEqual({ to: [al], message: 'hi Al' });
+  });
+
   it('greets all ungreeted people in one message', () => {
     const alice = { name: 'Alice' };
     const bob = { name: 'Bob' };

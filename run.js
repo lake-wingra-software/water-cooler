@@ -2,55 +2,23 @@ require("dotenv").config();
 
 const Simulation = require("./src/simulation");
 const Person = require("./src/person");
-const { defaultSchedule, chadSchedule } = require("./src/schedules");
+const { alice: aliceDef, bob: bobDef, chad: chadDef } = require("./src/characters");
 const yeahMan = require("./src/yeah-man");
 const makeLlmBrain = require("./src/llm-brain");
 const Anthropic = require("@anthropic-ai/sdk");
 
 const client = new Anthropic();
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
-
-const aliceCharacter = {
-  traits:
-    "direct, perpetually behind on deadlines, easily exasperated by flippancy",
-  role: "engineering manager",
-  goals: [
-    "get straight answers from the team",
-    "meet the sprint deadline",
-    "fire underperformers"
-  ],
-};
-
 const minutesPerTurn = 8;
 
-const aliceBrain = makeLlmBrain({
-  characterSheet: aliceCharacter,
-  client,
-  model,
-  minutesPerTurn,
-});
-
-const chadCharacter = {
-  traits:
-    "sarcastic, casual, confident. avoids directly answering questions",
-  role: "software engineer",
-  goals: [
-    "never talk about business at the water cooler",
-    "deflect with humor",
-    "get through the day with minimal meetings",
-  ],
-};
-const chadBrain = makeLlmBrain({
-  characterSheet: chadCharacter,
-  client,
-  model,
-  minutesPerTurn,
-});
+function llmBrain(characterSheet) {
+  return makeLlmBrain({ characterSheet, client, model, minutesPerTurn });
+}
 
 const sim = new Simulation();
-const alice = new Person("Alice", defaultSchedule, aliceBrain);
-const bob = new Person("Bob", defaultSchedule, yeahMan());
-const chad = new Person("Chad", chadSchedule, chadBrain);
+const alice = new Person(aliceDef.name, aliceDef.schedule, llmBrain(aliceDef.character));
+const bob = new Person(bobDef.name, bobDef.schedule, yeahMan());
+const chad = new Person(chadDef.name, chadDef.schedule, llmBrain(chadDef.character));
 
 sim.addPerson(alice);
 sim.addPerson(bob);
