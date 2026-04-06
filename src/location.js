@@ -10,12 +10,12 @@ function shuffle(arr) {
 }
 
 class Location extends EventEmitter {
-  constructor(name, speakerQueue = shuffle) {
+  constructor(name, orderSpeakers = shuffle) {
     super();
     this.name = name;
     this.occupants = [];
-    this.speakingQueue = [];
-    this.speakerQueue = speakerQueue;
+    this.speakerOrder = [];
+    this.orderSpeakers = orderSpeakers;
     this.tokenHeld = false;
   }
 
@@ -26,33 +26,40 @@ class Location extends EventEmitter {
   depart(person) {
     this.occupants.splice(this.occupants.indexOf(person), 1);
     if (this.occupants.length < 2) {
-      this.speakingQueue = [];
+      this.speakerOrder = [];
     }
+  }
+
+  nextSpeaker() {
+    if (this.speakerOrder.length === 0) {
+      this.speakerOrder = this.orderSpeakers(this.occupants);
+    }
+
+    while (this.speakerOrder.length > 0 && !this.occupants.includes(this.speakerOrder[0])) {
+      this.speakerOrder.shift();
+    }
+
+    return this.speakerOrder.shift();
+  }
+
+  broadcast(tokenHolder, action) {
+    if (!action || !this.occupants.includes(tokenHolder)) return;
+    const outgoing = { from: tokenHolder.name, message: action.message };
+    this.occupants.forEach(p => p.receiveMessage(outgoing));
+    this.emit('messageSent', outgoing);
   }
 
   tick() {
     if (this.occupants.length < 2) return;
     if (this.tokenHeld) return;
 
-    if (this.speakingQueue.length === 0) {
-      this.speakingQueue = this.speakerQueue(this.occupants);
-    }
-
-    while (this.speakingQueue.length > 0 && !this.occupants.includes(this.speakingQueue[0])) {
-      this.speakingQueue.shift();
-    }
-
-    if (this.speakingQueue.length === 0) return;
+    const speaker = this.nextSpeaker();
+    if (!speaker) return;
 
     this.tokenHeld = true;
-    const tokenHolder = this.speakingQueue.shift();
-    const others = this.occupants.filter(p => p !== tokenHolder);
-    tokenHolder.receiveToken(others, this.name, (action) => {
-      if (action && this.occupants.includes(tokenHolder)) {
-        const outgoing = { from: tokenHolder.name, message: action.message };
-        this.occupants.forEach(p => p.receiveMessage(outgoing));
-        this.emit('messageSent', outgoing);
-      }
+    const others = this.occupants.filter(p => p !== speaker);
+    speaker.receiveToken(others, this.name, (action) => {
+      this.broadcast(speaker, action);
       this.tokenHeld = false;
     });
   }

@@ -42,6 +42,12 @@ describe('Time', () => {
     expect(time1.equals(time3)).toEqual(false);
   });
 
+  it('should convert to total minutes', () => {
+    expect(new Time(0, 0).toMinutes()).toEqual(0);
+    expect(new Time(1, 30).toMinutes()).toEqual(90);
+    expect(new Time(9, 0).toMinutes()).toEqual(540);
+  });
+
   it('should format time as string', () => {
     expect(new Time(9, 0).toString()).toEqual('9:00');
     expect(new Time(9, 5).toString()).toEqual('9:05');

@@ -23,12 +23,15 @@ class Person extends EventEmitter {
     return null;
   }
 
+  currentSlot() {
+    return this.schedule.find(slot =>
+      !this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)
+    );
+  }
+
   currentLocation() {
-    for (const slot of this.schedule) {
-      if (!this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)) {
-        return slot.location;
-      }
-    }
+    const slot = this.currentSlot();
+    return slot && slot.location;
   }
 
   receiveMessage(message) {
@@ -37,14 +40,9 @@ class Person extends EventEmitter {
   }
 
   minutesRemainingAtLocation() {
-    for (const slot of this.schedule) {
-      if (!this.currentTime.isBefore(slot.startTime) && this.currentTime.isBefore(slot.endTime)) {
-        const end = slot.endTime.hour() * 60 + slot.endTime.minute();
-        const now = this.currentTime.hour() * 60 + this.currentTime.minute();
-        return end - now;
-      }
-    }
-    return 0;
+    const slot = this.currentSlot();
+    if (!slot) return 0;
+    return slot.endTime.toMinutes() - this.currentTime.toMinutes();
   }
 
   receiveToken(others, location, done) {

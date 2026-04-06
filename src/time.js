@@ -24,15 +24,16 @@ class Time {
     return new Time(newHour, newMinute);
   }
 
+  toMinutes() {
+    return this._hour * 60 + this._minute;
+  }
+
   isBefore(other) {
-    if (this._hour !== other._hour) {
-      return this._hour < other._hour;
-    }
-    return this._minute < other._minute;
+    return this.toMinutes() < other.toMinutes();
   }
 
   equals(other) {
-    return this._hour === other._hour && this._minute === other._minute;
+    return this.toMinutes() === other.toMinutes();
   }
 
   toString() {
