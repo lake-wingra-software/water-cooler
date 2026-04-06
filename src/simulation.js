@@ -17,9 +17,9 @@ class Simulation extends EventEmitter {
 
   addPerson(person) {
     this.people.push(person);
-    const location = person.currentLocation();
-    if (this.locations[location]) {
-      this.locations[location].arrive(person);
+    const change = person.tick(this.currentTime);
+    if (change && this.locations[change.to]) {
+      this.locations[change.to].arrive(person);
     }
   }
 

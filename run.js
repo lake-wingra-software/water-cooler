@@ -20,7 +20,7 @@ people.forEach((p) => sim.addPerson(p));
 const byLocation = {};
 for (const person of people) {
   const loc = person.currentLocation();
-  (byLocation[loc] = byLocation[loc] || []).push(person.name);
+  if (loc) (byLocation[loc] = byLocation[loc] || []).push(person.name);
 }
 const locationSummary = Object.entries(byLocation)
   .map(([loc, names]) => {

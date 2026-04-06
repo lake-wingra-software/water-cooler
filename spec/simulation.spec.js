@@ -92,6 +92,24 @@ describe("Simulation", () => {
 
       expect(sim.locations["water cooler"].occupants).toEqual([alice]);
     });
+
+    it("does not place person in any location if their schedule hasn't started yet", () => {
+      const lateStartSchedule = [
+        { startTime: new Time(16, 0), endTime: new Time(17, 0), location: "water cooler" },
+      ];
+      const person = new Person({
+        name: "LateStarter",
+        schedule: lateStartSchedule,
+      });
+      const sim = new Simulation({ speakerQueue: inOrder });
+      sim.addPerson(person);
+
+      // Check that person is not in any shared location
+      const inAnyLocation = Object.values(sim.locations).some((location) =>
+        location.occupants.includes(person)
+      );
+      expect(inAnyLocation).toEqual(false);
+    });
   });
 
   describe("events", () => {

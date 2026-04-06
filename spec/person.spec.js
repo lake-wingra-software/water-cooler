@@ -24,6 +24,7 @@ describe("Person", () => {
   describe("location", () => {
     it("a person should be at the water cooler at 9am", () => {
       const person = new Person(testCharDef);
+      person.tick(new Time(9, 0));
       expect(person.currentLocation()).toEqual("water cooler");
     });
 
@@ -35,12 +36,14 @@ describe("Person", () => {
 
     it("tick returns location change when location changes", () => {
       const person = new Person(testCharDef);
+      person.tick(new Time(9, 0));
       const change = person.tick(new Time(12, 0));
       expect(change).toEqual({ from: "water cooler", to: "cafeteria" });
     });
 
     it("tick returns null when location stays the same", () => {
       const person = new Person(testCharDef);
+      person.tick(new Time(9, 0));
       const change = person.tick(new Time(9, 1));
       expect(change).toBeNull();
     });
