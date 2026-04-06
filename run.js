@@ -15,22 +15,12 @@ const client = new Anthropic();
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const minutesPerTurn = 8;
 
-function llmBrain(characterSheet) {
-  return makeLlmBrain({ characterSheet, client, model, minutesPerTurn });
-}
+const llmBrain = makeLlmBrain({ client, model, minutesPerTurn });
 
 const sim = new Simulation();
-const alice = new Person(
-  aliceDef.name,
-  aliceDef.schedule,
-  llmBrain(aliceDef.character),
-);
-const bob = new Person(bobDef.name, bobDef.schedule, yeahMan());
-const chad = new Person(
-  chadDef.name,
-  chadDef.schedule,
-  llmBrain(chadDef.character),
-);
+const alice = new Person(aliceDef, llmBrain);
+const bob = new Person(bobDef, yeahMan());
+const chad = new Person(chadDef, llmBrain);
 
 sim.addPerson(alice);
 sim.addPerson(bob);

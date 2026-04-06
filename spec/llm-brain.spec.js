@@ -28,18 +28,17 @@ function capturePrompt(client) {
   return lastCall(client).messages[0].content;
 }
 
+const defaultCharacter = { traits: "friendly", role: "engineer" };
+
 describe("LLM brain", () => {
   it("calls the API and returns message to all others", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     const alice = { name: "Alice" };
     const bob = { name: "Bob" };
     const result = await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [alice, bob],
       chat: [],
       location: "water cooler",
@@ -51,13 +50,10 @@ describe("LLM brain", () => {
 
   it("puts role and traits in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "sarcastic", role: "senior engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Chad",
+      character: { traits: "sarcastic", role: "senior engineer" },
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -70,17 +66,14 @@ describe("LLM brain", () => {
 
   it("puts goals in the system prompt when provided", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: {
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    await brain({
+      name: "Chad",
+      character: {
         traits: "friendly",
         role: "engineer",
         goals: ["get promoted", "avoid meetings"],
       },
-      client,
-      model: "test-model",
-    });
-    await brain({
-      name: "Chad",
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -93,13 +86,10 @@ describe("LLM brain", () => {
 
   it("puts location in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "cafeteria",
@@ -110,14 +100,10 @@ describe("LLM brain", () => {
 
   it("puts turns remaining in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-      minutesPerTurn: 8,
-    });
+    const brain = makeLlmBrain({ client, model: "test-model", minutesPerTurn: 8 });
     await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -129,13 +115,10 @@ describe("LLM brain", () => {
 
   it("omits goals section when not provided", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -146,14 +129,10 @@ describe("LLM brain", () => {
 
   it("formats own messages as assistant role", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
-    const chat = [{ from: "Alice", message: "are we on track?" }];
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Bob",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [
         { from: "Bob", message: "working on it" },
@@ -171,13 +150,10 @@ describe("LLM brain", () => {
 
   it("formats others' messages as user role with name labels", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Bob",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [{ from: "Alice", message: "are we on track?" }],
       location: "water cooler",
@@ -192,13 +168,10 @@ describe("LLM brain", () => {
 
   it("merges consecutive messages from others into one user turn", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }, { name: "Bob" }],
       chat: [
         { from: "Alice", message: "status?" },
@@ -216,13 +189,10 @@ describe("LLM brain", () => {
 
   it("sends a default user message when chat is empty", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -235,14 +205,10 @@ describe("LLM brain", () => {
 
   it("returns null without calling the API when no turns remain", async () => {
     const client = { messages: { create: jasmine.createSpy("create") } };
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-      minutesPerTurn: 8,
-    });
+    const brain = makeLlmBrain({ client, model: "test-model", minutesPerTurn: 8 });
     const result = await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",
@@ -255,17 +221,14 @@ describe("LLM brain", () => {
 
   it("returns null if the last message is from the speaker", async () => {
     const client = { messages: { create: jasmine.createSpy("create") } };
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     const chat = [
       { from: "Alice", message: "hi Chad" },
       { from: "Chad", message: "hey!" },
     ];
     const result = await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat,
       location: "water cooler",
@@ -285,13 +248,10 @@ describe("LLM brain", () => {
     };
     spyOn(console, "error");
 
-    const brain = makeLlmBrain({
-      characterSheet: { traits: "friendly", role: "engineer" },
-      client,
-      model: "test-model",
-    });
+    const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
       name: "Chad",
+      character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [],
       location: "water cooler",

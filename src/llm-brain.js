@@ -16,8 +16,8 @@ function buildMessages(chat, name) {
 
 const isLastSpeaker = require("./last-speaker");
 
-function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
-  return async function ({ name, others, chat, location, minutesRemaining }) {
+function makeLlmBrain({ client, model, minutesPerTurn }) {
+  return async function ({ name, character, others, chat, location, minutesRemaining }) {
     if (isLastSpeaker(chat, name)) return null;
 
     const estimatedTurnsRemaining = Math.floor(
@@ -28,11 +28,11 @@ function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
     const otherNames = others.map((o) => o.name).join(", ");
 
     const systemLines = [
-      `You are ${name}, a ${characterSheet.role} at the ${location} at work.`,
-      `Your personality traits: ${characterSheet.traits}`,
+      `You are ${name}, a ${character.role} at the ${location} at work.`,
+      `Your personality traits: ${character.traits}`,
     ];
-    if (characterSheet.goals && characterSheet.goals.length > 0) {
-      systemLines.push(`Your goals: ${characterSheet.goals.join(", ")}`);
+    if (character.goals && character.goals.length > 0) {
+      systemLines.push(`Your goals: ${character.goals.join(", ")}`);
     }
     systemLines.push(
       `Others present: ${otherNames}`,

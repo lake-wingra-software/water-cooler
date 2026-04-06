@@ -1,4 +1,4 @@
-const greeter = require("./greeter");
+const makeGreeter = require("./greeter");
 const isLastSpeaker = require("./last-speaker");
 
 const responses = [
@@ -29,6 +29,7 @@ const questionDodges = [
 ];
 
 function yeahMan() {
+  const greeter = makeGreeter();
   let responseIndex = 0;
   let questionIndex = 0;
 

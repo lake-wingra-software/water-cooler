@@ -14,27 +14,33 @@ const testSchedule = [
   },
 ];
 
+const testCharDef = {
+  name: "Alice",
+  schedule: testSchedule,
+  character: { traits: "friendly", role: "tester" },
+};
+
 describe("Person", () => {
   describe("location", () => {
     it("a person should be at the water cooler at 9am", () => {
-      const person = new Person("Alice", testSchedule);
+      const person = new Person(testCharDef);
       expect(person.currentLocation()).toEqual("water cooler");
     });
 
     it("a person should be at the cafeteria at 12pm", () => {
-      const person = new Person("Alice", testSchedule);
+      const person = new Person(testCharDef);
       person.tick(new Time(12, 0));
       expect(person.currentLocation()).toEqual("cafeteria");
     });
 
     it("tick returns location change when location changes", () => {
-      const person = new Person("Alice", testSchedule);
+      const person = new Person(testCharDef);
       const change = person.tick(new Time(12, 0));
       expect(change).toEqual({ from: "water cooler", to: "cafeteria" });
     });
 
     it("tick returns null when location stays the same", () => {
-      const person = new Person("Alice", testSchedule);
+      const person = new Person(testCharDef);
       const change = person.tick(new Time(9, 1));
       expect(change).toBeNull();
     });
@@ -42,7 +48,7 @@ describe("Person", () => {
 
   describe("messaging", () => {
     it("receiveMessage adds to chat and emits messageReceived", () => {
-      const alice = new Person("Alice", testSchedule);
+      const alice = new Person(testCharDef);
 
       const received = [];
       alice.on("messageReceived", (msg) => received.push(msg));
@@ -55,9 +61,24 @@ describe("Person", () => {
       expect(received[0]).toEqual({ from: "Bob", message: "hi Alice" });
     });
 
+    it("receiveToken passes character to brain", () => {
+      let receivedArgs;
+      const alice = new Person(testCharDef, (args) => {
+        receivedArgs = args;
+        return null;
+      });
+
+      alice.receiveToken([], "water cooler", () => {});
+
+      expect(receivedArgs.character).toEqual({
+        traits: "friendly",
+        role: "tester",
+      });
+    });
+
     it("receiveToken passes minutesRemaining at current location to brain", () => {
       let receivedArgs;
-      const alice = new Person("Alice", testSchedule, (args) => {
+      const alice = new Person(testCharDef, (args) => {
         receivedArgs = args;
         return null;
       });
@@ -69,9 +90,9 @@ describe("Person", () => {
     });
 
     it("receiveToken delegates to brain and passes action to done", () => {
-      const bob = new Person("Bob", testSchedule);
+      const bob = new Person({ name: "Bob", schedule: testSchedule });
       const fakeBrain = () => ({ to: [bob], message: "hey!" });
-      const alice = new Person("Alice", testSchedule, fakeBrain);
+      const alice = new Person(testCharDef, fakeBrain);
 
       let receivedAction;
       alice.receiveToken([bob], "cafeteria", (action) => {
@@ -83,7 +104,7 @@ describe("Person", () => {
 
     it("receiveToken does nothing when brain returns null", () => {
       const fakeBrain = () => null;
-      const alice = new Person("Alice", testSchedule, fakeBrain);
+      const alice = new Person(testCharDef, fakeBrain);
 
       const sent = [];
       alice.on("messageSent", (event) => sent.push(event));
@@ -94,7 +115,7 @@ describe("Person", () => {
     });
 
     it("receiveToken does nothing when person has no brain", () => {
-      const alice = new Person("Alice", testSchedule);
+      const alice = new Person(testCharDef);
 
       const sent = [];
       alice.on("messageSent", (event) => sent.push(event));
