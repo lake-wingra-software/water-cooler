@@ -10,8 +10,16 @@ function makeClient(response) {
   };
 }
 
+function lastCall(client) {
+  return client.messages.create.calls.mostRecent().args[0];
+}
+
+function captureSystem(client) {
+  return lastCall(client).system;
+}
+
 function capturePrompt(client) {
-  return client.messages.create.calls.mostRecent().args[0].messages[0].content;
+  return lastCall(client).messages[0].content;
 }
 
 describe('LLM brain', () => {
@@ -26,17 +34,17 @@ describe('LLM brain', () => {
     expect(result).toEqual({ to: [alice, bob], message: 'hey everyone!' });
   });
 
-  it('includes role and traits in the prompt', async () => {
+  it('puts role and traits in the system prompt', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'sarcastic', role: 'senior engineer' }, client, model: 'test-model' });
     await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
-    const prompt = capturePrompt(client);
-    expect(prompt).toContain('senior engineer');
-    expect(prompt).toContain('sarcastic');
+    const system = captureSystem(client);
+    expect(system).toContain('senior engineer');
+    expect(system).toContain('sarcastic');
   });
 
-  it('includes goals in the prompt when provided', async () => {
+  it('puts goals in the system prompt when provided', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({
       characterSheet: { traits: 'friendly', role: 'engineer', goals: ['get promoted', 'avoid meetings'] },
@@ -45,27 +53,25 @@ describe('LLM brain', () => {
     });
     await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
-    const prompt = capturePrompt(client);
-    expect(prompt).toContain('get promoted');
-    expect(prompt).toContain('avoid meetings');
+    const system = captureSystem(client);
+    expect(system).toContain('get promoted');
+    expect(system).toContain('avoid meetings');
   });
 
-  it('converts minutesRemaining to turns in the prompt', async () => {
-    const client = makeClient();
-    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
-    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 24 });
-
-    const prompt = capturePrompt(client);
-    expect(prompt).toContain('3 turns');
-  });
-
-  it('includes location in the prompt', async () => {
+  it('puts location in the system prompt', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
     await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'cafeteria' });
 
-    const prompt = capturePrompt(client);
-    expect(prompt).toContain('cafeteria');
+    expect(captureSystem(client)).toContain('cafeteria');
+  });
+
+  it('puts turns remaining in the system prompt', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 24 });
+
+    expect(captureSystem(client)).toContain('3 turns');
   });
 
   it('omits goals section when not provided', async () => {
@@ -73,8 +79,21 @@ describe('LLM brain', () => {
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
     await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
 
+    expect(captureSystem(client)).not.toContain('goals');
+  });
+
+  it('puts conversation history in the user message', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+    const chat = [
+      { from: 'Alice', message: 'are we on track?' },
+      { from: 'Chad', message: 'yeah' },
+    ];
+    await brain({ name: 'Alice', others: [{ name: 'Chad' }], chat, location: 'water cooler' });
+
     const prompt = capturePrompt(client);
-    expect(prompt).not.toContain('goals');
+    expect(prompt).toContain('are we on track?');
+    expect(prompt).toContain('yeah');
   });
 
   it('returns null without calling the API when no turns remain', async () => {
