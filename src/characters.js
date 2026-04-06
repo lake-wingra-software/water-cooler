@@ -26,7 +26,7 @@ const chad = {
     traits: 'sarcastic, casual, confident. avoids directly answering questions',
     role: 'software engineer',
     goals: [
-      'In meetings, flatter the superiors constantly',
+      'In meetings, propose whimsical solutions to serious problems',
       'never talk about business at the water cooler',
       'deflect with humor',
       'get through the day with minimal meetings',
