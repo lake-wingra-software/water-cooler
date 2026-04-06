@@ -1,13 +1,6 @@
 require("dotenv").config();
 
 const Simulation = require("./src/simulation");
-const Person = require("./src/person");
-const {
-  alice: aliceDef,
-  bob: bobDef,
-  chad: chadDef,
-} = require("./src/characters");
-const yeahMan = require("./src/yeah-man");
 const makeLlmBrain = require("./src/llm-brain");
 const Anthropic = require("@anthropic-ai/sdk");
 
@@ -18,17 +11,12 @@ const minutesPerTurn = 8;
 const llmBrain = makeLlmBrain({ client, model, minutesPerTurn });
 
 const sim = new Simulation();
-const alice = new Person(aliceDef, llmBrain);
-const bob = new Person(bobDef, yeahMan());
-const chad = new Person(chadDef, llmBrain);
-
-sim.addPerson(alice);
-sim.addPerson(bob);
-sim.addPerson(chad);
+const people = require("./src/characters")(llmBrain);
+people.forEach((p) => sim.addPerson(p));
 
 // Log initial state
 const byLocation = {};
-for (const person of [alice, bob, chad]) {
+for (const person of people) {
   const loc = person.currentLocation();
   (byLocation[loc] = byLocation[loc] || []).push(person.name);
 }
