@@ -1,3 +1,18 @@
+function buildMessages(chat, name) {
+  const messages = [];
+  for (const msg of chat) {
+    const role = msg.from === name ? 'assistant' : 'user';
+    const content = msg.from === name ? msg.message : `${msg.from}: ${msg.message}`;
+    const last = messages[messages.length - 1];
+    if (last && last.role === role) {
+      last.content += '\n' + content;
+    } else {
+      messages.push({ role, content });
+    }
+  }
+  return messages;
+}
+
 function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
   return async function({ name, others, chat, location, minutesRemaining }) {
     if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
@@ -21,15 +36,16 @@ function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
     );
     const system = systemLines.join('\n\n');
 
-    const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
-    const userContent = chatHistory || 'No one has spoken yet.';
+    const messages = chat.length === 0
+      ? [{ role: 'user', content: 'No one has spoken yet.' }]
+      : buildMessages(chat, name);
 
     try {
       const response = await client.messages.create({
         model,
         max_tokens: 256,
         system,
-        messages: [{ role: 'user', content: userContent }]
+        messages,
       });
 
       const text = response.content.find(b => b.type === 'text');

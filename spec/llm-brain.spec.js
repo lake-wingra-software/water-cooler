@@ -18,6 +18,10 @@ function captureSystem(client) {
   return lastCall(client).system;
 }
 
+function captureMessages(client) {
+  return lastCall(client).messages;
+}
+
 function capturePrompt(client) {
   return lastCall(client).messages[0].content;
 }
@@ -82,18 +86,53 @@ describe('LLM brain', () => {
     expect(captureSystem(client)).not.toContain('goals');
   });
 
-  it('puts conversation history in the user message', async () => {
+  it('formats own messages as assistant role', async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
-    const chat = [
+    const chat = [{ from: 'Alice', message: 'are we on track?' }];
+    await brain({ name: 'Bob', others: [{ name: 'Alice' }], chat: [
+      { from: 'Bob', message: 'working on it' },
       { from: 'Alice', message: 'are we on track?' },
-      { from: 'Chad', message: 'yeah' },
-    ];
-    await brain({ name: 'Alice', others: [{ name: 'Chad' }], chat, location: 'water cooler' });
+    ], location: 'water cooler' });
 
-    const prompt = capturePrompt(client);
-    expect(prompt).toContain('are we on track?');
-    expect(prompt).toContain('yeah');
+    const messages = captureMessages(client);
+    expect(messages[0]).toEqual({ role: 'assistant', content: 'working on it' });
+  });
+
+  it('formats others\' messages as user role with name labels', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+    await brain({ name: 'Bob', others: [{ name: 'Alice' }], chat: [
+      { from: 'Alice', message: 'are we on track?' },
+    ], location: 'water cooler' });
+
+    const messages = captureMessages(client);
+    expect(messages[0]).toEqual({ role: 'user', content: 'Alice: are we on track?' });
+  });
+
+  it('merges consecutive messages from others into one user turn', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }, { name: 'Bob' }], chat: [
+      { from: 'Alice', message: 'status?' },
+      { from: 'Bob', message: 'yeah what she said' },
+    ], location: 'water cooler' });
+
+    const messages = captureMessages(client);
+    expect(messages.length).toEqual(1);
+    expect(messages[0].role).toEqual('user');
+    expect(messages[0].content).toContain('Alice: status?');
+    expect(messages[0].content).toContain('Bob: yeah what she said');
+  });
+
+  it('sends a default user message when chat is empty', async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });
+    await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler' });
+
+    const messages = captureMessages(client);
+    expect(messages.length).toEqual(1);
+    expect(messages[0].role).toEqual('user');
   });
 
   it('returns null without calling the API when no turns remain', async () => {
