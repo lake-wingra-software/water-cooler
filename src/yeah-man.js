@@ -22,7 +22,7 @@ const questionDodges = [
   'define "done"',
   'that\'s a great question',
   'you know how it is',
-  'I\'ve been meaning to talk about that',
+  'I\'ve been meaning to talk to you about that',
   'honestly? hard to say',
   'more or less',
   'ask me again tomorrow'
