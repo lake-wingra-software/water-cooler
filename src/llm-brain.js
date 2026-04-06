@@ -3,6 +3,8 @@ function makeLlmBrain({ characterSheet, client, model, minutesPerTurn }) {
     if (chat.length > 0 && chat[chat.length - 1].from === name) return null;
 
     const estimatedTurnsRemaining = Math.floor(minutesRemaining / minutesPerTurn);
+    if (estimatedTurnsRemaining === 0) return null;
+
     const otherNames = others.map(o => o.name).join(', ');
     const chatHistory = chat.map(m => `${m.from}: ${m.message}`).join('\n');
 

@@ -77,6 +77,15 @@ describe('LLM brain', () => {
     expect(prompt).not.toContain('goals');
   });
 
+  it('returns null without calling the API when no turns remain', async () => {
+    const client = { messages: { create: jasmine.createSpy('create') } };
+    const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model', minutesPerTurn: 8 });
+    const result = await brain({ name: 'Chad', others: [{ name: 'Alice' }], chat: [], location: 'water cooler', minutesRemaining: 0 });
+
+    expect(result).toBeNull();
+    expect(client.messages.create).not.toHaveBeenCalled();
+  });
+
   it('returns null if the last message is from the speaker', async () => {
     const client = { messages: { create: jasmine.createSpy('create') } };
     const brain = makeLlmBrain({ characterSheet: { traits: 'friendly', role: 'engineer' }, client, model: 'test-model' });

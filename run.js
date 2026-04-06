@@ -12,12 +12,12 @@ const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 
 const aliceCharacter = {
   traits:
-    "no-nonsense, direct, professional, perpetually behind on deadlines, easily exasperated by flippancy",
+    "direct, perpetually behind on deadlines, easily exasperated by flippancy",
   role: "engineering manager",
   goals: [
-    "keep the project on track",
     "get straight answers from the team",
     "meet the sprint deadline",
+    "fire underperformers"
   ],
 };
 
@@ -32,7 +32,7 @@ const aliceBrain = makeLlmBrain({
 
 const chadCharacter = {
   traits:
-    "sarcastic, casual, confident — knows he's good at his job and uses it as license to be flippant",
+    "sarcastic, casual, confident. avoids directly answering questions",
   role: "software engineer",
   goals: [
     "avoid extra work",
