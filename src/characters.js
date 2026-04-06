@@ -31,7 +31,7 @@ const bob = {
   ],
 };
 
-const chad = {
+const jim = {
   name: "Jim",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "water cooler" },
@@ -72,7 +72,7 @@ const ruby = {
 const yoder = {
   name: "Yoder",
   schedule: [
-    { startTime: new Time(9, 0), endTime: new Time(11, 0), location: "water cooler" },
+    { startTime: new Time(16, 0), endTime: new Time(17, 0), location: "water cooler" },
   ],
   character: {
     traits: "Amish.",
@@ -86,7 +86,7 @@ const yoder = {
 module.exports = (llmBrain) => [
   new Person(alice, llmBrain),
   new Person(bob, yeahMan()),
-  new Person(chad, llmBrain),
+  new Person(jim, llmBrain),
   new Person(ruby, llmBrain),
   new Person(yoder, llmBrain),
 ];
