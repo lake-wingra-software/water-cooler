@@ -83,7 +83,10 @@ describe("Simulation", () => {
 
   describe("addPerson", () => {
     it("places person in their starting shared location", () => {
-      const alice = new Person({ name: "Alice", schedule: waterCoolerStartSchedule });
+      const alice = new Person({
+        name: "Alice",
+        schedule: waterCoolerStartSchedule,
+      });
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
@@ -93,7 +96,10 @@ describe("Simulation", () => {
 
   describe("events", () => {
     it("emits locationChanged when a person changes location", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      const alice = new Person({
+        name: "Alice",
+        schedule: cubicleStartSchedule,
+      });
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
@@ -116,7 +122,10 @@ describe("Simulation", () => {
 
   describe("water cooler", () => {
     it("people should not greet when moving to cubicles", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      const alice = new Person({
+        name: "Alice",
+        schedule: cubicleStartSchedule,
+      });
       const bob = new Person({ name: "Bob", schedule: cubicleStartSchedule });
 
       const sim = new Simulation({ speakerQueue: inOrder });
@@ -147,7 +156,10 @@ describe("Simulation", () => {
         },
       ];
       const wally = new Person({ name: "Wally", schedule: wallySchedule });
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      const alice = new Person({
+        name: "Alice",
+        schedule: cubicleStartSchedule,
+      });
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(wally);
@@ -167,8 +179,14 @@ describe("Simulation", () => {
     });
 
     it("should only greet once — no more messages after the exchange", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule }, makeGreeter());
-      const bob = new Person({ name: "Bob", schedule: cubicleStartSchedule }, makeGreeter());
+      const alice = new Person(
+        { name: "Alice", schedule: cubicleStartSchedule },
+        makeGreeter(),
+      );
+      const bob = new Person(
+        { name: "Bob", schedule: cubicleStartSchedule },
+        makeGreeter(),
+      );
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -187,8 +205,14 @@ describe("Simulation", () => {
     });
 
     it("alice arriving at water cooler should initiate, bob should respond", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule }, makeGreeter());
-      const bob = new Person({ name: "Bob", schedule: cubicleStartSchedule }, makeGreeter());
+      const alice = new Person(
+        { name: "Alice", schedule: cubicleStartSchedule },
+        makeGreeter(),
+      );
+      const bob = new Person(
+        { name: "Bob", schedule: cubicleStartSchedule },
+        makeGreeter(),
+      );
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);

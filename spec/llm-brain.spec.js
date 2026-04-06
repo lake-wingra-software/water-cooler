@@ -100,7 +100,11 @@ describe("LLM brain", () => {
 
   it("puts turns remaining in the system prompt", async () => {
     const client = makeClient();
-    const brain = makeLlmBrain({ client, model: "test-model", minutesPerTurn: 8 });
+    const brain = makeLlmBrain({
+      client,
+      model: "test-model",
+      minutesPerTurn: 8,
+    });
     await brain({
       name: "Chad",
       character: defaultCharacter,
@@ -205,7 +209,11 @@ describe("LLM brain", () => {
 
   it("returns null without calling the API when no turns remain", async () => {
     const client = { messages: { create: jasmine.createSpy("create") } };
-    const brain = makeLlmBrain({ client, model: "test-model", minutesPerTurn: 8 });
+    const brain = makeLlmBrain({
+      client,
+      model: "test-model",
+      minutesPerTurn: 8,
+    });
     const result = await brain({
       name: "Chad",
       character: defaultCharacter,
