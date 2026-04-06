@@ -4,7 +4,9 @@ const Simulation = require("./src/simulation");
 const makeLlmBrain = require("./src/llm-brain");
 const Anthropic = require("@anthropic-ai/sdk");
 
-const client = new Anthropic();
+const client = new Anthropic({
+  baseURL: process.env.ANTHROPIC_URL,
+});
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const minutesPerTurn = 8;
 

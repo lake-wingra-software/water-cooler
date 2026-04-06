@@ -270,4 +270,58 @@ describe("LLM brain", () => {
       "[Chad] LLM error: credit balance too low",
     );
   });
+
+  it("returns null silently when content is null with stop_reason end_turn", async () => {
+    const client = makeClient({
+      content: null,
+      stop_reason: "end_turn",
+      id: "msg_123",
+      type: "message",
+      role: "assistant",
+      model: "test-model",
+      usage: { input_tokens: 10, output_tokens: 1 },
+    });
+    spyOn(console, "error");
+    spyOn(console, "warn");
+
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
+
+    expect(result).toBeNull();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it("returns null with warning when content is null with other stop_reason", async () => {
+    const client = makeClient({
+      content: null,
+      stop_reason: "max_tokens",
+      id: "msg_123",
+      type: "message",
+      role: "assistant",
+      model: "test-model",
+      usage: { input_tokens: 10, output_tokens: 256 },
+    });
+    spyOn(console, "warn");
+
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [],
+      location: "water cooler",
+    });
+
+    expect(result).toBeNull();
+    expect(console.warn).toHaveBeenCalledWith(
+      "[Chad] No text content (stop_reason: max_tokens)",
+    );
+  });
 });

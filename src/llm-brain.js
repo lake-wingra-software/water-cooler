@@ -61,8 +61,13 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
         messages,
       });
 
-      const text = response.content.find((b) => b.type === "text");
-      if (!text) return null;
+      const text = response.content?.find?.((b) => b.type === "text");
+      if (!text) {
+        if (response.stop_reason !== "end_turn") {
+          console.warn(`[${name}] No text content (stop_reason: ${response.stop_reason})`);
+        }
+        return null;
+      }
 
       return { to: others, message: text.text };
     } catch (err) {
