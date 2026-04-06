@@ -35,7 +35,7 @@ const chadCharacter = {
     "sarcastic, casual, confident. avoids directly answering questions",
   role: "software engineer",
   goals: [
-    "avoid extra work",
+    "never talk about business at the water cooler",
     "deflect with humor",
     "get through the day with minimal meetings",
   ],
@@ -57,9 +57,18 @@ sim.addPerson(bob);
 sim.addPerson(chad);
 
 // Log initial state
-console.log(
-  `${sim.currentTime.toString()}: Alice ${alice.currentLocation()}, Bob ${bob.currentLocation()}, Chad ${chad.currentLocation()}`,
-);
+const byLocation = {};
+for (const person of [alice, bob, chad]) {
+  const loc = person.currentLocation();
+  (byLocation[loc] = byLocation[loc] || []).push(person.name);
+}
+const locationSummary = Object.entries(byLocation).map(([loc, names]) => {
+  const listed = names.length < 3
+    ? names.join(' and ')
+    : `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+  return `${listed} at the ${loc}`;
+}).join('; ');
+console.log(`${sim.currentTime.toString()}: ${locationSummary}`);
 
 // Listen for location changes
 sim.on("locationChanged", ({ person, to }) => {
