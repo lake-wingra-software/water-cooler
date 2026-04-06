@@ -1,3 +1,6 @@
+const isLastSpeaker = require("./last-speaker");
+const buildSystemPrompt = require("./system-prompt");
+
 function buildMessages(chat, name) {
   const messages = [];
   for (const msg of chat) {
@@ -13,8 +16,6 @@ function buildMessages(chat, name) {
   }
   return messages;
 }
-
-const isLastSpeaker = require("./last-speaker");
 
 function makeLlmBrain({ client, model, minutesPerTurn }) {
   return async function ({
@@ -32,21 +33,14 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
     );
     if (estimatedTurnsRemaining === 0) return null;
 
-    const otherNames = others.map((o) => o.name).join(", ");
-
-    const systemLines = [
-      `You are ${name}, a ${character.role} at the ${location} at work.`,
-      `Your personality traits: ${character.traits}`,
-    ];
-    if (character.goals && character.goals.length > 0) {
-      systemLines.push(`Your goals: ${character.goals.join(", ")}`);
-    }
-    systemLines.push(
-      `Others present: ${otherNames}`,
-      `You have ${estimatedTurnsRemaining} turns remaining at this location.`,
-      "Say something brief and casual. Reply with spoken words only — no stage directions, actions, or text in asterisks.",
-    );
-    const system = systemLines.join("\n\n");
+    const system = buildSystemPrompt({
+      name,
+      character,
+      others,
+      location,
+      minutesRemaining,
+      minutesPerTurn,
+    });
 
     const messages =
       chat.length === 0
