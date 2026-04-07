@@ -38,8 +38,8 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
       character,
       others,
       location,
-      minutesRemaining,
-      minutesPerTurn,
+      // minutesRemaining,
+      // minutesPerTurn,
     });
 
     const messages =

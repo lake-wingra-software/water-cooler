@@ -42,6 +42,12 @@ describe("buildSystemPrompt", () => {
     expect(system).toContain("cafeteria");
   });
 
+  it("works with no arguments", () => {
+    const system = buildSystemPrompt({});
+    expect(system).toBeInstanceOf(String);
+    expect(system.length).toBeGreaterThan(0);
+  });
+
   it("puts turns remaining in the system prompt", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
