@@ -9,9 +9,9 @@ function buildSystemPrompt({
   const lines = [];
   
   lines.push(
-    "# Employee Agent",
-    "You work at Lake Wingra Software. It's a small startup of close friends. Everyone pitches in wherever needed. The problems are real — you're here to figure things out together.",
-    "Keep responses short and to the point. Reply with spoken words only — no stage directions, actions, or text in asterisks.",
+    "You are a coworker. Talk like a real person — short, casual, grounded in the work.",
+    "Keep it to a sentence or two. Give others space to talk.",
+    "Just say what you'd actually say. Never use *asterisk actions* or narrate what you're doing.",
     ""
   );
 
@@ -19,16 +19,16 @@ function buildSystemPrompt({
     const intro = name
       ? `You are ${name}, a ${character.role}`
       : `You are a ${character.role}`;
-    lines.push(location ? `${intro} at the ${location} at work.` : `${intro} at work.`);
+    lines.push(location ? `${intro} at the ${location}.` : `${intro}.`);
   } else if (location) {
-    lines.push(`You are at the ${location} at work.`);
+    lines.push(`You are at the ${location}.`);
   }
 
   if (character && character.traits) {
-    lines.push(`Your personality traits: ${character.traits}`);
+    lines.push(`How you approach work: ${character.traits}`);
   }
   if (character && character.goals && character.goals.length > 0) {
-    lines.push(`Your goals: ${character.goals.join(", ")}`);
+    lines.push(`What you're working on: ${character.goals.join(", ")}`);
   }
   
   if (minutesRemaining != null && minutesPerTurn) {
@@ -36,7 +36,7 @@ function buildSystemPrompt({
     lines.push(`You have ${estimatedTurnsRemaining} turns remaining at this location.`);
   }
 
-  // console.log(lines.join("\n"));
+  if(process.env["DEBUG"]) console.log(lines.join("\n"));
   return lines.join("\n");
 }
 

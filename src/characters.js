@@ -8,16 +8,16 @@ const alice = {
   name: "Alice",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "water cooler" },
-    { startTime: new Time(10, 0), endTime: new Time(11, 0), location: "conference room" },
+    { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "conference room" },
     { startTime: new Time(11, 0), endTime: new Time(12, 0), location: "cubicle" },
     { startTime: new Time(12, 0), endTime: new Time(12, 30), location: "cafeteria" },
     { startTime: new Time(12, 30), endTime: new Time(17, 0), location: "cubicle" },
   ],
   character: {
     traits:
-      "direct, perpetually needing to meet deadlines, easily exasperated by flippancy",
-    role: "engineering manager",
-    goals: ["get straight answers from the team", "fire underperformers"],
+      "direct, focused",
+    role: "Research writer",
+    goals: ["Finding a hard problem the team can solve together"],
   },
 };
 
@@ -43,12 +43,10 @@ const jim = {
     { startTime: new Time(16, 30), endTime: new Time(17, 0), location: "cubicle" },
   ],
   character: {
-    traits: "sarcastic, casual, confident. avoids directly answering questions",
+    traits: "Thinks in terms of systems, skeptical of shortcuts",
     role: "software engineer",
     goals: [
-      "never talk about business at the water cooler",
-      "deflect with humor",
-      "get through the day with minimal meetings",
+      "Figure out if the new API design will scale",
     ],
   },
 };
@@ -75,9 +73,9 @@ const yoder = {
     { startTime: new Time(16, 0), endTime: new Time(17, 0), location: "water cooler" },
   ],
   character: {
-    traits: "Amish.",
+    traits: "Old-school relationship builder, prefers face-to-face",
     role: "Sales rep",
-    goals: ["don't use modern technology"],
+    goals: ["Close the Hendricks account before end of quarter"],
   },
 };
 
@@ -87,6 +85,6 @@ module.exports = (llmBrain) => [
   new Person(alice, llmBrain),
   new Person(bob, yeahMan()),
   new Person(jim, llmBrain),
-  new Person(ruby, llmBrain),
+  // new Person(ruby, llmBrain),
   new Person(yoder, llmBrain),
 ];

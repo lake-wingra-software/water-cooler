@@ -10,6 +10,24 @@ const defaultArgs = {
 };
 
 describe("buildSystemPrompt", () => {
+  it("includes behavioral grounding", () => {
+    const system = buildSystemPrompt(defaultArgs);
+    expect(system).toContain("coworker");
+    expect(system).not.toContain("personality traits");
+  });
+
+  it("explicitly prohibits asterisk actions", () => {
+    const system = buildSystemPrompt(defaultArgs);
+    expect(system).toContain("*");
+    expect(system).toMatch(/never|don't|no/i);
+  });
+
+  it("encourages short responses", () => {
+    const system = buildSystemPrompt(defaultArgs);
+    expect(system).toMatch(/one|two|1|2/i);
+    expect(system).toMatch(/sentence/i);
+  });
+
   it("puts role and traits in the system prompt", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
