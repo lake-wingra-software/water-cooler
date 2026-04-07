@@ -22,6 +22,11 @@ describe("buildSystemPrompt", () => {
     expect(system).toMatch(/never|don't|no/i);
   });
 
+  it("tells the model it can signal done", () => {
+    const system = buildSystemPrompt(defaultArgs);
+    expect(system).toContain("[done]");
+  });
+
   it("encourages short responses", () => {
     const system = buildSystemPrompt(defaultArgs);
     expect(system).toMatch(/one|two|1|2/i);

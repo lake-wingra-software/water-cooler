@@ -68,7 +68,10 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
         return null;
       }
 
-      return { to: others, message: text.text };
+      const cleaned = text.text.replace(/\[done\]/gi, "").trim();
+      if (!cleaned) return null;
+
+      return { to: others, message: cleaned };
     } catch (err) {
       console.error(`[${name}] LLM error: ${err.message}`);
       return null;

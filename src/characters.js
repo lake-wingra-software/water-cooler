@@ -16,8 +16,8 @@ const alice = {
   character: {
     traits:
       "direct, focused",
-    role: "Research writer",
-    goals: ["Finding a hard problem the team can solve together"],
+    role: "Product Manager",
+    goals: ["Figure out how to get from A to B", "Identify blockers"],
   },
 };
 
@@ -43,10 +43,11 @@ const jim = {
     { startTime: new Time(16, 30), endTime: new Time(17, 0), location: "cubicle" },
   ],
   character: {
-    traits: "Thinks in terms of systems, skeptical of shortcuts",
+    traits: "Helpful and engaging. Thinks in terms of systems.",
     role: "software engineer",
     goals: [
-      "Figure out if the new API design will scale",
+      "Assess feasibility of solutions",
+      "When the situation calls for it, delivers working software"
     ],
   },
 };
@@ -70,12 +71,12 @@ const ruby = {
 const yoder = {
   name: "Yoder",
   schedule: [
-    { startTime: new Time(16, 0), endTime: new Time(17, 0), location: "water cooler" },
+    { startTime: new Time(9, 0), endTime: new Time(17, 0), location: "water cooler" },
   ],
   character: {
     traits: "Old-school relationship builder, prefers face-to-face",
-    role: "Sales rep",
-    goals: ["Close the Hendricks account before end of quarter"],
+    role: "Product Designer",
+    goals: ["Advocate for the users"],
   },
 };
 

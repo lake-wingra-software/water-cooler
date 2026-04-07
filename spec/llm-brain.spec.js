@@ -183,6 +183,48 @@ describe("LLM brain", () => {
     expect(client.messages.create).not.toHaveBeenCalled();
   });
 
+  it("returns null when the model signals done", async () => {
+    const client = makeClient({ content: [{ type: "text", text: "[done]" }] });
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      location: "water cooler",
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it("strips [done] and sends remaining text", async () => {
+    const client = makeClient({ content: [{ type: "text", text: "Sounds good, talk soon.\n\n[done]" }] });
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      location: "water cooler",
+    });
+
+    expect(result.message).toEqual("Sounds good, talk soon.");
+  });
+
+  it("returns null when done signal is all that remains after stripping", async () => {
+    const client = makeClient({ content: [{ type: "text", text: "  [done]  " }] });
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      location: "water cooler",
+    });
+
+    expect(result).toBeNull();
+  });
+
   it("returns null and logs to stderr on API error", async () => {
     const client = {
       messages: {
