@@ -1,5 +1,6 @@
 const isLastSpeaker = require("./last-speaker");
 const buildSystemPrompt = require("./system-prompt");
+const makeGreeter = require("./greeter");
 
 function buildMessages(chat, name) {
   const messages = [];
@@ -18,6 +19,7 @@ function buildMessages(chat, name) {
 }
 
 function makeLlmBrain({ client, model, minutesPerTurn }) {
+  const greeter = makeGreeter();
   return async function ({
     name,
     character,
@@ -26,12 +28,18 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
     location,
     minutesRemaining,
   }) {
-    if (isLastSpeaker(chat, name)) return null;
+    const messages_so_far = chat || [];
+    if (isLastSpeaker(messages_so_far, name)) return null;
 
     const estimatedTurnsRemaining = Math.floor(
       minutesRemaining / minutesPerTurn,
     );
     if (estimatedTurnsRemaining === 0) return null;
+
+    if (messages_so_far.length === 0) {
+      const greeting = greeter({ name, others, chat: messages_so_far });
+      if (greeting) return greeting;
+    }
 
     const system = buildSystemPrompt({
       name,
@@ -42,10 +50,7 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
       // minutesPerTurn,
     });
 
-    const messages =
-      chat.length === 0
-        ? [{ role: "user", content: "No one has spoken yet." }]
-        : buildMessages(chat, name);
+    const messages = buildMessages(messages_so_far, name);
 
     try {
       const response = await client.messages.create({

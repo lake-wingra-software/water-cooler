@@ -40,7 +40,7 @@ describe("LLM brain", () => {
       name: "Chad",
       character: defaultCharacter,
       others: [alice, bob],
-      chat: [],
+      chat: [{ from: "Chad", message: "hi Alice, hi Bob" }, { from: "Alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -56,6 +56,7 @@ describe("LLM brain", () => {
       character: defaultCharacter,
       others: [{ name: "Alice" }],
       chat: [
+        { from: "Bob", message: "hi Alice" },
         { from: "Bob", message: "working on it" },
         { from: "Alice", message: "are we on track?" },
       ],
@@ -65,7 +66,7 @@ describe("LLM brain", () => {
     const messages = captureMessages(client);
     expect(messages[0]).toEqual({
       role: "assistant",
-      content: "working on it",
+      content: "hi Alice\nworking on it",
     });
   });
 
@@ -76,12 +77,15 @@ describe("LLM brain", () => {
       name: "Bob",
       character: defaultCharacter,
       others: [{ name: "Alice" }],
-      chat: [{ from: "Alice", message: "are we on track?" }],
+      chat: [
+        { from: "Bob", message: "hi Alice" },
+        { from: "Alice", message: "are we on track?" },
+      ],
       location: "water cooler",
     });
 
     const messages = captureMessages(client);
-    expect(messages[0]).toEqual({
+    expect(messages[1]).toEqual({
       role: "user",
       content: "Alice: are we on track?",
     });
@@ -95,6 +99,7 @@ describe("LLM brain", () => {
       character: defaultCharacter,
       others: [{ name: "Alice" }, { name: "Bob" }],
       chat: [
+        { from: "Chad", message: "hi Alice, hi Bob" },
         { from: "Alice", message: "status?" },
         { from: "Bob", message: "yeah what she said" },
       ],
@@ -102,26 +107,41 @@ describe("LLM brain", () => {
     });
 
     const messages = captureMessages(client);
-    expect(messages.length).toEqual(1);
-    expect(messages[0].role).toEqual("user");
-    expect(messages[0].content).toContain("Alice: status?");
-    expect(messages[0].content).toContain("Bob: yeah what she said");
+    expect(messages.length).toEqual(2);
+    expect(messages[1].role).toEqual("user");
+    expect(messages[1].content).toContain("Alice: status?");
+    expect(messages[1].content).toContain("Bob: yeah what she said");
   });
 
-  it("sends a default user message when chat is empty", async () => {
+  it("greets others when no one has spoken yet", async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
-    await brain({
+    const result = await brain({
       name: "Chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "Alice" }, { name: "Bob" }],
       chat: [],
       location: "water cooler",
     });
 
-    const messages = captureMessages(client);
-    expect(messages.length).toEqual(1);
-    expect(messages[0].role).toEqual("user");
+    expect(client.messages.create).not.toHaveBeenCalled();
+    expect(result.message).toContain("hi Alice");
+    expect(result.message).toContain("hi Bob");
+  });
+
+  it("greets others when chat is null", async () => {
+    const client = makeClient();
+    const brain = makeLlmBrain({ client, model: "test-model" });
+    const result = await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: null,
+      location: "water cooler",
+    });
+
+    expect(client.messages.create).not.toHaveBeenCalled();
+    expect(result.message).toContain("hi Alice");
   });
 
   it("returns null without calling the API when no turns remain", async () => {
@@ -178,7 +198,7 @@ describe("LLM brain", () => {
       name: "Chad",
       character: defaultCharacter,
       others: [{ name: "Alice" }],
-      chat: [],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -206,7 +226,7 @@ describe("LLM brain", () => {
       name: "Chad",
       character: defaultCharacter,
       others: [{ name: "Alice" }],
-      chat: [],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -232,7 +252,7 @@ describe("LLM brain", () => {
       name: "Chad",
       character: defaultCharacter,
       others: [{ name: "Alice" }],
-      chat: [],
+      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
       location: "water cooler",
     });
 
