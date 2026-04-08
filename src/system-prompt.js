@@ -5,6 +5,7 @@ function buildSystemPrompt({
   location,
   minutesRemaining,
   minutesPerTurn,
+  memory,
 }) {
   const lines = [];
 
@@ -38,14 +39,9 @@ function buildSystemPrompt({
     lines.push(`You have ${estimatedTurnsRemaining} turns remaining at this location.`);
   }
 
-  var strawberry = "How many letter 'r' in the word 'strawberries'. Your decision MUST be unanimous among all participants";
-  var quietGame = "Play the quiet game. End the conversation as quickly as possible."
-  var getInAFight = "Get in a fight with your coworkers. Insult your coworkers."
-  var twoTruths = "As a team building exercise, play 'two truths and a lie'. Make sure your truths are actual true facts";
-  var itTask = "How does the simulation decide who speaks next at a location? Read the code and explain the turn-taking mechanism.";
-  var rhymeGame = "You are playing the Shakespeare game. Your response MUST ALWAYS be in iambic pentameter"
-  // lines.push(rhymeGame)
-  lines.push("You're working on: " + itTask)
+  if (memory) {
+    lines.push(`\nYour memory:\n${memory}`);
+  }
 
   if(process.env["DEBUG"]) console.log(lines.join("\n"));
   return lines.join("\n");
