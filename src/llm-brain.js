@@ -48,7 +48,7 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
       location,
       // minutesRemaining,
       // minutesPerTurn,
-    });
+    }) + "\nYou can only discuss, reason, and draw on your own knowledge. You cannot read code, access files, or run commands. If the task requires those abilities and nobody present can do them, acknowledge you're blocked and say [done].";
 
     const messages = buildMessages(messages_so_far, name);
 

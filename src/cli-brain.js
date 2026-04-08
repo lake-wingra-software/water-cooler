@@ -46,7 +46,8 @@ function makeCliBrain({ model, cwd, exec, allowedTools }) {
       if (greeting) return greeting;
     }
 
-    const systemPrompt = buildSystemPrompt({ name, character, others, location });
+    const systemPrompt = buildSystemPrompt({ name, character, others, location })
+      + "\nYou can read code, search files, and explore the codebase to complete your work.";
     const prompt = buildPrompt(messages, name, location);
 
     try {
