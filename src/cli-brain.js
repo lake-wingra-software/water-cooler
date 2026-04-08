@@ -33,7 +33,7 @@ function buildPrompt(chat, name, location) {
   return lines.join("\n");
 }
 
-function makeCliBrain({ model, cwd, exec, allowedTools }) {
+function makeCliBrain({ model, cwd, exec, allowedTools, memory }) {
   exec = exec || execClaude;
   const greeter = makeGreeter();
 
@@ -46,7 +46,7 @@ function makeCliBrain({ model, cwd, exec, allowedTools }) {
       if (greeting) return greeting;
     }
 
-    const systemPrompt = buildSystemPrompt({ name, character, others, location })
+    const systemPrompt = buildSystemPrompt({ name, character, others, location, memory: memory ? memory.read(name) : undefined })
       + "\nYou can read code, search files, and explore the codebase to complete your work.";
     const prompt = buildPrompt(messages, name, location);
 

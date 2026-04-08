@@ -18,7 +18,7 @@ function buildMessages(chat, name) {
   return messages;
 }
 
-function makeLlmBrain({ client, model, minutesPerTurn }) {
+function makeLlmBrain({ client, model, minutesPerTurn, memory }) {
   const greeter = makeGreeter();
   return async function ({
     name,
@@ -48,6 +48,7 @@ function makeLlmBrain({ client, model, minutesPerTurn }) {
       location,
       // minutesRemaining,
       // minutesPerTurn,
+      memory: memory ? memory.read(name) : undefined,
     }) + "\nYou can only discuss, reason, and draw on your own knowledge. You cannot read code, access files, or run commands. If the task requires those abilities and nobody present can do them, acknowledge you're blocked and say [done].";
 
     const messages = buildMessages(messages_so_far, name);

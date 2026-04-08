@@ -154,6 +154,27 @@ describe("CLI brain", () => {
     expect(flags).toContain("Read,Grep");
   });
 
+  it("includes character memory in system prompt when memory is provided", async () => {
+    const exec = mockExec("On it.");
+    const memory = { read: jasmine.createSpy("read").and.returnValue("Working on: issue #18") };
+    const brain = makeCliBrain({ model: "test-model", exec, memory });
+    const chat = [
+      { from: "Chad", message: "hi Alice" },
+      { from: "Alice", message: "thoughts?" },
+    ];
+    await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat,
+      location: "water cooler",
+    });
+
+    expect(memory.read).toHaveBeenCalledWith("Chad");
+    const systemPrompt = exec.calls.mostRecent().args[1].find((_, i, arr) => arr[i - 1] === "--system-prompt");
+    expect(systemPrompt).toContain("Working on: issue #18");
+  });
+
   it("does not pass allowedTools when not provided", async () => {
     const exec = mockExec("Sure.");
     const brain = makeCliBrain({ model: "test-model", exec });
