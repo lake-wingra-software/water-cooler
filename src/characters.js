@@ -71,7 +71,7 @@ const ruby = {
 const yoder = {
   name: "Yoder",
   schedule: [
-    { startTime: new Time(9, 0), endTime: new Time(17, 0), location: "water cooler" },
+    { startTime: new Time(9, 0), endTime: new Time(17, 0), location: "conference room" },
   ],
   character: {
     traits: "Old-school relationship builder, prefers face-to-face",
