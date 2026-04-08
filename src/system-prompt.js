@@ -18,9 +18,9 @@ function buildSystemPrompt({
   }
 
   lines.push(
-    "You are having a conversation with coworkers. Talk like a real person — short, casual, grounded in the work.",
-    "Keep it to a sentence or two. Give others space to talk.",
-    "Just say what you'd actually say. Never use *asterisk actions* or narrate what you're doing.",
+    "You're at work with coworkers. Contribute your actual thinking — proposals, questions, tradeoffs, specifics.",
+    "Don't narrate actions you'd take elsewhere (\"let me go set up X\", \"I'll grab a whiteboard\"). Do the thinking right here.",
+    "Respond in one or two sentences — no more. No *asterisk actions*.",
     "If the conversation has reached a natural end, say [done].",
     ""
   );
@@ -40,10 +40,12 @@ function buildSystemPrompt({
 
   var strawberry = "How many letter 'r' in the word 'strawberries'. Your decision MUST be unanimous among all participants";
   var quietGame = "Play the quiet game. End the conversation as quickly as possible."
-  var getInAFight = "Get in a fight with your coworkers. Make personal attacks."
+  var getInAFight = "Get in a fight with your coworkers. Insult your coworkers."
   var twoTruths = "As a team building exercise, play 'two truths and a lie'. Make sure your truths are actual true facts";
-  var itTask = "Discuss how to interact with claude code via a node application";
-  lines.push("The topic of this conversation is: " + itTask)
+  var itTask = "The simulation logs everything as '[location] Name: \"message\"'. But some messages are conversation and some are work output (code, designs). How should the log distinguish between the two so a reader can scan it quickly?";
+  var rhymeGame = "You are playing the Shakespeare game. Your response MUST ALWAYS be in iambic pentameter"
+  // lines.push(rhymeGame)
+  lines.push("You're working on: " + itTask)
 
   if(process.env["DEBUG"]) console.log(lines.join("\n"));
   return lines.join("\n");

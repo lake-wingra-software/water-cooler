@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const Simulation = require("./src/simulation");
 const makeLlmBrain = require("./src/llm-brain");
+const makeCliBrain = require("./src/cli-brain");
 const Anthropic = require("@anthropic-ai/sdk");
 
 const client = new Anthropic({
@@ -11,9 +12,10 @@ const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const minutesPerTurn = 8;
 
 const llmBrain = makeLlmBrain({ client, model, minutesPerTurn });
+const cliBrain = makeCliBrain({ model });
 
 const sim = new Simulation();
-const people = require("./src/characters")(llmBrain);
+const people = require("./src/characters")(llmBrain, cliBrain);
 people.forEach((p) => sim.addPerson(p));
 
 // Log initial state

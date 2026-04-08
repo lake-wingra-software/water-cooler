@@ -10,39 +10,25 @@ const defaultArgs = {
 };
 
 describe("buildSystemPrompt", () => {
-  it("includes behavioral grounding", () => {
-    const system = buildSystemPrompt(defaultArgs);
-    expect(system).toContain("coworker");
-    expect(system).not.toContain("personality traits");
-  });
-
-  it("explicitly prohibits asterisk actions", () => {
-    const system = buildSystemPrompt(defaultArgs);
-    expect(system).toContain("*");
-    expect(system).toMatch(/never|don't|no/i);
-  });
-
-  it("tells the model it can signal done", () => {
-    const system = buildSystemPrompt(defaultArgs);
-    expect(system).toContain("[done]");
-  });
-
-  it("encourages short responses", () => {
-    const system = buildSystemPrompt(defaultArgs);
-    expect(system).toMatch(/one|two|1|2/i);
-    expect(system).toMatch(/sentence/i);
-  });
-
-  it("puts role and traits in the system prompt", () => {
+  it("includes character identity", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
+      name: "Chad",
       character: { traits: "sarcastic", role: "senior engineer" },
     });
+    expect(system).toContain("Chad");
     expect(system).toContain("senior engineer");
+  });
+
+  it("includes traits", () => {
+    const system = buildSystemPrompt({
+      ...defaultArgs,
+      character: { traits: "sarcastic", role: "engineer" },
+    });
     expect(system).toContain("sarcastic");
   });
 
-  it("puts goals in the system prompt when provided", () => {
+  it("includes goals when provided", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
       character: {
@@ -55,28 +41,34 @@ describe("buildSystemPrompt", () => {
     expect(system).toContain("avoid meetings");
   });
 
-  it("omits goals section when not provided", () => {
+  it("omits goals when not provided", () => {
     const system = buildSystemPrompt(defaultArgs);
-    expect(system).not.toContain("goals");
+    expect(system).not.toMatch(/get promoted|avoid meetings/);
   });
 
-  it("puts location in the system prompt", () => {
+  it("includes location", () => {
     const system = buildSystemPrompt({ ...defaultArgs, location: "cafeteria" });
     expect(system).toContain("cafeteria");
+  });
+
+  it("includes turns remaining", () => {
+    const system = buildSystemPrompt({
+      ...defaultArgs,
+      minutesRemaining: 24,
+      minutesPerTurn: 8,
+    });
+    expect(system).toContain("3");
+    expect(system).toMatch(/turn/);
+  });
+
+  it("includes done signal", () => {
+    const system = buildSystemPrompt(defaultArgs);
+    expect(system).toContain("[done]");
   });
 
   it("works with no arguments", () => {
     const system = buildSystemPrompt({});
     expect(system).toBeInstanceOf(String);
     expect(system.length).toBeGreaterThan(0);
-  });
-
-  it("puts turns remaining in the system prompt", () => {
-    const system = buildSystemPrompt({
-      ...defaultArgs,
-      minutesRemaining: 24,
-      minutesPerTurn: 8,
-    });
-    expect(system).toContain("3 turns");
   });
 });

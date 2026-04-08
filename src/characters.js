@@ -7,7 +7,7 @@ const Time = require("./time");
 const alice = {
   name: "Alice",
   schedule: [
-    { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "water cooler" },
+    { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
     { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "conference room" },
     { startTime: new Time(11, 0), endTime: new Time(12, 0), location: "cubicle" },
     { startTime: new Time(12, 0), endTime: new Time(12, 30), location: "cafeteria" },
@@ -34,7 +34,7 @@ const bob = {
 const jim = {
   name: "Jim",
   schedule: [
-    { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "water cooler" },
+    { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
     { startTime: new Time(10, 0), endTime: new Time(11, 0), location: "conference room" },
     { startTime: new Time(11, 0), endTime: new Time(12, 30), location: "cubicle" },
     { startTime: new Time(12, 30), endTime: new Time(13, 30), location: "cafeteria" },
@@ -82,10 +82,10 @@ const yoder = {
 
 // --- Wire up people with brains ---
 
-module.exports = (llmBrain) => [
+module.exports = (llmBrain, cliBrain) => [
   new Person(alice, llmBrain),
-  new Person(bob, yeahMan()),
-  new Person(jim, llmBrain),
+  // new Person(bob, yeahMan()),
+  new Person(jim, cliBrain),
   // new Person(ruby, llmBrain),
-  new Person(yoder, llmBrain),
+  // new Person(yoder, llmBrain),
 ];
