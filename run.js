@@ -12,7 +12,7 @@ const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const minutesPerTurn = 8;
 
 const llmBrain = makeLlmBrain({ client, model, minutesPerTurn });
-const cliBrain = makeCliBrain({ model });
+const cliBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"] });
 
 const sim = new Simulation();
 const people = require("./src/characters")(llmBrain, cliBrain);

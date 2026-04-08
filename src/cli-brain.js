@@ -1,8 +1,20 @@
-const util = require("util");
 const { execFile } = require("child_process");
 const isLastSpeaker = require("./last-speaker");
 const makeGreeter = require("./greeter");
 const buildSystemPrompt = require("./system-prompt");
+
+function execClaude(cmd, args, opts) {
+  return new Promise((resolve, reject) => {
+    const child = execFile(cmd, args, opts, (err, stdout) => {
+      if (err) return reject(err);
+      resolve({ stdout });
+    });
+    if (opts.input) {
+      child.stdin.write(opts.input);
+      child.stdin.end();
+    }
+  });
+}
 
 function buildPrompt(chat, name, location) {
   const lines = [];
@@ -21,8 +33,8 @@ function buildPrompt(chat, name, location) {
   return lines.join("\n");
 }
 
-function makeCliBrain({ model, cwd, exec }) {
-  exec = exec || util.promisify(execFile);
+function makeCliBrain({ model, cwd, exec, allowedTools }) {
+  exec = exec || execClaude;
   const greeter = makeGreeter();
 
   return async function ({ name, character, others, chat, location }) {
@@ -38,13 +50,17 @@ function makeCliBrain({ model, cwd, exec }) {
     const prompt = buildPrompt(messages, name, location);
 
     try {
-      const { stdout } = await exec("claude", [
+      const flags = [
         "-p",
         "--model", model,
         "--output-format", "text",
         "--system-prompt", systemPrompt,
-        prompt,
-      ], { cwd, timeout: 120000 });
+      ];
+      if (allowedTools && allowedTools.length > 0) {
+        flags.push("--allowedTools", allowedTools.join(","));
+      }
+
+      const { stdout } = await exec("claude", flags, { cwd, timeout: 120000, input: prompt });
 
       const text = stdout.trim();
       if (!text) return null;

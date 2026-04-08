@@ -42,7 +42,7 @@ function buildSystemPrompt({
   var quietGame = "Play the quiet game. End the conversation as quickly as possible."
   var getInAFight = "Get in a fight with your coworkers. Insult your coworkers."
   var twoTruths = "As a team building exercise, play 'two truths and a lie'. Make sure your truths are actual true facts";
-  var itTask = "The simulation logs everything as '[location] Name: \"message\"'. But some messages are conversation and some are work output (code, designs). How should the log distinguish between the two so a reader can scan it quickly?";
+  var itTask = "How does the simulation decide who speaks next at a location? Read the code and explain the turn-taking mechanism.";
   var rhymeGame = "You are playing the Shakespeare game. Your response MUST ALWAYS be in iambic pentameter"
   // lines.push(rhymeGame)
   lines.push("You're working on: " + itTask)
