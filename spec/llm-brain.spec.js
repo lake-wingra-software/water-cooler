@@ -277,6 +277,22 @@ describe("LLM brain", () => {
     expect(console.warn).not.toHaveBeenCalled();
   });
 
+  it("includes character memory in system prompt when memory is provided", async () => {
+    const client = makeClient();
+    const memory = { read: jasmine.createSpy("read").and.returnValue("Working on: issue #18") };
+    const brain = makeLlmBrain({ client, model: "test-model", memory });
+    await brain({
+      name: "Chad",
+      character: defaultCharacter,
+      others: [{ name: "Alice" }],
+      chat: [{ from: "Chad", message: "hi" }, { from: "Alice", message: "hey" }],
+      location: "water cooler",
+    });
+
+    expect(memory.read).toHaveBeenCalledWith("Chad");
+    expect(captureSystem(client)).toContain("Working on: issue #18");
+  });
+
   it("returns null with warning when content is null with other stop_reason", async () => {
     const client = makeClient({
       content: null,

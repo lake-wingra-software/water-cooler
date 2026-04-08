@@ -71,4 +71,18 @@ describe("buildSystemPrompt", () => {
     expect(system).toBeInstanceOf(String);
     expect(system.length).toBeGreaterThan(0);
   });
+
+  it("includes memory when provided", () => {
+    const system = buildSystemPrompt({
+      ...defaultArgs,
+      memory: "Working on: issue #18\nNext: discuss config format with Jim",
+    });
+    expect(system).toContain("Working on: issue #18");
+    expect(system).toContain("discuss config format with Jim");
+  });
+
+  it("omits memory section when memory is empty", () => {
+    const system = buildSystemPrompt({ ...defaultArgs, memory: "" });
+    expect(system).not.toContain("Memory");
+  });
 });
