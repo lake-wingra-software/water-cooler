@@ -28,11 +28,13 @@ Output is a timestamped log of location changes and conversation turns:
 
 ### Speed
 
-By default the sim runs at 8 ticks/second (1 sim-minute per tick). Control this with `TICKS_PER_SEC` in `.env`:
+Each tick is one sim-minute. A full 9–5 workday is 480 ticks. `TICKS_PER_SEC` controls how many ticks run per real second:
 
 ```sh
-TICKS_PER_SEC=0   # instant (no delay between ticks)
-TICKS_PER_SEC=2   # slower — good for watching live
+TICKS_PER_SEC=0    # instant — all 480 ticks run as fast as possible
+TICKS_PER_SEC=1    # 1 sim-minute/sec — full day takes 8 minutes real time
+TICKS_PER_SEC=8    # default — full day takes ~60 seconds
+TICKS_PER_SEC=60   # 1 sim-hour/sec — full day takes ~8 seconds
 ```
 
 ### Model
