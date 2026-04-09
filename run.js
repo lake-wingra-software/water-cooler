@@ -3,6 +3,7 @@ require("dotenv").config();
 const Simulation = require("./src/simulation");
 const makeLlmBrain = require("./src/llm-brain");
 const makeCliBrain = require("./src/cli-brain");
+const makeReflectionBrain = require("./src/reflection-brain");
 const Memory = require("./src/memory");
 const Anthropic = require("@anthropic-ai/sdk");
 
@@ -15,9 +16,10 @@ const memory = new Memory();
 
 const llmBrain = makeLlmBrain({ client, model, minutesPerTurn, memory });
 const cliBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
+const reflector = makeReflectionBrain({ client, model, memory });
 
 const sim = new Simulation();
-const people = require("./src/characters")(llmBrain, cliBrain);
+const people = require("./src/characters")(llmBrain, cliBrain, reflector);
 people.forEach((p) => sim.addPerson(p));
 
 // Log initial state

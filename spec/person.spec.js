@@ -128,4 +128,56 @@ describe("Person", () => {
       expect(sent.length).toEqual(0);
     });
   });
+
+  describe("reflection", () => {
+    it("fires reflector with chat snapshot when leaving a location", () => {
+      const reflected = [];
+      const reflector = jasmine.createSpy("reflector").and.returnValue(Promise.resolve());
+      const alice = new Person(testCharDef, null, { reflector });
+
+      alice.tick(new Time(9, 0)); // arrive at water cooler
+      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
+      alice.tick(new Time(12, 0)); // leave water cooler
+
+      expect(reflector).toHaveBeenCalledWith({
+        name: "Alice",
+        chat: [{ from: "Bob", message: "hi Alice" }],
+      });
+    });
+
+    it("passes a snapshot of chat before clearing it", () => {
+      let capturedChat;
+      const reflector = jasmine.createSpy("reflector").and.callFake(({ chat }) => {
+        capturedChat = chat;
+        return Promise.resolve();
+      });
+      const alice = new Person(testCharDef, null, { reflector });
+
+      alice.tick(new Time(9, 0));
+      alice.receiveMessage({ from: "Bob", message: "hi" });
+      alice.tick(new Time(12, 0)); // triggers reflection, then clears chat
+
+      expect(capturedChat).toEqual([{ from: "Bob", message: "hi" }]);
+      expect(alice.chat).toEqual([]); // chat is cleared after
+    });
+
+    it("does not fire reflector when chat is empty on departure", () => {
+      const reflector = jasmine.createSpy("reflector");
+      const alice = new Person(testCharDef, null, { reflector });
+
+      alice.tick(new Time(9, 0));
+      alice.tick(new Time(12, 0)); // no messages exchanged
+
+      expect(reflector).not.toHaveBeenCalled();
+    });
+
+    it("does not fire reflector when no reflector is configured", () => {
+      const alice = new Person(testCharDef);
+
+      alice.tick(new Time(9, 0));
+      alice.receiveMessage({ from: "Bob", message: "hi" });
+
+      expect(() => alice.tick(new Time(12, 0))).not.toThrow();
+    });
+  });
 });

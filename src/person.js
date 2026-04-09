@@ -2,12 +2,13 @@ const { EventEmitter } = require("events");
 const Time = require("./time");
 
 class Person extends EventEmitter {
-  constructor({ name, schedule, character }, brain) {
+  constructor({ name, schedule, character }, brain, { reflector } = {}) {
     super();
     this.name = name;
     this.schedule = schedule;
     this.character = character;
     this.brain = brain;
+    this.reflector = reflector;
     this.currentTime = new Time(0, 0);
     this.previousLocation = this.currentLocation();
     this.chat = [];
@@ -18,6 +19,9 @@ class Person extends EventEmitter {
     const prev = this.previousLocation;
     const curr = this.currentLocation();
     if (curr !== prev && curr !== undefined) {
+      if (this.reflector && this.chat.length > 0) {
+        this.reflector({ name: this.name, chat: [...this.chat] });
+      }
       this.chat = [];
       this.previousLocation = curr;
       return { from: prev, to: curr };
