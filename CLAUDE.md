@@ -34,7 +34,7 @@
 Write tests before writing code. The pattern:
 
 1. Write **one** failing test that asserts the desired behavior
-2. Run it to confirm it fails (red)
+2. Run it to confirm the **assertion** fails (red) — not just an import or syntax error. Stub the module first if needed so the test actually runs.
 3. Write the minimum code to make it pass (green)
 4. Repeat 1–3 for the next behavior — one test at a time, not a batch
 5. Consider and apply refactors while the suite stays green
