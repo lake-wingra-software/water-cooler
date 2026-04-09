@@ -53,6 +53,10 @@ class Person extends EventEmitter {
     return slot.endTime.toMinutes() - this.currentTime.toMinutes();
   }
 
+  startWork(location) {
+    this.receiveToken([], location, () => {});
+  }
+
   receiveToken(others, location, done) {
     if (!this.brain) {
       done(null);

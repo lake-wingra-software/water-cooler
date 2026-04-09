@@ -156,6 +156,18 @@ describe("Person", () => {
 
   });
 
+  describe("startWork", () => {
+    it("calls brain with empty others and the given location", () => {
+      const brain = jasmine.createSpy("brain");
+      const alice = new Person(testCharDef, brain);
+      alice.startWork("cubicle");
+      expect(brain).toHaveBeenCalledWith(jasmine.objectContaining({
+        others: [],
+        location: "cubicle",
+      }));
+    });
+  });
+
   describe("reflection", () => {
     it("fires reflector with chat snapshot when leaving a location", () => {
       const reflected = [];

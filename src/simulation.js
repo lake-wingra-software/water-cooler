@@ -10,13 +10,21 @@ class Simulation extends EventEmitter {
     this.currentTime = new Time(9, 0);
     this.people = [];
     this.speakerQueue = speakerQueue;
-    this.locations = {};
+    this.publicLocations = {};
   }
 
   ensureLocation(name) {
     if (PRIVATE_LOCATIONS.includes(name)) return;
-    if (!this.locations[name]) {
-      this.locations[name] = new Location(name, this.speakerQueue);
+    if (!this.publicLocations[name]) {
+      this.publicLocations[name] = new Location(name, this.speakerQueue);
+    }
+  }
+
+  handleArrival(person, location) {
+    if (this.publicLocations[location]) {
+      this.publicLocations[location].arrive(person);
+    } else {
+      person.startWork(location);
     }
   }
 
@@ -26,8 +34,8 @@ class Simulation extends EventEmitter {
       this.ensureLocation(slot.location);
     }
     const change = person.tick(this.currentTime);
-    if (change && this.locations[change.to]) {
-      this.locations[change.to].arrive(person);
+    if (change) {
+      this.handleArrival(person, change.to);
     }
   }
 
@@ -37,12 +45,10 @@ class Simulation extends EventEmitter {
     this.people.forEach((person) => {
       const change = person.tick(this.currentTime);
       if (change) {
-        if (this.locations[change.from]) {
-          this.locations[change.from].depart(person);
+        if (this.publicLocations[change.from]) {
+          this.publicLocations[change.from].depart(person);
         }
-        if (this.locations[change.to]) {
-          this.locations[change.to].arrive(person);
-        }
+        this.handleArrival(person, change.to);
         this.emit("locationChanged", {
           person,
           from: change.from,
@@ -51,7 +57,7 @@ class Simulation extends EventEmitter {
       }
     });
 
-    for (const location of Object.values(this.locations)) {
+    for (const location of Object.values(this.publicLocations)) {
       location.tick();
     }
   }

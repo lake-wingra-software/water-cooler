@@ -53,7 +53,7 @@ function runDay() {
       console.log(`${sim.currentTime.toString()}: ${person.name} → ${to}`);
     });
 
-    for (const location of Object.values(sim.locations)) {
+    for (const location of Object.values(sim.publicLocations)) {
       location.on("messageSent", ({ from, message }) => {
         console.log(
           `${sim.currentTime.toString()}: [${location.name}] ${from}: "${message}"`,

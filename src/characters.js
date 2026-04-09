@@ -1,6 +1,7 @@
 const Person = require("./person");
 const yeahMan = require("./yeah-man");
 const Time = require("./time");
+const makeRoutingBrain = require("./routing-brain");
 
 // --- Character sheets (pure data) ---
 
@@ -81,10 +82,13 @@ const yoder = {
 
 // --- Wire up people with brains ---
 
-module.exports = (llmBrain, cliBrain, reflector) => [
-  new Person(alice, llmBrain, { reflector }),
-  // new Person(bob, yeahMan()),
-  new Person(jim, cliBrain, { reflector }),
-  // new Person(ruby, llmBrain, { reflector }),
-  // new Person(yoder, llmBrain, { reflector }),
-];
+module.exports = (llmBrain, cliBrain, reflector) => {
+  const brain = makeRoutingBrain({ publicBrain: llmBrain, workBrain: cliBrain });
+  return [
+    new Person(alice, brain, { reflector }),
+    // new Person(bob, yeahMan()),
+    new Person(jim, brain, { reflector }),
+    // new Person(ruby, brain, { reflector }),
+    // new Person(yoder, brain, { reflector }),
+  ];
+};

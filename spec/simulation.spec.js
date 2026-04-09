@@ -90,7 +90,7 @@ describe("Simulation", () => {
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
-      expect(sim.locations["water cooler"].occupants).toEqual([alice]);
+      expect(sim.publicLocations["water cooler"].occupants).toEqual([alice]);
     });
 
     it("does not place person in any location if their schedule hasn't started yet", () => {
@@ -105,10 +105,34 @@ describe("Simulation", () => {
       sim.addPerson(person);
 
       // Check that person is not in any shared location
-      const inAnyLocation = Object.values(sim.locations).some((location) =>
+      const inAnyLocation = Object.values(sim.publicLocations).some((location) =>
         location.occupants.includes(person)
       );
       expect(inAnyLocation).toEqual(false);
+    });
+  });
+
+  describe("private locations", () => {
+    it("calls startWork when a person arrives at a private location", () => {
+      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      spyOn(alice, "startWork");
+      const sim = new Simulation({ speakerQueue: inOrder });
+      sim.addPerson(alice);
+      expect(alice.startWork).toHaveBeenCalledWith("cubicle");
+    });
+
+    it("calls startWork again when a person returns to a private location", () => {
+      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      spyOn(alice, "startWork");
+      const sim = new Simulation({ speakerQueue: inOrder });
+      sim.addPerson(alice);
+
+      // tick to 13:00 — Alice returns to cubicle from cafeteria
+      for (let i = 0; i < ticksUntil(13, 0); i++) {
+        sim.tick();
+      }
+
+      expect(alice.startWork).toHaveBeenCalledTimes(2);
     });
   });
 
