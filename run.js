@@ -11,10 +11,9 @@ const client = new Anthropic({
   baseURL: process.env.ANTHROPIC_URL,
 });
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
-const minutesPerTurn = 8;
 const memory = new Memory();
 
-const llmBrain = makeLlmBrain({ client, model, minutesPerTurn, memory });
+const llmBrain = makeLlmBrain({ client, model, memory });
 const cliBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
 const reflector = makeReflectionBrain({ client, model, memory });
 
@@ -55,25 +54,17 @@ for (const location of Object.values(sim.locations)) {
 
 // TICKS_PER_SEC: ticks per second.
 // Example: 10 (1 hour = 6 seconds).
-// Set TICKS_PER_SEC=0 for instant execution.
 const DEFAULT_TICKS_PER_SEC = 8;
-const ticksPerSec = process.env.TICKS_PER_SEC;
-const tickInterval =
-  ticksPerSec === "0"
-    ? 0
-    : Math.round(1000 / (parseFloat(ticksPerSec) || DEFAULT_TICKS_PER_SEC));
-
-if (tickInterval === 0) {
-  while (sim.isActiveWorkday()) {
-    sim.tick();
-  }
-  console.log(`${sim.currentTime.toString()}: workday ended`);
-} else {
-  const timer = setInterval(() => {
-    sim.tick();
-    if (!sim.isActiveWorkday()) {
-      clearInterval(timer);
-      console.log(`${sim.currentTime.toString()}: workday ended`);
-    }
-  }, tickInterval);
+const ticksPerSec = parseFloat(process.env.TICKS_PER_SEC) || DEFAULT_TICKS_PER_SEC;
+if (ticksPerSec <= 0) {
+  throw new Error(`TICKS_PER_SEC must be greater than 0 (got ${process.env.TICKS_PER_SEC})`);
 }
+const tickInterval = Math.round(1000 / ticksPerSec);
+
+const timer = setInterval(() => {
+  sim.tick();
+  if (!sim.isActiveWorkday()) {
+    clearInterval(timer);
+    console.log(`${sim.currentTime.toString()}: workday ended`);
+  }
+}, tickInterval);

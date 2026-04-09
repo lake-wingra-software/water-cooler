@@ -1,7 +1,5 @@
 const { execFile } = require("child_process");
-const isLastSpeaker = require("./last-speaker");
-const makeGreeter = require("./greeter");
-const buildSystemPrompt = require("./system-prompt");
+const makeBrain = require("./make-brain");
 
 function execClaude(cmd, args, opts) {
   return new Promise((resolve, reject) => {
@@ -35,43 +33,37 @@ function buildPrompt(chat, name, location) {
 
 function makeCliBrain({ model, cwd, exec, allowedTools, memory }) {
   exec = exec || execClaude;
-  const greeter = makeGreeter();
 
-  return async function ({ name, character, others, chat, location }) {
-    const messages = chat || [];
-    if (isLastSpeaker(messages, name)) return null;
+  return makeBrain({
+    memory,
+    systemSuffix:
+      "You can read code, search files, and explore the codebase to complete your work.",
+    async transport({ name, others, chat, location, system }) {
+      const prompt = buildPrompt(chat, name, location);
 
-    if (messages.length === 0) {
-      const greeting = greeter({ name, others, chat: messages });
-      if (greeting) return greeting;
-    }
+      try {
+        const flags = [
+          "-p",
+          "--model", model,
+          "--output-format", "text",
+          "--system-prompt", system,
+        ];
+        if (allowedTools && allowedTools.length > 0) {
+          flags.push("--allowedTools", allowedTools.join(","));
+        }
 
-    const systemPrompt = buildSystemPrompt({ name, character, others, location, memory: memory ? memory.read(name) : undefined })
-      + "\nYou can read code, search files, and explore the codebase to complete your work.";
-    const prompt = buildPrompt(messages, name, location);
+        const { stdout } = await exec("claude", flags, { cwd, timeout: 120000, input: prompt });
 
-    try {
-      const flags = [
-        "-p",
-        "--model", model,
-        "--output-format", "text",
-        "--system-prompt", systemPrompt,
-      ];
-      if (allowedTools && allowedTools.length > 0) {
-        flags.push("--allowedTools", allowedTools.join(","));
+        const text = stdout.trim();
+        if (!text) return null;
+
+        return { to: others, message: text };
+      } catch (err) {
+        console.error(`[${name}] CLI error: ${err.message}`);
+        return null;
       }
-
-      const { stdout } = await exec("claude", flags, { cwd, timeout: 120000, input: prompt });
-
-      const text = stdout.trim();
-      if (!text) return null;
-
-      return { to: others, message: text };
-    } catch (err) {
-      console.error(`[${name}] CLI error: ${err.message}`);
-      return null;
-    }
-  };
+    },
+  });
 }
 
 module.exports = makeCliBrain;

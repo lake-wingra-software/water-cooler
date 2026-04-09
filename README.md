@@ -4,6 +4,13 @@ An office simulation where AI-powered characters follow schedules, move between 
 
 The simulation runs a single workday (9am–5pm). Characters follow a schedule, moving between shared locations — the `conference room`, `water cooler`, and `cafeteria`. When two characters end up at the same place, they strike up a conversation: they greet each other, then take turns speaking while everyone present listens.
 
+## Requirements
+
+- [Node.js](https://nodejs.org/)
+- [GitHub CLI (`gh`)](https://cli.github.com/)
+- [Claude Code CLI (`claude`)](https://docs.anthropic.com/en/docs/claude-code) — used by the CLI brain to spawn `claude -p` subprocesses
+- An `ANTHROPIC_API_KEY` from [Anthropic](https://console.anthropic.com/) — used by both the LLM brain (API calls) and the CLI brain
+
 ## Setup
 
 ```sh
@@ -31,7 +38,6 @@ Output is a timestamped log of location changes and conversation turns:
 Each tick is one sim-minute. A full 9–5 workday is 480 ticks. `TICKS_PER_SEC` controls how many ticks run per real second:
 
 ```sh
-TICKS_PER_SEC=0    # instant — all 480 ticks run as fast as possible
 TICKS_PER_SEC=1    # 1 sim-minute/sec — full day takes 8 minutes real time
 TICKS_PER_SEC=8    # default — full day takes ~60 seconds
 TICKS_PER_SEC=60   # 1 sim-hour/sec — full day takes ~8 seconds

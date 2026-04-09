@@ -7,8 +7,7 @@ const Time = require("./time");
 const alice = {
   name: "Alice",
   schedule: [
-    { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
-    { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "conference room" },
+    { startTime: new Time(9, 0), endTime: new Time(11, 0), location: "conference room" },
     { startTime: new Time(11, 0), endTime: new Time(12, 0), location: "cubicle" },
     { startTime: new Time(12, 0), endTime: new Time(12, 30), location: "cafeteria" },
     { startTime: new Time(12, 30), endTime: new Time(17, 0), location: "cubicle" },
@@ -84,7 +83,7 @@ const yoder = {
 
 module.exports = (llmBrain, cliBrain, reflector) => [
   new Person(alice, llmBrain, { reflector }),
-  // new Person(bob, yeahMan(), { reflector }),
+  // new Person(bob, yeahMan()),
   new Person(jim, cliBrain, { reflector }),
   // new Person(ruby, llmBrain, { reflector }),
   // new Person(yoder, llmBrain, { reflector }),

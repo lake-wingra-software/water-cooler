@@ -10,7 +10,7 @@ describe("run.js", () => {
         encoding: "utf8",
         env: {
           ...process.env,
-          TICKS_PER_SEC: "0",
+          TICKS_PER_SEC: "99999",
           ANTHROPIC_API_KEY: "",
           ANTHROPIC_URL: "",
         },
