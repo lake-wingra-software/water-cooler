@@ -129,6 +129,33 @@ describe("Person", () => {
     });
   });
 
+  describe("conversation done", () => {
+    it("appends [done] to own chat when brain returns null and chat is non-empty", () => {
+      const fakeBrain = () => null;
+      const alice = new Person(testCharDef, fakeBrain);
+
+      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
+      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {});
+
+      expect(alice.chat.length).toEqual(2);
+      expect(alice.chat[1]).toEqual({ from: "Alice", message: "[done]" });
+    });
+
+    it("skips brain when last chat entry is own [done]", () => {
+      let brainCalls = 0;
+      const fakeBrain = () => { brainCalls++; return null; };
+      const alice = new Person(testCharDef, fakeBrain);
+
+      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
+      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {}); // brain returns null, appends [done]
+      expect(brainCalls).toEqual(1);
+
+      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {}); // should skip brain
+      expect(brainCalls).toEqual(1);
+    });
+
+  });
+
   describe("reflection", () => {
     it("fires reflector with chat snapshot when leaving a location", () => {
       const reflected = [];

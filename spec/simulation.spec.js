@@ -216,10 +216,11 @@ describe("Simulation", () => {
 
       sim.tick(); // 15:30 — Alice greets Bob
       sim.tick(); // 15:31 — Bob responds
-      sim.tick(); // 15:32 — nothing more to say
+      sim.tick(); // 15:32 — Alice's greeter returns null, appends [done]
+      sim.tick(); // 15:33 — Bob's greeter returns null, appends [done]
 
-      expect(alice.chat.length).toEqual(2);
-      expect(bob.chat.length).toEqual(2);
+      expect(alice.chat.length).toEqual(3);
+      expect(bob.chat.length).toEqual(3);
     });
 
     it("alice arriving at water cooler should initiate, bob should respond", () => {

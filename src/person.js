@@ -16,15 +16,15 @@ class Person extends EventEmitter {
 
   tick(time) {
     this.currentTime = time;
-    const prev = this.previousLocation;
-    const curr = this.currentLocation();
-    if (curr !== prev && curr !== undefined) {
+    const currentLocation = this.currentLocation();
+    if (currentLocation !== this.previousLocation && currentLocation !== undefined) {
       if (this.reflector && this.chat.length > 0) {
         this.reflector({ name: this.name, chat: [...this.chat] });
       }
+      const from = this.previousLocation;
       this.chat = [];
-      this.previousLocation = curr;
-      return { from: prev, to: curr };
+      this.previousLocation = currentLocation;
+      return { from, to: currentLocation };
     }
     return null;
   }
@@ -58,6 +58,11 @@ class Person extends EventEmitter {
       done(null);
       return;
     }
+    const lastEntry = this.chat[this.chat.length - 1];
+    if (lastEntry && lastEntry.from === this.name && lastEntry.message === "[done]") {
+      done(null);
+      return;
+    }
     const minutesRemaining = this.minutesRemainingAtLocation();
     const result = this.brain({
       name: this.name,
@@ -67,10 +72,16 @@ class Person extends EventEmitter {
       location,
       minutesRemaining,
     });
+    const handle = (action) => {
+      if (!action && this.chat.length > 0) {
+        this.chat.push({ from: this.name, message: "[done]" });
+      }
+      done(action);
+    };
     if (result && typeof result.then === "function") {
-      result.then((action) => done(action));
+      result.then(handle);
     } else {
-      done(result);
+      handle(result);
     }
   }
 }
