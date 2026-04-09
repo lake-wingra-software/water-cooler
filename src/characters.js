@@ -82,10 +82,10 @@ const yoder = {
 
 // --- Wire up people with brains ---
 
-module.exports = (llmBrain, cliBrain) => [
-  new Person(alice, llmBrain),
-  // new Person(bob, yeahMan()),
-  new Person(jim, cliBrain),
-  // new Person(ruby, llmBrain),
-  // new Person(yoder, llmBrain),
+module.exports = (llmBrain, cliBrain, reflector) => [
+  new Person(alice, llmBrain, { reflector }),
+  // new Person(bob, yeahMan(), { reflector }),
+  new Person(jim, cliBrain, { reflector }),
+  // new Person(ruby, llmBrain, { reflector }),
+  // new Person(yoder, llmBrain, { reflector }),
 ];
