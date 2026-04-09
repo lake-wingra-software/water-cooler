@@ -29,6 +29,23 @@
 
 ## Workflow
 
+### TDD
+
+Write tests before writing code. The pattern:
+
+1. Write **one** failing test that asserts the desired behavior
+2. Run it to confirm it fails (red)
+3. Write the minimum code to make it pass (green)
+4. Repeat 1–3 for the next behavior — one test at a time, not a batch
+5. Consider and apply refactors while the suite stays green
+6. Run the full test suite — all tests must pass before committing
+7. Commit
+
+**For behavioral/integration changes:** write executable specs that verify system behavior.
+**For logic/pure function changes:** write unit tests.
+
+Tests also serve as regression guards during refactors — write characterization tests first if the behavior isn't already covered.
+
 ### Interactive workflow
 
 Use this workflow by default, or whenever the user asks to pair or code together.
