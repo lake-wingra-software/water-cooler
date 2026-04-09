@@ -17,43 +17,6 @@ const llmBrain = makeLlmBrain({ client, model, memory });
 const cliBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
 const reflector = makeReflectionBrain({ client, model, memory });
 
-const sim = new Simulation();
-const people = require("./src/characters")(llmBrain, cliBrain, reflector);
-people.forEach((p) => sim.addPerson(p));
-
-// Log initial state
-const byLocation = {};
-for (const person of people) {
-  const loc = person.currentLocation();
-  if (loc) (byLocation[loc] = byLocation[loc] || []).push(person.name);
-}
-const locationSummary = Object.entries(byLocation)
-  .map(([loc, names]) => {
-    const listed =
-      names.length < 3
-        ? names.join(" and ")
-        : `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
-    return `${listed} at the ${loc}`;
-  })
-  .join("; ");
-console.log(`${sim.currentTime.toString()}: ${locationSummary}`);
-
-// Listen for location changes
-sim.on("locationChanged", ({ person, to }) => {
-  console.log(`${sim.currentTime.toString()}: ${person.name} → ${to}`);
-});
-
-// Listen for messages at each shared location
-for (const location of Object.values(sim.locations)) {
-  location.on("messageSent", ({ from, message }) => {
-    console.log(
-      `${sim.currentTime.toString()}: [${location.name}] ${from}: "${message}"`,
-    );
-  });
-}
-
-// TICKS_PER_SEC: ticks per second.
-// Example: 10 (1 hour = 6 seconds).
 const DEFAULT_TICKS_PER_SEC = 8;
 const ticksPerSec = parseFloat(process.env.TICKS_PER_SEC) || DEFAULT_TICKS_PER_SEC;
 if (ticksPerSec <= 0) {
@@ -61,10 +24,59 @@ if (ticksPerSec <= 0) {
 }
 const tickInterval = Math.round(1000 / ticksPerSec);
 
-const timer = setInterval(() => {
-  sim.tick();
-  if (!sim.isActiveWorkday()) {
-    clearInterval(timer);
-    console.log(`${sim.currentTime.toString()}: workday ended`);
+const daysArg = process.argv.find((a) => a.startsWith("--days="));
+const days = daysArg ? parseInt(daysArg.split("=")[1]) : 1;
+
+function runDay() {
+  return new Promise((resolve) => {
+    const sim = new Simulation();
+    const people = require("./src/characters")(llmBrain, cliBrain, reflector);
+    people.forEach((p) => sim.addPerson(p));
+
+    const byLocation = {};
+    for (const person of people) {
+      const loc = person.currentLocation();
+      if (loc) (byLocation[loc] = byLocation[loc] || []).push(person.name);
+    }
+    const locationSummary = Object.entries(byLocation)
+      .map(([loc, names]) => {
+        const listed =
+          names.length < 3
+            ? names.join(" and ")
+            : `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
+        return `${listed} at the ${loc}`;
+      })
+      .join("; ");
+    console.log(`${sim.currentTime.toString()}: ${locationSummary}`);
+
+    sim.on("locationChanged", ({ person, to }) => {
+      console.log(`${sim.currentTime.toString()}: ${person.name} → ${to}`);
+    });
+
+    for (const location of Object.values(sim.locations)) {
+      location.on("messageSent", ({ from, message }) => {
+        console.log(
+          `${sim.currentTime.toString()}: [${location.name}] ${from}: "${message}"`,
+        );
+      });
+    }
+
+    const timer = setInterval(() => {
+      sim.tick();
+      if (!sim.isActiveWorkday()) {
+        clearInterval(timer);
+        console.log(`${sim.currentTime.toString()}: workday ended`);
+        resolve();
+      }
+    }, tickInterval);
+  });
+}
+
+async function main() {
+  for (let day = 1; day <= days; day++) {
+    console.log(`\n--- Day ${day} ---`);
+    await runDay();
   }
-}, tickInterval);
+}
+
+main();
