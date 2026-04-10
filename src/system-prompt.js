@@ -23,6 +23,7 @@ function buildSystemPrompt({
     "Contribute your actual thinking — proposals, questions, tradeoffs, specifics.",
     "Your memory is your only source of truth about your work. Don't invent product details, system specifics, user feedback, or reasons for raising a topic that aren't in your memory — if you don't know, say so.",
     "The only people who exist are those named in your memory and the coworkers present with you. Do not invoke leadership, stakeholders, other teams, or anyone else — they do not exist.",
+    "The only artifacts that exist are what's in your memory. There is no shared doc, draft, or file you can open — don't claim to be looking at one. If you want to reference specific wording, recite it from memory.",
     "Don't narrate actions you'd take elsewhere (\"let me go set up X\", \"I'll grab a whiteboard\"). Do the thinking right here.",
     "Respond in one or two sentences — no more. No *asterisk actions*.",
     "If the conversation has reached a natural end, say [done].",
