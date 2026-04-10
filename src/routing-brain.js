@@ -1,9 +1,9 @@
-function makeRoutingBrain({ publicBrain, workBrain }) {
+function makeRoutingBrain({ chatBrain, workBrain }) {
   return function routingBrain(ctx) {
     if (ctx.location === "cubicle") {
       return workBrain(ctx);
     }
-    return publicBrain(ctx);
+    return chatBrain(ctx);
   };
 }
 

@@ -1,25 +1,25 @@
 const makeRoutingBrain = require("../src/routing-brain");
 
 describe("routing brain", () => {
-  let publicBrain, workBrain, ctx;
+  let chatBrain, workBrain, ctx;
 
   beforeEach(() => {
-    publicBrain = jasmine.createSpy("publicBrain");
+    chatBrain = jasmine.createSpy("chatBrain");
     workBrain = jasmine.createSpy("workBrain");
     ctx = { name: "Alice", others: [], chat: [] };
   });
 
-  it("delegates to publicBrain at a public location", () => {
-    const brain = makeRoutingBrain({ publicBrain, workBrain });
+  it("delegates to chatBrain at a public location", () => {
+    const brain = makeRoutingBrain({ chatBrain, workBrain });
     brain({ ...ctx, location: "water cooler" });
-    expect(publicBrain).toHaveBeenCalledWith({ ...ctx, location: "water cooler" });
+    expect(chatBrain).toHaveBeenCalledWith({ ...ctx, location: "water cooler" });
     expect(workBrain).not.toHaveBeenCalled();
   });
 
   it("delegates to workBrain at the cubicle", () => {
-    const brain = makeRoutingBrain({ publicBrain, workBrain });
+    const brain = makeRoutingBrain({ chatBrain, workBrain });
     brain({ ...ctx, location: "cubicle" });
     expect(workBrain).toHaveBeenCalledWith({ ...ctx, location: "cubicle" });
-    expect(publicBrain).not.toHaveBeenCalled();
+    expect(chatBrain).not.toHaveBeenCalled();
   });
 });

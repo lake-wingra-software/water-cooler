@@ -13,8 +13,8 @@ const client = new Anthropic({
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const memory = new Memory();
 
-const llmBrain = makeLlmBrain({ client, model, memory });
-const cliBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
+const chatBrain = makeLlmBrain({ client, model, memory });
+const workBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
 const reflector = makeReflectionBrain({ client, model, memory });
 
 const DEFAULT_TICKS_PER_SEC = 8;
@@ -30,7 +30,7 @@ const days = daysArg ? parseInt(daysArg.split("=")[1]) : 1;
 function runDay() {
   return new Promise((resolve) => {
     const sim = new Simulation();
-    const people = require("./src/characters")(llmBrain, cliBrain, reflector);
+    const people = require("./src/characters")(chatBrain, workBrain, reflector);
     people.forEach((p) => sim.addPerson(p));
 
     const byLocation = {};

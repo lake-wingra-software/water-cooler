@@ -5,8 +5,8 @@ const { alice, bob, jim, ruby, yoder } = require("./character-defs");
 
 // --- Wire up people with brains ---
 
-module.exports = (llmBrain, cliBrain, reflector) => {
-  const brain = makeRoutingBrain({ publicBrain: llmBrain, workBrain: cliBrain });
+module.exports = (chatBrain, workBrain, reflector) => {
+  const brain = makeRoutingBrain({ chatBrain, workBrain });
   return [
     new Person(alice, brain, { reflector }),
     // new Person(bob, yeahMan()),
