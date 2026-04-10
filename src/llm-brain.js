@@ -1,4 +1,5 @@
 const makeBrain = require("./make-brain");
+const buildBaseSystemPrompt = require("./system-prompt");
 
 function buildMessages(chat, name) {
   const messages = [];
@@ -19,8 +20,10 @@ function buildMessages(chat, name) {
 function makeLlmBrain({ client, model, memory }) {
   return makeBrain({
     memory,
-    systemSuffix:
-      "You can only discuss, reason, and draw on your own knowledge. You cannot read code, access files, or run commands. If the task requires those abilities and nobody present can do them, acknowledge you're blocked and say [done].",
+    buildSystemPrompt(args) {
+      return buildBaseSystemPrompt(args) + "\n" +
+        "You can only discuss, reason, and draw on your own knowledge. You cannot read code, access files, or run commands. If the task requires those abilities and nobody present can do them, acknowledge you're blocked and say [done].";
+    },
 
     async transport({ name, others, chat, system }) {
       const messages = buildMessages(chat, name);

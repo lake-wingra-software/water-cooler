@@ -1,4 +1,4 @@
-const buildSystemPrompt = require("../src/system-prompt");
+const { buildSystemPrompt, buildWorkSystemPrompt } = require("../src/system-prompt");
 
 const defaultArgs = {
   name: "Chad",
@@ -84,5 +84,29 @@ describe("buildSystemPrompt", () => {
   it("omits memory section when memory is empty", () => {
     const system = buildSystemPrompt({ ...defaultArgs, memory: "" });
     expect(system).not.toContain("Memory");
+  });
+});
+
+describe("buildWorkSystemPrompt", () => {
+  it("includes character identity and location", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Alice",
+      character: { role: "product manager", traits: "organized" },
+      location: "cubicle",
+    });
+    expect(system).toContain("Alice");
+    expect(system).toContain("product manager");
+    expect(system).toContain("cubicle");
+  });
+
+  it("includes memory when provided", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Alice",
+      character: { role: "product manager" },
+      location: "cubicle",
+      memory: "Working on: issue #18\nNext: discuss config format with Jim",
+    });
+    expect(system).toContain("Working on: issue #18");
+    expect(system).toContain("discuss config format with Jim");
   });
 });

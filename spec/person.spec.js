@@ -166,6 +166,30 @@ describe("Person", () => {
         location: "cubicle",
       }));
     });
+
+    it("records brain output in chat when working at cubicle", () => {
+      const brain = jasmine
+        .createSpy("brain")
+        .and.returnValue({ to: [], message: "Reading the backlog" });
+      const alice = new Person(testCharDef, brain);
+      alice.startWork("cubicle");
+      expect(alice.chat).toEqual([
+        { from: "Alice", message: "Reading the backlog" },
+      ]);
+    });
+
+    it("emits worked event with brain output when working at cubicle", () => {
+      const brain = jasmine
+        .createSpy("brain")
+        .and.returnValue({ to: [], message: "Reading the backlog" });
+      const alice = new Person(testCharDef, brain);
+      const worked = [];
+      alice.on("worked", (e) => worked.push(e));
+      alice.startWork("cubicle");
+      expect(worked).toEqual([
+        { name: "Alice", location: "cubicle", message: "Reading the backlog" },
+      ]);
+    });
   });
 
   describe("reflection", () => {

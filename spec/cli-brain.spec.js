@@ -136,7 +136,7 @@ describe("CLI brain", () => {
 
   it("passes allowedTools when provided", async () => {
     const exec = mockExec("Found it.");
-    const brain = makeCliBrain({ model: "test-model", exec, allowedTools: ["Read", "Grep"] });
+    const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
       { from: "Chad", message: "hi Alice" },
       { from: "Alice", message: "can you check the code?" },
@@ -147,6 +147,7 @@ describe("CLI brain", () => {
       others: [{ name: "Alice" }],
       chat,
       location: "water cooler",
+      allowedTools: ["Read", "Grep"],
     });
 
     const flags = exec.calls.mostRecent().args[1];

@@ -7,10 +7,12 @@ const { alice, bob, jim, ruby, yoder } = require("./character-defs");
 
 module.exports = (chatBrain, workBrain, reflector) => {
   const brain = makeRoutingBrain({ chatBrain, workBrain });
+  const aliceTools = ["Read", "Grep", "Glob", "Bash(gh:*)", "WebFetch"];
+  const jimTools = ["Read", "Grep", "Glob", "Edit", "Write", "Bash(gh:*)", "Bash(npm test:*)"];
   return [
-    new Person(alice, brain, { reflector }),
+    new Person(alice, brain, { reflector, allowedTools: aliceTools }),
     // new Person(bob, yeahMan()),
-    new Person(jim, brain, { reflector }),
+    new Person(jim, brain, { reflector, allowedTools: jimTools }),
     // new Person(ruby, brain, { reflector }),
     // new Person(yoder, brain, { reflector }),
   ];

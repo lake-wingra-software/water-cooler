@@ -1,8 +1,7 @@
 const isLastSpeaker = require("./last-speaker");
 const makeGreeter = require("./greeter");
-const buildSystemPrompt = require("./system-prompt");
 
-function makeBrain({ memory, systemSuffix, shouldBail, transport }) {
+function makeBrain({ buildSystemPrompt, memory, shouldBail, transport }) {
   const greeter = makeGreeter();
 
   return async function (args) {
@@ -17,14 +16,13 @@ function makeBrain({ memory, systemSuffix, shouldBail, transport }) {
       if (greeting) return greeting;
     }
 
-    const system =
-      buildSystemPrompt({
-        name,
-        character,
-        others,
-        location,
-        memory: memory ? memory.read(name) : undefined,
-      }) + (systemSuffix ? "\n" + systemSuffix : "");
+    const system = buildSystemPrompt({
+      name,
+      character,
+      others,
+      location,
+      memory: memory ? memory.read(name) : undefined,
+    });
 
     return transport({ ...args, chat: messages, system });
   };

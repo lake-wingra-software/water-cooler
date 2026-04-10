@@ -1,5 +1,6 @@
 const { execFile } = require("child_process");
 const makeBrain = require("./make-brain");
+const buildBaseSystemPrompt = require("./system-prompt");
 
 function execClaude(cmd, args, opts) {
   return new Promise((resolve, reject) => {
@@ -31,14 +32,16 @@ function buildPrompt(chat, name, location) {
   return lines.join("\n");
 }
 
-function makeCliBrain({ model, cwd, exec, allowedTools, memory }) {
+function makeCliBrain({ model, cwd, exec, memory }) {
   exec = exec || execClaude;
 
   return makeBrain({
     memory,
-    systemSuffix:
-      "You can read code, search files, and explore the codebase to complete your work.",
-    async transport({ name, others, chat, location, system }) {
+    buildSystemPrompt(args) {
+      return buildBaseSystemPrompt(args) + "\n" +
+        "You can read code, search files, and explore the codebase to complete your work.";
+    },
+    async transport({ name, others, chat, location, system, allowedTools }) {
       const prompt = buildPrompt(chat, name, location);
 
       try {

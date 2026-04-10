@@ -2,13 +2,14 @@ const { EventEmitter } = require("events");
 const Time = require("./time");
 
 class Person extends EventEmitter {
-  constructor({ name, schedule, character }, brain, { reflector } = {}) {
+  constructor({ name, schedule, character }, brain, { reflector, allowedTools } = {}) {
     super();
     this.name = name;
     this.schedule = schedule;
     this.character = character;
     this.brain = brain;
     this.reflector = reflector;
+    this.allowedTools = allowedTools;
     this.currentTime = new Time(0, 0);
     this.previousLocation = this.currentLocation();
     this.chat = [];
@@ -54,7 +55,16 @@ class Person extends EventEmitter {
   }
 
   startWork(location) {
-    this.receiveToken([], location, () => {});
+    this.receiveToken([], location, (action) => {
+      if (action && action.message) {
+        this.receiveMessage({ from: this.name, message: action.message });
+        this.emit("worked", {
+          name: this.name,
+          location,
+          message: action.message,
+        });
+      }
+    });
   }
 
   receiveToken(others, location, done) {
@@ -75,6 +85,7 @@ class Person extends EventEmitter {
       chat: this.chat,
       location,
       minutesRemaining,
+      allowedTools: this.allowedTools,
     });
     const handle = (action) => {
       if (!action && this.chat.length > 0) {

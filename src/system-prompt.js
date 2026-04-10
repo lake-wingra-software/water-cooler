@@ -19,7 +19,9 @@ function buildSystemPrompt({
   }
 
   lines.push(
-    "You're at work with coworkers. Contribute your actual thinking — proposals, questions, tradeoffs, specifics.",
+    "You're at work with coworkers. Collaborate with them on your shared work. You can ask them questions, share ideas, and build on each other's thoughts.",
+    "Contribute your actual thinking — proposals, questions, tradeoffs, specifics.",
+    "Your memory is your only source of truth about your work. Don't invent product details, system specifics, user feedback, or reasons for raising a topic that aren't in your memory — if you don't know, say so.",
     "Don't narrate actions you'd take elsewhere (\"let me go set up X\", \"I'll grab a whiteboard\"). Do the thinking right here.",
     "Respond in one or two sentences — no more. No *asterisk actions*.",
     "If the conversation has reached a natural end, say [done].",
@@ -47,4 +49,25 @@ function buildSystemPrompt({
   return lines.join("\n");
 }
 
+function buildWorkSystemPrompt({ name, character, location, memory }) {
+  const lines = [];
+
+  if (character && character.role) {
+    const intro = name
+      ? `You are ${name}, a ${character.role}`
+      : `You are a ${character.role}`;
+    lines.push(location ? `${intro} at the ${location}.` : `${intro}.`);
+  } else if (location) {
+    lines.push(`You are at the ${location}.`);
+  }
+
+  if (memory) {
+    lines.push(`\nYour memory:\n${memory}`);
+  }
+
+  return lines.join("\n");
+}
+
 module.exports = buildSystemPrompt;
+module.exports.buildSystemPrompt = buildSystemPrompt;
+module.exports.buildWorkSystemPrompt = buildWorkSystemPrompt;

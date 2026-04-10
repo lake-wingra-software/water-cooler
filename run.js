@@ -14,7 +14,7 @@ const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const memory = new Memory();
 
 const chatBrain = makeLlmBrain({ client, model, memory });
-const workBrain = makeCliBrain({ model, allowedTools: ["Read", "Grep", "Glob"], memory });
+const workBrain = makeCliBrain({ model, memory });
 const reflector = makeReflectionBrain({ client, model, memory });
 
 const DEFAULT_TICKS_PER_SEC = 8;
@@ -52,6 +52,14 @@ function runDay() {
     sim.on("locationChanged", ({ person, to }) => {
       console.log(`${sim.currentTime.toString()}: ${person.name} → ${to}`);
     });
+
+    for (const person of people) {
+      person.on("worked", ({ name, location, message }) => {
+        console.log(
+          `${sim.currentTime.toString()}: [${location}] ${name}: "${message}"`,
+        );
+      });
+    }
 
     for (const location of Object.values(sim.publicLocations)) {
       location.on("messageSent", ({ from, message }) => {
