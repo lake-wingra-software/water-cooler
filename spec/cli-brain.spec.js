@@ -75,7 +75,8 @@ describe("CLI brain", () => {
     expect(flags).toContain("--output-format");
     expect(flags).toContain("text");
     // prompt goes via input option, not as a positional arg
-    expect(opts.input).toContain("Alice: what do you think about the schema?");
+    expect(typeof opts.input).toBe("string");
+    expect(opts.input.length).toBeGreaterThan(0);
   });
 
   it("returns { to, message } from CLI stdout", async () => {
@@ -174,6 +175,21 @@ describe("CLI brain", () => {
     expect(memory.read).toHaveBeenCalledWith("Chad");
     const systemPrompt = exec.calls.mostRecent().args[1].find((_, i, arr) => arr[i - 1] === "--system-prompt");
     expect(systemPrompt).toContain("Working on: issue #18");
+  });
+
+  it("uses solo work framing, not conversational framing", async () => {
+    const exec = mockExec("Reading the backlog.");
+    const brain = makeCliBrain({ model: "test-model", exec });
+    await brain({
+      name: "Alice",
+      character: defaultCharacter,
+      others: [],
+      chat: [],
+      location: "cubicle",
+    });
+
+    const systemPrompt = exec.calls.mostRecent().args[1].find((_, i, arr) => arr[i - 1] === "--system-prompt");
+    expect(systemPrompt).not.toContain("at work with coworkers");
   });
 
   it("does not pass allowedTools when not provided", async () => {

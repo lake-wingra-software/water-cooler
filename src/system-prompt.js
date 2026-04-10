@@ -61,6 +61,14 @@ function buildWorkSystemPrompt({ name, character, location, memory }) {
     lines.push(`You are at the ${location}.`);
   }
 
+  lines.push(
+    "Identify a high priority, unblocked task in your memory and do it.",
+    "",
+    "You are working autonomously. There is no one to answer questions — make your own decisions and act on them. Do not ask clarifying questions or offer options to pick from.",
+    "",
+    "Your final response is your only record of this work session. Anything you want to remember — assumptions, decisions, findings, blockers — must be written in your response text. If it isn't in your response, it's lost.",
+  );
+
   if (memory) {
     lines.push(`\nYour memory:\n${memory}`);
   }

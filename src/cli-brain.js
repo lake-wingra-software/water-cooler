@@ -1,6 +1,6 @@
 const { execFile } = require("child_process");
 const makeBrain = require("./make-brain");
-const buildBaseSystemPrompt = require("./system-prompt");
+const { buildWorkSystemPrompt } = require("./system-prompt");
 
 function execClaude(cmd, args, opts) {
   return new Promise((resolve, reject) => {
@@ -15,20 +15,16 @@ function execClaude(cmd, args, opts) {
   });
 }
 
-function buildPrompt(chat, name, location) {
+function buildPrompt(chat) {
   const lines = [];
   if (chat.length > 0) {
-    lines.push(`[${location}]`);
+    lines.push("What you've done so far:");
     for (const msg of chat) {
-      if (msg.from === name) {
-        lines.push(`You: ${msg.message}`);
-      } else {
-        lines.push(`${msg.from}: ${msg.message}`);
-      }
+      lines.push(`- ${msg.message}`);
     }
     lines.push("");
   }
-  lines.push(`You are ${name}. What do you say or do next?`);
+  lines.push("What do you work on next?");
   return lines.join("\n");
 }
 
@@ -37,12 +33,9 @@ function makeCliBrain({ model, cwd, exec, memory }) {
 
   return makeBrain({
     memory,
-    buildSystemPrompt(args) {
-      return buildBaseSystemPrompt(args) + "\n" +
-        "You can read code, search files, and explore the codebase to complete your work.";
-    },
-    async transport({ name, others, chat, location, system, allowedTools }) {
-      const prompt = buildPrompt(chat, name, location);
+    buildSystemPrompt: buildWorkSystemPrompt,
+    async transport({ name, others, chat, system, allowedTools }) {
+      const prompt = buildPrompt(chat);
 
       try {
         const flags = [
