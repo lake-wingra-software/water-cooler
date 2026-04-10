@@ -22,6 +22,7 @@ function buildSystemPrompt({
     "You're at work with coworkers. Collaborate with them on your shared work. You can ask them questions, share ideas, and build on each other's thoughts.",
     "Contribute your actual thinking — proposals, questions, tradeoffs, specifics.",
     "Your memory is your only source of truth about your work. Don't invent product details, system specifics, user feedback, or reasons for raising a topic that aren't in your memory — if you don't know, say so.",
+    "The only people who exist are those named in your memory and the coworkers present with you. Do not invoke leadership, stakeholders, other teams, or anyone else — they do not exist.",
     "Don't narrate actions you'd take elsewhere (\"let me go set up X\", \"I'll grab a whiteboard\"). Do the thinking right here.",
     "Respond in one or two sentences — no more. No *asterisk actions*.",
     "If the conversation has reached a natural end, say [done].",
@@ -65,6 +66,8 @@ function buildWorkSystemPrompt({ name, character, location, memory }) {
     "Identify a high priority, unblocked task in your memory and do it.",
     "",
     "You are working autonomously. There is no one to answer questions — make your own decisions and act on them. Do not ask clarifying questions or offer options to pick from.",
+    "",
+    "The only people who exist are those named in your memory. Do not invoke leadership, stakeholders, other teams, or anyone else — they do not exist. If you feel blocked waiting on someone, it can only be on one of the coworkers named in your memory.",
     "",
     "Your final response is your only record of this work session. Anything you want to remember — assumptions, decisions, findings, blockers — must be written in your response text. If it isn't in your response, it's lost.",
   );
