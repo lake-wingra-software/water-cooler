@@ -109,4 +109,46 @@ describe("buildWorkSystemPrompt", () => {
     expect(system).toContain("Working on: issue #18");
     expect(system).toContain("discuss config format with Jim");
   });
+
+  it("includes workspace path when cwd is provided", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Jim",
+      character: { role: "engineer" },
+      location: "cubicle",
+      cwd: "/tmp/workspaces/jim",
+    });
+    expect(system).toContain("/tmp/workspaces/jim");
+  });
+
+  it("lists workspace files when bag is provided", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Jim",
+      character: { role: "engineer" },
+      location: "cubicle",
+      cwd: "/tmp/workspaces/jim",
+      bag: ["team-roles-recommendation.md", "notes.md"],
+    });
+    expect(system).toContain("team-roles-recommendation.md");
+    expect(system).toContain("notes.md");
+  });
+
+  it("indicates empty workspace when bag is empty", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Jim",
+      character: { role: "engineer" },
+      location: "cubicle",
+      cwd: "/tmp/workspaces/jim",
+      bag: [],
+    });
+    expect(system).toMatch(/empty/i);
+  });
+
+  it("does not instruct that response is the only record", () => {
+    const system = buildWorkSystemPrompt({
+      name: "Jim",
+      character: { role: "engineer" },
+      location: "cubicle",
+    });
+    expect(system).not.toContain("only record");
+  });
 });

@@ -91,6 +91,18 @@ describe("Person", () => {
       expect(receivedArgs.cwd).toMatch(/workspaces\/alice$/);
     });
 
+    it("receiveToken passes workspace bag to brain", () => {
+      let receivedArgs;
+      const alice = new Person(testCharDef, (args) => {
+        receivedArgs = args;
+        return null;
+      });
+
+      alice.receiveToken([], "cubicle", () => {});
+
+      expect(Array.isArray(receivedArgs.bag)).toBe(true);
+    });
+
     it("receiveToken passes minutesRemaining at current location to brain", () => {
       let receivedArgs;
       const alice = new Person(testCharDef, (args) => {

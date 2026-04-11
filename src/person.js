@@ -1,6 +1,6 @@
 const { EventEmitter } = require("events");
 const Time = require("./time");
-const { workspacePathFor } = require("./workspace");
+const { workspacePathFor, bagFor } = require("./workspace");
 
 class Person extends EventEmitter {
   constructor({ name, schedule, character }, brain, { reflector, allowedTools } = {}) {
@@ -88,6 +88,7 @@ class Person extends EventEmitter {
       minutesRemaining,
       allowedTools: this.allowedTools,
       cwd: workspacePathFor(this.name),
+      bag: bagFor(this.name),
     });
     const handle = (action) => {
       if (!action && this.chat.length > 0) {

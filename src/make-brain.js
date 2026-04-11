@@ -17,10 +17,8 @@ function makeBrain({ buildSystemPrompt, memory, shouldBail, transport }) {
     }
 
     const system = buildSystemPrompt({
-      name,
-      character,
-      others,
-      location,
+      ...args,
+      chat: messages,
       memory: memory ? memory.read(name) : undefined,
     });
 

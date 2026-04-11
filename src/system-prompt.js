@@ -51,7 +51,7 @@ function buildSystemPrompt({
   return lines.join("\n");
 }
 
-function buildWorkSystemPrompt({ name, character, location, memory }) {
+function buildWorkSystemPrompt({ name, character, location, cwd, bag, memory }) {
   const lines = [];
 
   if (character && character.role) {
@@ -66,11 +66,31 @@ function buildWorkSystemPrompt({ name, character, location, memory }) {
   lines.push(
     "Identify a high priority, unblocked task in your memory and do it.",
     "",
+  );
+
+  if (cwd) {
+    lines.push(
+      `You have a workspace at ${cwd} where you can keep durable artifacts — drafts, notes, or work products that outlive this session.`,
+    );
+    if (bag && bag.length > 0) {
+      lines.push("Workspace contents:");
+      for (const file of bag) lines.push(`- ${file}`);
+    } else {
+      lines.push("Workspace contents: (empty)");
+    }
+    lines.push(
+      "",
+      "Use your workspace when the work produces something you or your coworkers will want to reference later. For investigative or exploratory work without a durable output, your response text is fine on its own.",
+      "",
+    );
+  }
+
+  lines.push(
     "You are working autonomously. There is no one to answer questions — make your own decisions and act on them. Do not ask clarifying questions or offer options to pick from.",
     "",
     "The only people who exist are those named in your memory. Do not invoke leadership, stakeholders, other teams, or anyone else — they do not exist. If you feel blocked waiting on someone, it can only be on one of the coworkers named in your memory.",
     "",
-    "Your final response is your only record of this work session. Anything you want to remember — assumptions, decisions, findings, blockers — must be written in your response text. If it isn't in your response, it's lost.",
+    "Your final response should describe what you did and what's next — decisions, findings, blockers. Keep it focused; put long-form drafts in workspace files instead of in your response.",
   );
 
   if (memory) {
