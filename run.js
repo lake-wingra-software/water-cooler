@@ -1,6 +1,23 @@
 require("dotenv").config();
 
 const fs = require("fs");
+const path = require("path");
+
+if (process.argv.includes("--reset")) {
+  const characters = require("./src/characters");
+  const reset = require("./src/reset");
+  reset({
+    memoryDir: process.env.WC_MEMORY_DIR || path.join(__dirname, "memory"),
+    seedDir:
+      process.env.WC_SEED_DIR || path.join(__dirname, "seed", "memory"),
+    workspacesDir:
+      process.env.WC_WORKSPACES_DIR || path.join(__dirname, "workspaces"),
+    names: characters.names,
+  });
+  console.log(`reset complete: ${characters.names.join(", ")}`);
+  process.exit(0);
+}
+
 const Simulation = require("./src/simulation");
 const makeLlmBrain = require("./src/llm-brain");
 const makeCliBrain = require("./src/cli-brain");
