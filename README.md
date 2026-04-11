@@ -47,6 +47,52 @@ TICKS_PER_SEC=60   # 1 sim-hour/sec — full day takes ~8 seconds
 
 Set `LLM_MODEL` in `.env` to change the model used by the LLM brain. The CLI brain uses the same model via the `--model` flag passed to `claude`.
 
+## Dev harness
+
+`harness.js` runs a single character (or a two-character meeting) in isolation, without spinning up the full workday. Use it to iterate quickly on prompts, tools, memory, and character behavior.
+
+> **Run outside Claude Code.** The harness spawns `claude -p` under the hood, which refuses to launch inside another Claude Code session. Use a plain terminal.
+
+### Cubicle mode
+
+Runs a single cubicle work session for one character against their real memory. Diffs their workspace directory before and after and prints any new or changed files.
+
+```sh
+node harness.js jim
+```
+
+Output:
+
+```
+Character: Jim
+Workspace: /path/to/water-cooler/workspaces/jim
+Tools:     Read, Grep, Glob, Edit, Write, Bash(gh:*), Bash(npm test:*)
+
+Running cubicle work session...
+
+--- Brain output ---
+Done. I've drafted the initial recommendation as `team-roles-recommendation.md`...
+
+--- Workspace changes ---
++ team-roles-recommendation.md
+```
+
+### Meeting mode
+
+Places two characters at a shared location and runs a short exchange between them. Useful for probing chat-brain behavior, greetings, turn-taking, and (eventually) artifact sharing.
+
+```sh
+node harness.js jim --location "conference room" --with alice --turns 4
+```
+
+- `--location <loc>` — any public location (`conference room`, `water cooler`, `cafeteria`)
+- `--with <other>` — the other character to put in the room
+- `--turns N` — how many turns to run (default 4)
+
+Speaker order is deterministic (arrival order), not randomized like the full sim, so runs are reproducible.
+
+Each turn has a 60-second timeout — if a character hits `[done]` and returns nothing, the harness moves on instead of hanging.
+
 ## Brains
 
 Each character is assigned a **brain** — an async function that receives context and returns a message (or null to stay silent).
