@@ -88,6 +88,10 @@ async function main() {
     console.log(`\n--- Day ${day} ---`);
     await runDay();
   }
+  // The Anthropic SDK keeps a connection pool alive that Node's event loop
+  // won't drain on its own. Force-exit so the sim doesn't hang after the
+  // workday ends. Same workaround as harness.js meeting mode.
+  process.exit(0);
 }
 
 main();
