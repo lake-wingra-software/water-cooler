@@ -1,4 +1,10 @@
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
 const Location = require("../src/location");
+const Person = require("../src/person");
+const { workspacePathFor } = require("../src/workspace");
 
 const inOrder = (arr) => [...arr];
 
@@ -342,6 +348,49 @@ describe("Location", () => {
       location.tick();
 
       expect(tokenCalls.length).toEqual(0);
+    });
+  });
+
+  describe("share tag expansion", () => {
+    const speakerName = "share-test-speaker";
+    let workspace;
+
+    beforeEach(() => {
+      workspace = workspacePathFor(speakerName);
+      fs.mkdirSync(workspace, { recursive: true });
+    });
+
+    afterEach(() => {
+      fs.rmSync(workspace, { recursive: true, force: true });
+    });
+
+    it("expands share tags in broadcast messages using the speaker's workspace", () => {
+      fs.writeFileSync(path.join(workspace, "draft.md"), "hello world");
+      const loc = new Location("room", inOrder);
+      const received = [];
+      const speaker = {
+        name: speakerName,
+        receiveToken(others, location, done) {
+          done({ message: "see <share>draft.md</share>" });
+        },
+        receiveMessage() {},
+      };
+      const listener = {
+        name: "Listener",
+        receiveToken(others, location, done) {
+          done(null);
+        },
+        receiveMessage(msg) {
+          received.push(msg);
+        },
+      };
+
+      loc.arrive(speaker);
+      loc.arrive(listener);
+      loc.tick();
+
+      expect(received.length).toEqual(1);
+      expect(received[0].message).toContain("hello world");
     });
   });
 

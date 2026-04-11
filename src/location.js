@@ -1,4 +1,6 @@
 const { EventEmitter } = require("events");
+const { expandShares } = require("./share");
+const { workspacePathFor } = require("./workspace");
 
 function shuffle(arr) {
   const result = [...arr];
@@ -49,7 +51,11 @@ class Location extends EventEmitter {
 
   broadcast(tokenHolder, action) {
     if (!action || !this.occupants.includes(tokenHolder)) return;
-    const outgoing = { from: tokenHolder.name, message: action.message };
+    const message = expandShares(
+      action.message,
+      workspacePathFor(tokenHolder.name),
+    );
+    const outgoing = { from: tokenHolder.name, message };
     this.occupants.forEach((p) => p.receiveMessage(outgoing));
     this.emit("messageSent", outgoing);
   }
