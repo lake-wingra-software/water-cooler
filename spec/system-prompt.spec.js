@@ -1,9 +1,9 @@
 const { buildSystemPrompt, buildWorkSystemPrompt } = require("../src/system-prompt");
 
 const defaultArgs = {
-  name: "Chad",
+  name: "chad",
   character: { traits: "friendly", role: "engineer" },
-  others: [{ name: "Alice" }],
+  others: [{ name: "alice" }],
   location: "water cooler",
   minutesRemaining: 60,
   minutesPerTurn: 8,
@@ -13,10 +13,10 @@ describe("buildSystemPrompt", () => {
   it("includes character identity", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
-      name: "Chad",
+      name: "chad",
       character: { traits: "sarcastic", role: "senior engineer" },
     });
-    expect(system).toContain("Chad");
+    expect(system).toContain("chad");
     expect(system).toContain("senior engineer");
   });
 
@@ -75,10 +75,10 @@ describe("buildSystemPrompt", () => {
   it("includes memory when provided", () => {
     const system = buildSystemPrompt({
       ...defaultArgs,
-      memory: "Working on: issue #18\nNext: discuss config format with Jim",
+      memory: "Working on: issue #18\nNext: discuss config format with jim",
     });
     expect(system).toContain("Working on: issue #18");
-    expect(system).toContain("discuss config format with Jim");
+    expect(system).toContain("discuss config format with jim");
   });
 
   it("omits memory section when memory is empty", () => {
@@ -104,29 +104,29 @@ describe("buildSystemPrompt", () => {
 describe("buildWorkSystemPrompt", () => {
   it("includes character identity and location", () => {
     const system = buildWorkSystemPrompt({
-      name: "Alice",
+      name: "alice",
       character: { role: "product manager", traits: "organized" },
       location: "cubicle",
     });
-    expect(system).toContain("Alice");
+    expect(system).toContain("alice");
     expect(system).toContain("product manager");
     expect(system).toContain("cubicle");
   });
 
   it("includes memory when provided", () => {
     const system = buildWorkSystemPrompt({
-      name: "Alice",
+      name: "alice",
       character: { role: "product manager" },
       location: "cubicle",
-      memory: "Working on: issue #18\nNext: discuss config format with Jim",
+      memory: "Working on: issue #18\nNext: discuss config format with jim",
     });
     expect(system).toContain("Working on: issue #18");
-    expect(system).toContain("discuss config format with Jim");
+    expect(system).toContain("discuss config format with jim");
   });
 
   it("includes workspace path when cwd is provided", () => {
     const system = buildWorkSystemPrompt({
-      name: "Jim",
+      name: "jim",
       character: { role: "engineer" },
       location: "cubicle",
       cwd: "/tmp/workspaces/jim",
@@ -136,7 +136,7 @@ describe("buildWorkSystemPrompt", () => {
 
   it("lists workspace files when bag is provided", () => {
     const system = buildWorkSystemPrompt({
-      name: "Jim",
+      name: "jim",
       character: { role: "engineer" },
       location: "cubicle",
       cwd: "/tmp/workspaces/jim",
@@ -148,7 +148,7 @@ describe("buildWorkSystemPrompt", () => {
 
   it("indicates empty workspace when bag is empty", () => {
     const system = buildWorkSystemPrompt({
-      name: "Jim",
+      name: "jim",
       character: { role: "engineer" },
       location: "cubicle",
       cwd: "/tmp/workspaces/jim",
@@ -159,7 +159,7 @@ describe("buildWorkSystemPrompt", () => {
 
   it("does not instruct that response is the only record", () => {
     const system = buildWorkSystemPrompt({
-      name: "Jim",
+      name: "jim",
       character: { role: "engineer" },
       location: "cubicle",
     });

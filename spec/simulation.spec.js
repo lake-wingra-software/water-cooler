@@ -84,7 +84,7 @@ describe("Simulation", () => {
   describe("addPerson", () => {
     it("places person in their starting shared location", () => {
       const alice = new Person({
-        name: "Alice",
+        name: "alice",
         schedule: waterCoolerStartSchedule,
       });
       const sim = new Simulation({ speakerQueue: inOrder });
@@ -98,7 +98,7 @@ describe("Simulation", () => {
         { startTime: new Time(16, 0), endTime: new Time(17, 0), location: "water cooler" },
       ];
       const person = new Person({
-        name: "LateStarter",
+        name: "latestarter",
         schedule: lateStartSchedule,
       });
       const sim = new Simulation({ speakerQueue: inOrder });
@@ -114,7 +114,7 @@ describe("Simulation", () => {
 
   describe("private locations", () => {
     it("calls startWork when a person arrives at a private location", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      const alice = new Person({ name: "alice", schedule: cubicleStartSchedule });
       spyOn(alice, "startWork");
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -122,12 +122,12 @@ describe("Simulation", () => {
     });
 
     it("calls startWork again when a person returns to a private location", () => {
-      const alice = new Person({ name: "Alice", schedule: cubicleStartSchedule });
+      const alice = new Person({ name: "alice", schedule: cubicleStartSchedule });
       spyOn(alice, "startWork");
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
 
-      // tick to 13:00 — Alice returns to cubicle from cafeteria
+      // tick to 13:00 — alice returns to cubicle from cafeteria
       for (let i = 0; i < ticksUntil(13, 0); i++) {
         sim.tick();
       }
@@ -139,7 +139,7 @@ describe("Simulation", () => {
   describe("events", () => {
     it("emits locationChanged when a person changes location", () => {
       const alice = new Person({
-        name: "Alice",
+        name: "alice",
         schedule: cubicleStartSchedule,
       });
       const sim = new Simulation({ speakerQueue: inOrder });
@@ -148,7 +148,7 @@ describe("Simulation", () => {
       const events = [];
       sim.on("locationChanged", (data) => events.push(data));
 
-      // Tick to 12:00 — Alice moves from cubicle to cafeteria
+      // Tick to 12:00 — alice moves from cubicle to cafeteria
       for (let i = 0; i < ticksUntil(12, 0); i++) {
         sim.tick();
       }
@@ -165,10 +165,10 @@ describe("Simulation", () => {
   describe("water cooler", () => {
     it("people should not greet when moving to cubicles", () => {
       const alice = new Person({
-        name: "Alice",
+        name: "alice",
         schedule: cubicleStartSchedule,
       });
-      const bob = new Person({ name: "Bob", schedule: cubicleStartSchedule });
+      const bob = new Person({ name: "bob", schedule: cubicleStartSchedule });
 
       const sim = new Simulation({ speakerQueue: inOrder });
       sim.addPerson(alice);
@@ -197,9 +197,9 @@ describe("Simulation", () => {
           location: "cubicle",
         },
       ];
-      const wally = new Person({ name: "Wally", schedule: wallySchedule });
+      const wally = new Person({ name: "wally", schedule: wallySchedule });
       const alice = new Person({
-        name: "Alice",
+        name: "alice",
         schedule: cubicleStartSchedule,
       });
 
@@ -215,18 +215,18 @@ describe("Simulation", () => {
       const wallyMessages = [];
       wally.on("messageReceived", (msg) => wallyMessages.push(msg));
 
-      sim.tick(); // Alice arrives at water cooler at 15:30
+      sim.tick(); // alice arrives at water cooler at 15:30
 
       expect(wallyMessages.length).toEqual(0);
     });
 
     it("should only greet once — no more messages after the exchange", () => {
       const alice = new Person(
-        { name: "Alice", schedule: cubicleStartSchedule },
+        { name: "alice", schedule: cubicleStartSchedule },
         makeGreeter(),
       );
       const bob = new Person(
-        { name: "Bob", schedule: cubicleStartSchedule },
+        { name: "bob", schedule: cubicleStartSchedule },
         makeGreeter(),
       );
 
@@ -238,10 +238,10 @@ describe("Simulation", () => {
         sim.tick();
       }
 
-      sim.tick(); // 15:30 — Alice greets Bob
-      sim.tick(); // 15:31 — Bob responds
-      sim.tick(); // 15:32 — Alice's greeter returns null, appends [done]
-      sim.tick(); // 15:33 — Bob's greeter returns null, appends [done]
+      sim.tick(); // 15:30 — alice greets bob
+      sim.tick(); // 15:31 — bob responds
+      sim.tick(); // 15:32 — alice's greeter returns null, appends [done]
+      sim.tick(); // 15:33 — bob's greeter returns null, appends [done]
 
       expect(alice.chat.length).toEqual(3);
       expect(bob.chat.length).toEqual(3);
@@ -249,11 +249,11 @@ describe("Simulation", () => {
 
     it("alice arriving at water cooler should initiate, bob should respond", () => {
       const alice = new Person(
-        { name: "Alice", schedule: cubicleStartSchedule },
+        { name: "alice", schedule: cubicleStartSchedule },
         makeGreeter(),
       );
       const bob = new Person(
-        { name: "Bob", schedule: cubicleStartSchedule },
+        { name: "bob", schedule: cubicleStartSchedule },
         makeGreeter(),
       );
 
@@ -266,21 +266,21 @@ describe("Simulation", () => {
         sim.tick();
       }
 
-      // Alice initiates at 15:30
+      // alice initiates at 15:30
       sim.tick();
 
       expect(alice.chat.length).toEqual(1);
-      expect(alice.chat[0]).toEqual({ from: "Alice", message: "hi Bob" });
+      expect(alice.chat[0]).toEqual({ from: "alice", message: "hi bob" });
       expect(bob.chat.length).toEqual(1);
-      expect(bob.chat[0]).toEqual({ from: "Alice", message: "hi Bob" });
+      expect(bob.chat[0]).toEqual({ from: "alice", message: "hi bob" });
 
-      // Bob responds at 15:31
+      // bob responds at 15:31
       sim.tick();
 
       expect(alice.chat.length).toEqual(2);
-      expect(alice.chat[1]).toEqual({ from: "Bob", message: "hi Alice" });
+      expect(alice.chat[1]).toEqual({ from: "bob", message: "hi alice" });
       expect(bob.chat.length).toEqual(2);
-      expect(bob.chat[1]).toEqual({ from: "Bob", message: "hi Alice" });
+      expect(bob.chat[1]).toEqual({ from: "bob", message: "hi alice" });
     });
   });
 });

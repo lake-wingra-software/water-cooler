@@ -15,7 +15,7 @@ const testSchedule = [
 ];
 
 const testCharDef = {
-  name: "Alice",
+  name: "alice",
   schedule: testSchedule,
   character: { traits: "friendly", role: "tester" },
 };
@@ -56,12 +56,12 @@ describe("Person", () => {
       const received = [];
       alice.on("messageReceived", (msg) => received.push(msg));
 
-      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
+      alice.receiveMessage({ from: "bob", message: "hi alice" });
 
       expect(alice.chat.length).toEqual(1);
-      expect(alice.chat[0]).toEqual({ from: "Bob", message: "hi Alice" });
+      expect(alice.chat[0]).toEqual({ from: "bob", message: "hi alice" });
       expect(received.length).toEqual(1);
-      expect(received[0]).toEqual({ from: "Bob", message: "hi Alice" });
+      expect(received[0]).toEqual({ from: "bob", message: "hi alice" });
     });
 
     it("receiveToken passes character to brain", () => {
@@ -117,7 +117,7 @@ describe("Person", () => {
     });
 
     it("receiveToken delegates to brain and passes action to done", () => {
-      const bob = new Person({ name: "Bob", schedule: testSchedule });
+      const bob = new Person({ name: "bob", schedule: testSchedule });
       const fakeBrain = () => ({ to: [bob], message: "hey!" });
       const alice = new Person(testCharDef, fakeBrain);
 
@@ -158,11 +158,11 @@ describe("Person", () => {
       const fakeBrain = () => null;
       const alice = new Person(testCharDef, fakeBrain);
 
-      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
-      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {});
+      alice.receiveMessage({ from: "bob", message: "hi alice" });
+      alice.receiveToken([{ name: "bob" }], "water cooler", () => {});
 
       expect(alice.chat.length).toEqual(2);
-      expect(alice.chat[1]).toEqual({ from: "Alice", message: "[done]" });
+      expect(alice.chat[1]).toEqual({ from: "alice", message: "[done]" });
     });
 
     it("skips brain when last chat entry is own [done]", () => {
@@ -170,11 +170,11 @@ describe("Person", () => {
       const fakeBrain = () => { brainCalls++; return null; };
       const alice = new Person(testCharDef, fakeBrain);
 
-      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
-      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {}); // brain returns null, appends [done]
+      alice.receiveMessage({ from: "bob", message: "hi alice" });
+      alice.receiveToken([{ name: "bob" }], "water cooler", () => {}); // brain returns null, appends [done]
       expect(brainCalls).toEqual(1);
 
-      alice.receiveToken([{ name: "Bob" }], "water cooler", () => {}); // should skip brain
+      alice.receiveToken([{ name: "bob" }], "water cooler", () => {}); // should skip brain
       expect(brainCalls).toEqual(1);
     });
 
@@ -198,7 +198,7 @@ describe("Person", () => {
       const alice = new Person(testCharDef, brain);
       alice.startWork("cubicle");
       expect(alice.chat).toEqual([
-        { from: "Alice", message: "Reading the backlog" },
+        { from: "alice", message: "Reading the backlog" },
       ]);
     });
 
@@ -211,7 +211,7 @@ describe("Person", () => {
       alice.on("worked", (e) => worked.push(e));
       alice.startWork("cubicle");
       expect(worked).toEqual([
-        { name: "Alice", location: "cubicle", message: "Reading the backlog" },
+        { name: "alice", location: "cubicle", message: "Reading the backlog" },
       ]);
     });
   });
@@ -223,12 +223,12 @@ describe("Person", () => {
       const alice = new Person(testCharDef, null, { reflector });
 
       alice.tick(new Time(9, 0)); // arrive at water cooler
-      alice.receiveMessage({ from: "Bob", message: "hi Alice" });
+      alice.receiveMessage({ from: "bob", message: "hi alice" });
       alice.tick(new Time(12, 0)); // leave water cooler
 
       expect(reflector).toHaveBeenCalledWith({
-        name: "Alice",
-        chat: [{ from: "Bob", message: "hi Alice" }],
+        name: "alice",
+        chat: [{ from: "bob", message: "hi alice" }],
       });
     });
 
@@ -241,10 +241,10 @@ describe("Person", () => {
       const alice = new Person(testCharDef, null, { reflector });
 
       alice.tick(new Time(9, 0));
-      alice.receiveMessage({ from: "Bob", message: "hi" });
+      alice.receiveMessage({ from: "bob", message: "hi" });
       alice.tick(new Time(12, 0)); // triggers reflection, then clears chat
 
-      expect(capturedChat).toEqual([{ from: "Bob", message: "hi" }]);
+      expect(capturedChat).toEqual([{ from: "bob", message: "hi" }]);
       expect(alice.chat).toEqual([]); // chat is cleared after
     });
 
@@ -262,7 +262,7 @@ describe("Person", () => {
       const alice = new Person(testCharDef);
 
       alice.tick(new Time(9, 0));
-      alice.receiveMessage({ from: "Bob", message: "hi" });
+      alice.receiveMessage({ from: "bob", message: "hi" });
 
       expect(() => alice.tick(new Time(12, 0))).not.toThrow();
     });

@@ -34,13 +34,13 @@ describe("LLM brain", () => {
   it("calls the API and returns message to all others", async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
-    const alice = { name: "Alice" };
-    const bob = { name: "Bob" };
+    const alice = { name: "alice" };
+    const bob = { name: "bob" };
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
       others: [alice, bob],
-      chat: [{ from: "Chad", message: "hi Alice, hi Bob" }, { from: "Alice", message: "hey" }],
+      chat: [{ from: "chad", message: "hi alice, hi bob" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -52,13 +52,13 @@ describe("LLM brain", () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
-      name: "Bob",
+      name: "bob",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat: [
-        { from: "Bob", message: "hi Alice" },
-        { from: "Bob", message: "working on it" },
-        { from: "Alice", message: "are we on track?" },
+        { from: "bob", message: "hi alice" },
+        { from: "bob", message: "working on it" },
+        { from: "alice", message: "are we on track?" },
       ],
       location: "water cooler",
     });
@@ -66,7 +66,7 @@ describe("LLM brain", () => {
     const messages = captureMessages(client);
     expect(messages[0]).toEqual({
       role: "assistant",
-      content: "hi Alice\nworking on it",
+      content: "hi alice\nworking on it",
     });
   });
 
@@ -74,12 +74,12 @@ describe("LLM brain", () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
-      name: "Bob",
+      name: "bob",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat: [
-        { from: "Bob", message: "hi Alice" },
-        { from: "Alice", message: "are we on track?" },
+        { from: "bob", message: "hi alice" },
+        { from: "alice", message: "are we on track?" },
       ],
       location: "water cooler",
     });
@@ -87,7 +87,7 @@ describe("LLM brain", () => {
     const messages = captureMessages(client);
     expect(messages[1]).toEqual({
       role: "user",
-      content: "Alice: are we on track?",
+      content: "alice: are we on track?",
     });
   });
 
@@ -95,13 +95,13 @@ describe("LLM brain", () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
     await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }, { name: "Bob" }],
+      others: [{ name: "alice" }, { name: "bob" }],
       chat: [
-        { from: "Chad", message: "hi Alice, hi Bob" },
-        { from: "Alice", message: "status?" },
-        { from: "Bob", message: "yeah what she said" },
+        { from: "chad", message: "hi alice, hi bob" },
+        { from: "alice", message: "status?" },
+        { from: "bob", message: "yeah what she said" },
       ],
       location: "water cooler",
     });
@@ -109,52 +109,52 @@ describe("LLM brain", () => {
     const messages = captureMessages(client);
     expect(messages.length).toEqual(2);
     expect(messages[1].role).toEqual("user");
-    expect(messages[1].content).toContain("Alice: status?");
-    expect(messages[1].content).toContain("Bob: yeah what she said");
+    expect(messages[1].content).toContain("alice: status?");
+    expect(messages[1].content).toContain("bob: yeah what she said");
   });
 
   it("greets others when no one has spoken yet", async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }, { name: "Bob" }],
+      others: [{ name: "alice" }, { name: "bob" }],
       chat: [],
       location: "water cooler",
     });
 
     expect(client.messages.create).not.toHaveBeenCalled();
-    expect(result.message).toContain("hi Alice");
-    expect(result.message).toContain("hi Bob");
+    expect(result.message).toContain("hi alice");
+    expect(result.message).toContain("hi bob");
   });
 
   it("greets others when chat is null", async () => {
     const client = makeClient();
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat: null,
       location: "water cooler",
     });
 
     expect(client.messages.create).not.toHaveBeenCalled();
-    expect(result.message).toContain("hi Alice");
+    expect(result.message).toContain("hi alice");
   });
 
   it("returns null if the last message is from the speaker", async () => {
     const client = { messages: { create: jasmine.createSpy("create") } };
     const brain = makeLlmBrain({ client, model: "test-model" });
     const chat = [
-      { from: "Alice", message: "hi Chad" },
-      { from: "Chad", message: "hey!" },
+      { from: "alice", message: "hi chad" },
+      { from: "chad", message: "hey!" },
     ];
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
@@ -167,10 +167,10 @@ describe("LLM brain", () => {
     const client = makeClient({ content: [{ type: "text", text: "[done]" }] });
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -181,10 +181,10 @@ describe("LLM brain", () => {
     const client = makeClient({ content: [{ type: "text", text: "Sounds good, talk soon.\n\n[done]" }] });
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -195,10 +195,10 @@ describe("LLM brain", () => {
     const client = makeClient({ content: [{ type: "text", text: "  [done]  " }] });
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -217,16 +217,16 @@ describe("LLM brain", () => {
 
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
     expect(result).toBeNull();
     expect(console.error).toHaveBeenCalledWith(
-      "[Chad] LLM error: credit balance too low",
+      "[chad] LLM error: credit balance too low",
     );
   });
 
@@ -245,10 +245,10 @@ describe("LLM brain", () => {
 
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
@@ -262,14 +262,14 @@ describe("LLM brain", () => {
     const memory = { read: jasmine.createSpy("read").and.returnValue("Working on: issue #18") };
     const brain = makeLlmBrain({ client, model: "test-model", memory });
     await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
-    expect(memory.read).toHaveBeenCalledWith("Chad");
+    expect(memory.read).toHaveBeenCalledWith("chad");
     expect(captureSystem(client)).toContain("Working on: issue #18");
   });
 
@@ -287,16 +287,16 @@ describe("LLM brain", () => {
 
     const brain = makeLlmBrain({ client, model: "test-model" });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
-      chat: [{ from: "Chad", message: "hi Alice" }, { from: "Alice", message: "hey" }],
+      others: [{ name: "alice" }],
+      chat: [{ from: "chad", message: "hi alice" }, { from: "alice", message: "hey" }],
       location: "water cooler",
     });
 
     expect(result).toBeNull();
     expect(console.warn).toHaveBeenCalledWith(
-      "[Chad] No text content (stop_reason: max_tokens)",
+      "[chad] No text content (stop_reason: max_tokens)",
     );
   });
 });

@@ -22,8 +22,8 @@ describe("reflection brain", () => {
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
     await reflect({
-      name: "Alice",
-      chat: [{ from: "Alice", message: "hi" }, { from: "Bob", message: "hey" }],
+      name: "alice",
+      chat: [{ from: "alice", message: "hi" }, { from: "bob", message: "hey" }],
     });
 
     expect(client.messages.create).toHaveBeenCalled();
@@ -38,8 +38,8 @@ describe("reflection brain", () => {
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
     await reflect({
-      name: "Alice",
-      chat: [{ from: "Alice", message: "hi" }],
+      name: "alice",
+      chat: [{ from: "alice", message: "hi" }],
     });
 
     const call = client.messages.create.calls.mostRecent().args[0];
@@ -56,17 +56,17 @@ describe("reflection brain", () => {
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
     await reflect({
-      name: "Alice",
+      name: "alice",
       chat: [
-        { from: "Alice", message: "we should fix the login bug" },
-        { from: "Bob", message: "agreed, I'll look into it" },
+        { from: "alice", message: "we should fix the login bug" },
+        { from: "bob", message: "agreed, I'll look into it" },
       ],
     });
 
     const call = client.messages.create.calls.mostRecent().args[0];
     const prompt = call.messages[0].content;
-    expect(prompt).toContain("Alice: we should fix the login bug");
-    expect(prompt).toContain("Bob: agreed, I'll look into it");
+    expect(prompt).toContain("alice: we should fix the login bug");
+    expect(prompt).toContain("bob: agreed, I'll look into it");
   });
 
   it("reads existing memory for the character", async () => {
@@ -77,9 +77,9 @@ describe("reflection brain", () => {
     };
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
-    await reflect({ name: "Jim", chat: [{ from: "Jim", message: "hi" }] });
+    await reflect({ name: "jim", chat: [{ from: "jim", message: "hi" }] });
 
-    expect(memory.read).toHaveBeenCalledWith("Jim");
+    expect(memory.read).toHaveBeenCalledWith("jim");
   });
 
   it("writes updated memory for the character", async () => {
@@ -90,9 +90,9 @@ describe("reflection brain", () => {
     };
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
-    await reflect({ name: "Jim", chat: [{ from: "Jim", message: "hi" }] });
+    await reflect({ name: "jim", chat: [{ from: "jim", message: "hi" }] });
 
-    expect(memory.write).toHaveBeenCalledWith("Jim", "New memory content after reflection.");
+    expect(memory.write).toHaveBeenCalledWith("jim", "New memory content after reflection.");
   });
 
   it("logs an error and does not throw on API error", async () => {
@@ -109,7 +109,7 @@ describe("reflection brain", () => {
     const reflect = makeReflectionBrain({ client, model: "test-model", memory });
 
     await expectAsync(
-      reflect({ name: "Alice", chat: [{ from: "Alice", message: "hi" }] })
+      reflect({ name: "alice", chat: [{ from: "alice", message: "hi" }] })
     ).toBeResolved();
 
     expect(console.error).toHaveBeenCalled();

@@ -9,13 +9,13 @@ The simulated company builds real software. Characters retrieve work from a shar
 Issue: [elevator-saga-2#18 - Headless sandbox mode](https://github.com/tdurtschi/elevator-saga-2/issues/18)
 
 **Day 1 - Planning:**
-Alice (PM) pulls the issue from the backlog during solo time. Reads it, notices the dependency on #17. In the next meeting with Jim, her agenda is: "what's the status of #17, and can we start scoping #18?" They discuss, Jim reads the codebase to assess feasibility. They leave the meeting with a rough plan.
+alice (PM) pulls the issue from the backlog during solo time. Reads it, notices the dependency on #17. In the next meeting with jim, her agenda is: "what's the status of #17, and can we start scoping #18?" They discuss, jim reads the codebase to assess feasibility. They leave the meeting with a rough plan.
 
 **Day 2 - Design:**
-Yoder looks at the issue from a UX angle during solo time - what should the config look like, what metrics matter to users. Brings proposals to the next face-to-face. Alice prioritizes. Jim identifies the technical approach.
+yoder looks at the issue from a UX angle during solo time - what should the config look like, what metrics matter to users. Brings proposals to the next face-to-face. alice prioritizes. jim identifies the technical approach.
 
 **Day 3+ - Build:**
-Jim works solo at his cubicle, CLI brain active, actually writing code against the repo. Hits a question about requirements, notes it for the next meeting with Alice. Alice reviews his PR during her solo time.
+jim works solo at his cubicle, CLI brain active, actually writing code against the repo. Hits a question about requirements, notes it for the next meeting with alice. alice reviews his PR during her solo time.
 
 ## Key Design Changes
 
@@ -42,14 +42,14 @@ Characters can read from and write to GitHub issues. The shared backlog is the s
 
 ### 4. Agenda Formation
 
-Solo brain produces agendas like "I need to talk to Jim about X." These feed the conversation brain so face-to-face time is purposeful, not aimless chatting.
+Solo brain produces agendas like "I need to talk to jim about X." These feed the conversation brain so face-to-face time is purposeful, not aimless chatting.
 
 ### 5. Work Artifacts
 
 Solo work produces real output:
-- Jim: commits, PRs
-- Alice: specs, issue comments, prioritization decisions
-- Yoder: design proposals, user-facing feedback
+- jim: commits, PRs
+- alice: specs, issue comments, prioritization decisions
+- yoder: design proposals, user-facing feedback
 
 ### 6. Multi-Day Simulation Loop
 

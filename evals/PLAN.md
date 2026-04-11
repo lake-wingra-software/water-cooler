@@ -24,13 +24,13 @@ A fixed setup that produces one LLM response. Each scenario exports:
 
 ```js
 module.exports = {
-  label: "Jim is asked about the roadmap",
+  label: "jim is asked about the roadmap",
   character: { ... },  // from characters.js or inline
-  name: "Jim",
+  name: "jim",
   location: "water cooler",
-  others: [{ name: "Alice" }],
+  others: [{ name: "alice" }],
   chat: [
-    { from: "Alice", message: "so what's the plan for Q3?" },
+    { from: "alice", message: "so what's the plan for Q3?" },
   ],
   // minutesRemaining and minutesPerTurn are fixed by the runner (e.g. 60 / 8)
 };
@@ -51,8 +51,8 @@ still runs so you can see the full picture.
 ### Output
 
 ```
-=== Jim is asked about the roadmap ===
-Alice: so what's the plan for Q3?
+=== jim is asked about the roadmap ===
+alice: so what's the plan for Q3?
 
 CHECKS
   ✓ no asterisks

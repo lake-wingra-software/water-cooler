@@ -17,13 +17,13 @@ describe("CLI brain", () => {
     const exec = jasmine.createSpy("exec");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Alice", message: "hi Chad" },
-      { from: "Chad", message: "hey!" },
+      { from: "alice", message: "hi chad" },
+      { from: "chad", message: "hey!" },
     ];
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
@@ -36,29 +36,29 @@ describe("CLI brain", () => {
     const exec = jasmine.createSpy("exec");
     const brain = makeCliBrain({ model: "test-model", exec });
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }, { name: "Bob" }],
+      others: [{ name: "alice" }, { name: "bob" }],
       chat: [],
       location: "water cooler",
     });
 
     expect(exec).not.toHaveBeenCalled();
-    expect(result.message).toContain("hi Alice");
-    expect(result.message).toContain("hi Bob");
+    expect(result.message).toContain("hi alice");
+    expect(result.message).toContain("hi bob");
   });
 
   it("invokes claude with the correct arguments and prompt via stdin", async () => {
     const exec = mockExec("Looks good to me.");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "what do you think about the schema?" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "what do you think about the schema?" },
     ];
     await brain({
-      name: "Chad",
+      name: "chad",
       character: { traits: "direct", role: "engineer", goals: ["ship it"] },
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "conference room",
     });
@@ -83,18 +83,18 @@ describe("CLI brain", () => {
     const exec = mockExec("Looks good to me.");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "thoughts?" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "thoughts?" },
     ];
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
 
-    expect(result).toEqual({ to: [{ name: "Alice" }], message: "Looks good to me." });
+    expect(result).toEqual({ to: [{ name: "alice" }], message: "Looks good to me." });
   });
 
   it("returns null and logs error on CLI failure", async () => {
@@ -102,32 +102,32 @@ describe("CLI brain", () => {
     spyOn(console, "error");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "hey" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "hey" },
     ];
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
 
     expect(result).toBeNull();
-    expect(console.error).toHaveBeenCalledWith("[Chad] CLI error: command not found");
+    expect(console.error).toHaveBeenCalledWith("[chad] CLI error: command not found");
   });
 
   it("returns null on empty output", async () => {
     const exec = mockExec("   \n  ");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "hey" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "hey" },
     ];
     const result = await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
@@ -139,13 +139,13 @@ describe("CLI brain", () => {
     const exec = mockExec("Found it.");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "can you check the code?" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "can you check the code?" },
     ];
     await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
       allowedTools: ["Read", "Grep"],
@@ -161,18 +161,18 @@ describe("CLI brain", () => {
     const memory = { read: jasmine.createSpy("read").and.returnValue("Working on: issue #18") };
     const brain = makeCliBrain({ model: "test-model", exec, memory });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "thoughts?" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "thoughts?" },
     ];
     await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });
 
-    expect(memory.read).toHaveBeenCalledWith("Chad");
+    expect(memory.read).toHaveBeenCalledWith("chad");
     const systemPrompt = exec.calls.mostRecent().args[1].find((_, i, arr) => arr[i - 1] === "--system-prompt");
     expect(systemPrompt).toContain("Working on: issue #18");
   });
@@ -181,7 +181,7 @@ describe("CLI brain", () => {
     const exec = mockExec("Reading the backlog.");
     const brain = makeCliBrain({ model: "test-model", exec });
     await brain({
-      name: "Alice",
+      name: "alice",
       character: defaultCharacter,
       others: [],
       chat: [],
@@ -196,13 +196,13 @@ describe("CLI brain", () => {
     const exec = mockExec("Sure.");
     const brain = makeCliBrain({ model: "test-model", exec });
     const chat = [
-      { from: "Chad", message: "hi Alice" },
-      { from: "Alice", message: "thoughts?" },
+      { from: "chad", message: "hi alice" },
+      { from: "alice", message: "thoughts?" },
     ];
     await brain({
-      name: "Chad",
+      name: "chad",
       character: defaultCharacter,
-      others: [{ name: "Alice" }],
+      others: [{ name: "alice" }],
       chat,
       location: "water cooler",
     });

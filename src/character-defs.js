@@ -1,7 +1,7 @@
 const Time = require("./time");
 
 const alice = {
-  name: "Alice",
+  name: "alice",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
     { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "cubicle" },
@@ -19,7 +19,7 @@ const alice = {
 };
 
 const bob = {
-  name: "Bob",
+  name: "bob",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
     { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "cubicle" },
@@ -29,7 +29,7 @@ const bob = {
 };
 
 const jim = {
-  name: "Jim",
+  name: "jim",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "conference room" },
     { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "cubicle" },
@@ -47,7 +47,7 @@ const jim = {
 };
 
 const ruby = {
-  name: "Ruby",
+  name: "ruby",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(10, 0), location: "water cooler" },
     { startTime: new Time(10, 0), endTime: new Time(12, 0), location: "cubicle" },
@@ -63,7 +63,7 @@ const ruby = {
 };
 
 const yoder = {
-  name: "Yoder",
+  name: "yoder",
   schedule: [
     { startTime: new Time(9, 0), endTime: new Time(17, 0), location: "conference room" },
   ],

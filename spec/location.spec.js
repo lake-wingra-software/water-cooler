@@ -12,8 +12,8 @@ describe("Location", () => {
   describe("occupants", () => {
     it("tracks who is present via arrive and depart", () => {
       const location = new Location("water cooler", inOrder);
-      const alice = { name: "Alice" };
-      const bob = { name: "Bob" };
+      const alice = { name: "alice" };
+      const bob = { name: "bob" };
 
       location.arrive(alice);
       location.arrive(bob);
@@ -25,8 +25,8 @@ describe("Location", () => {
 
     it("depart does nothing if person is not present", () => {
       const location = new Location("water cooler", inOrder);
-      const alice = { name: "Alice" };
-      const bob = { name: "Bob" };
+      const alice = { name: "alice" };
+      const bob = { name: "bob" };
 
       location.arrive(alice);
       location.depart(bob);
@@ -40,16 +40,16 @@ describe("Location", () => {
       const loc = new Location("water cooler", inOrder);
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          tokenCalls.push({ holder: "Alice", others });
+          tokenCalls.push({ holder: "alice", others });
           done();
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
-          tokenCalls.push({ holder: "Bob", others });
+          tokenCalls.push({ holder: "bob", others });
           done();
         },
       };
@@ -59,7 +59,7 @@ describe("Location", () => {
 
       loc.tick();
       expect(tokenCalls.length).toEqual(1);
-      expect(tokenCalls[0].holder).toEqual("Alice");
+      expect(tokenCalls[0].holder).toEqual("alice");
       expect(tokenCalls[0].others).toEqual([bob]);
     });
 
@@ -67,14 +67,14 @@ describe("Location", () => {
       const loc = new Location("cafeteria", inOrder);
       let receivedLocation;
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
           receivedLocation = location;
           done();
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done();
         },
@@ -91,16 +91,16 @@ describe("Location", () => {
       const location = new Location("water cooler", inOrder);
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          tokenCalls.push("Alice");
+          tokenCalls.push("alice");
           done();
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
-          tokenCalls.push("Bob");
+          tokenCalls.push("bob");
           done();
         },
       };
@@ -112,49 +112,49 @@ describe("Location", () => {
       location.tick();
       location.tick();
 
-      expect(tokenCalls).toEqual(["Alice", "Bob", "Alice"]);
+      expect(tokenCalls).toEqual(["alice", "bob", "alice"]);
     });
 
     it("does not hand out the token while it is held", () => {
       const location = new Location("water cooler", inOrder);
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          tokenCalls.push("Alice");
+          tokenCalls.push("alice");
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
-          tokenCalls.push("Bob");
+          tokenCalls.push("bob");
         },
       };
 
       location.arrive(alice);
       location.arrive(bob);
 
-      location.tick(); // Alice gets token, doesn't call done
+      location.tick(); // alice gets token, doesn't call done
       location.tick(); // should be a no-op
       location.tick(); // still no-op
 
-      expect(tokenCalls).toEqual(["Alice"]);
+      expect(tokenCalls).toEqual(["alice"]);
     });
 
     it("broadcasts the message to all occupants when token holder speaks", () => {
       const location = new Location("water cooler", inOrder);
       const messages = { alice: [], bob: [], chad: [] };
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          done({ to: [bob], message: "hi Bob" });
+          done({ to: [bob], message: "hi bob" });
         },
         receiveMessage(msg) {
           messages.alice.push(msg);
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done(null);
         },
@@ -163,7 +163,7 @@ describe("Location", () => {
         },
       };
       const chad = {
-        name: "Chad",
+        name: "chad",
         receiveToken(others, location, done) {
           done(null);
         },
@@ -176,9 +176,9 @@ describe("Location", () => {
       location.arrive(bob);
       location.arrive(chad);
 
-      location.tick(); // Alice speaks
+      location.tick(); // alice speaks
 
-      const expected = { from: "Alice", message: "hi Bob" };
+      const expected = { from: "alice", message: "hi bob" };
       expect(messages.alice).toEqual([expected]);
       expect(messages.bob).toEqual([expected]);
       expect(messages.chad).toEqual([expected]);
@@ -190,14 +190,14 @@ describe("Location", () => {
       location.on("messageSent", (data) => events.push(data));
 
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          done({ to: others, message: "hi Bob" });
+          done({ to: others, message: "hi bob" });
         },
         receiveMessage() {},
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done(null);
         },
@@ -210,32 +210,32 @@ describe("Location", () => {
       location.tick();
 
       expect(events.length).toEqual(1);
-      expect(events[0]).toEqual({ from: "Alice", message: "hi Bob" });
+      expect(events[0]).toEqual({ from: "alice", message: "hi bob" });
     });
 
     it("resets token index when occupants leave and re-enter", () => {
       const location = new Location("water cooler", inOrder);
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          tokenCalls.push("Alice");
+          tokenCalls.push("alice");
           done(null);
         },
         receiveMessage() {},
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
-          tokenCalls.push("Bob");
+          tokenCalls.push("bob");
           done(null);
         },
         receiveMessage() {},
       };
       const chad = {
-        name: "Chad",
+        name: "chad",
         receiveToken(others, location, done) {
-          tokenCalls.push("Chad");
+          tokenCalls.push("chad");
           done(null);
         },
         receiveMessage() {},
@@ -245,9 +245,9 @@ describe("Location", () => {
       location.arrive(bob);
       location.arrive(chad);
 
-      location.tick(); // Alice
-      location.tick(); // Bob
-      location.tick(); // Chad — tokenIndex now wraps to 0
+      location.tick(); // alice
+      location.tick(); // bob
+      location.tick(); // chad — tokenIndex now wraps to 0
 
       location.depart(alice);
       location.depart(bob);
@@ -266,14 +266,14 @@ describe("Location", () => {
       const location = new Location("water cooler", inOrder);
       let savedDone;
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
           savedDone = done;
         },
         receiveMessage() {},
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done(null);
         },
@@ -283,7 +283,7 @@ describe("Location", () => {
       location.arrive(alice);
       location.arrive(bob);
 
-      location.tick(); // Alice gets token, holds it (async)
+      location.tick(); // alice gets token, holds it (async)
 
       location.depart(alice);
       location.depart(bob);
@@ -304,7 +304,7 @@ describe("Location", () => {
       let savedDone;
       const messages = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
           savedDone = done;
         },
@@ -313,7 +313,7 @@ describe("Location", () => {
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done(null);
         },
@@ -325,9 +325,9 @@ describe("Location", () => {
       location.arrive(alice);
       location.arrive(bob);
 
-      location.tick(); // Alice gets token
+      location.tick(); // alice gets token
 
-      location.depart(alice); // Alice leaves before responding
+      location.depart(alice); // alice leaves before responding
 
       savedDone({ to: [bob], message: "hey bob!" }); // response arrives late
 
@@ -338,9 +338,9 @@ describe("Location", () => {
       const location = new Location("water cooler", inOrder);
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken() {
-          tokenCalls.push("Alice");
+          tokenCalls.push("alice");
         },
       };
 
@@ -399,16 +399,16 @@ describe("Location", () => {
       const loc = new Location("water cooler", (arr) => [...arr].reverse());
       const tokenCalls = [];
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
-          tokenCalls.push("Alice");
+          tokenCalls.push("alice");
           done();
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
-          tokenCalls.push("Bob");
+          tokenCalls.push("bob");
           done();
         },
       };
@@ -419,7 +419,7 @@ describe("Location", () => {
       loc.tick();
       loc.tick();
 
-      expect(tokenCalls).toEqual(["Bob", "Alice"]);
+      expect(tokenCalls).toEqual(["bob", "alice"]);
     });
 
     it("calls speakerQueue once per round", () => {
@@ -429,13 +429,13 @@ describe("Location", () => {
         return [...arr];
       });
       const alice = {
-        name: "Alice",
+        name: "alice",
         receiveToken(others, location, done) {
           done();
         },
       };
       const bob = {
-        name: "Bob",
+        name: "bob",
         receiveToken(others, location, done) {
           done();
         },

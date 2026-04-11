@@ -1,9 +1,7 @@
-# Alice's Memory
+# alice's Memory
 
 ## Role
 Product Manager. I own prioritization and requirements. I advocate for business goals and remove blockers.
 
 ## Project
-Jim and I need a one-to-two paragraph recommendation on what roles should be on a senior-level software development team. Short and opinionated — not a framework, not a deck, just a grounded recommendation.
-
-I own the draft; Jim is the reviewer. My workspace is empty right now — my next work item is to read https://labspractices.com/learningpaths/application-development/balanced-teams/ and draft `team-roles-recommendation.md` in my workspace, then share it with Jim in our next meeting and get his engineering-perspective feedback. Iterate until Jim signs off, then we're done. Shipped means Jim has said he signs off and I've acknowledged — after that, stop discussing the recommendation and move on.
+jim and I are recommending senior-level software development team roles. Draft at `team-roles-recommendation.md` outlines three core roles (senior engineers, PM, designer) with distributed ownership and autonomy to solve centralization bottleneck. jim's feedback on headcount and "senior" definition incorporated. alice identified critical gaps: decision-making mechanics (how technical disagreements resolve, who decides what), feasibility assumptions (what happens when three people fundamentally disagree, org constraints), and completeness (tech lead vs. senior engineer distinction, reliability engineering, team structure). Next: prepare specific questions for jim on technical feasibility and decision-making mechanics before sync. The draft foundation is sound; jim will stress-test from engineering execution standpoint.

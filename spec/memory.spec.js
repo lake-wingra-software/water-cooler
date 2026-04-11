@@ -26,9 +26,9 @@ describe("Memory", () => {
   });
 
   it("keeps memory separate per character", () => {
-    memory.write("alice", "Alice's notes");
-    memory.write("jim", "Jim's notes");
-    expect(memory.read("alice")).toBe("Alice's notes");
-    expect(memory.read("jim")).toBe("Jim's notes");
+    memory.write("alice", "alice's notes");
+    memory.write("jim", "jim's notes");
+    expect(memory.read("alice")).toBe("alice's notes");
+    expect(memory.read("jim")).toBe("jim's notes");
   });
 });

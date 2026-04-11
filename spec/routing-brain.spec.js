@@ -6,7 +6,7 @@ describe("routing brain", () => {
   beforeEach(() => {
     chatBrain = jasmine.createSpy("chatBrain");
     workBrain = jasmine.createSpy("workBrain");
-    ctx = { name: "Alice", others: [], chat: [] };
+    ctx = { name: "alice", others: [], chat: [] };
   });
 
   it("delegates to chatBrain at a public location", () => {

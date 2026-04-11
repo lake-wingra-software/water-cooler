@@ -28,9 +28,9 @@ node run.js
 Output is a timestamped log of location changes and conversation turns:
 
 ```
-09:00: Alice at the conference room; Jim at the conference room
-09:01: [conference room] Alice: "Hey Jim, what are we working on today?"
-09:02: [conference room] Jim: "I've been looking at the auth service..."
+09:00: alice at the conference room; jim at the conference room
+09:01: [conference room] alice: "Hey jim, what are we working on today?"
+09:02: [conference room] jim: "I've been looking at the auth service..."
 ```
 
 ### Speed
@@ -64,7 +64,7 @@ node harness.js jim
 Output:
 
 ```
-Character: Jim
+Character: jim
 Workspace: /path/to/water-cooler/workspaces/jim
 Tools:     Read, Grep, Glob, Edit, Write, Bash(gh:*), Bash(npm test:*)
 
