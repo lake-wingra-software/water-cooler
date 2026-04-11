@@ -85,6 +85,20 @@ describe("buildSystemPrompt", () => {
     const system = buildSystemPrompt({ ...defaultArgs, memory: "" });
     expect(system).not.toContain("Memory");
   });
+
+  it("lists workspace files when bag is provided", () => {
+    const system = buildSystemPrompt({
+      ...defaultArgs,
+      bag: ["team-roles-recommendation.md", "notes.md"],
+    });
+    expect(system).toContain("team-roles-recommendation.md");
+    expect(system).toContain("notes.md");
+  });
+
+  it("omits workspace section when bag is empty", () => {
+    const system = buildSystemPrompt({ ...defaultArgs, bag: [] });
+    expect(system).not.toMatch(/workspace/i);
+  });
 });
 
 describe("buildWorkSystemPrompt", () => {
