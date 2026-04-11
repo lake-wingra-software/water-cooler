@@ -5,13 +5,13 @@ const { alice, bob, jim, ruby, yoder } = require("./character-defs");
 
 // --- Wire up people with brains ---
 
+const activeCharacters = [alice, jim];
+
 module.exports = (chatBrain, workBrain, reflector) => {
   const brain = makeRoutingBrain({ chatBrain, workBrain });
-  return [
-    new Person(alice, brain, { reflector, allowedTools: alice.allowedTools }),
-    // new Person(bob, yeahMan()),
-    new Person(jim, brain, { reflector, allowedTools: jim.allowedTools }),
-    // new Person(ruby, brain, { reflector }),
-    // new Person(yoder, brain, { reflector }),
-  ];
+  return activeCharacters.map(
+    (c) => new Person(c, brain, { reflector, allowedTools: c.allowedTools }),
+  );
 };
+
+module.exports.names = activeCharacters.map((c) => c.name);
