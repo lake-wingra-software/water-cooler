@@ -82,7 +82,7 @@ function buildWorkSystemPrompt({ name, character, location, cwd, bag, memory }) 
 
   if (cwd) {
     lines.push(
-      `You have a workspace at ${cwd} where you can keep durable artifacts — drafts, notes, or work products that outlive this session.`,
+      `You have a workspace at ${cwd} for durable work products — drafts, designs, analyses, and other documents the work actually produces.`,
     );
     if (bag && bag.length > 0) {
       lines.push("Workspace contents:");
@@ -91,6 +91,8 @@ function buildWorkSystemPrompt({ name, character, location, cwd, bag, memory }) 
       lines.push("Workspace contents: (empty)");
     }
     lines.push(
+      "",
+      "Your workspace is NOT for messages to coworkers or async asks. Coworker coordination happens in meetings, not through files — do not write review-request memos, briefing notes, or anything else aimed at another person. If you have something to raise with a coworker next time you see them, update the \"next work item\" in memory instead.",
       "",
       "Use your workspace when the work produces something you or your coworkers will want to reference later. For investigative or exploratory work without a durable output, your response text is fine on its own.",
       "",
