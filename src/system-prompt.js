@@ -53,6 +53,10 @@ function buildSystemPrompt({
       "Your workspace files — you can reference these by name and offer to share them, but you can't read their contents mid-conversation. Recite specifics from memory:",
     );
     for (const file of bag) lines.push(`- ${file}`);
+    lines.push(
+      "",
+      "To share a file's contents with everyone in the room, include <share>filename</share> in your message. The tag is expanded into the file contents for all listeners.",
+    );
   }
 
   if(process.env["DEBUG"]) console.log(lines.join("\n"));
