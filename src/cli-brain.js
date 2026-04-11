@@ -28,13 +28,13 @@ function buildPrompt(chat) {
   return lines.join("\n");
 }
 
-function makeCliBrain({ model, cwd, exec, memory }) {
+function makeCliBrain({ model, exec, memory }) {
   exec = exec || execClaude;
 
   return makeBrain({
     memory,
     buildSystemPrompt: buildWorkSystemPrompt,
-    async transport({ name, others, chat, system, allowedTools }) {
+    async transport({ name, others, chat, system, allowedTools, cwd }) {
       const prompt = buildPrompt(chat);
 
       try {
