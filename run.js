@@ -1,10 +1,12 @@
 require("dotenv").config();
 
+const fs = require("fs");
 const Simulation = require("./src/simulation");
 const makeLlmBrain = require("./src/llm-brain");
 const makeCliBrain = require("./src/cli-brain");
 const makeReflectionBrain = require("./src/reflection-brain");
 const Memory = require("./src/memory");
+const { workspacePathFor } = require("./src/workspace");
 const Anthropic = require("@anthropic-ai/sdk");
 
 const client = new Anthropic({
@@ -31,6 +33,7 @@ function runDay() {
   return new Promise((resolve) => {
     const sim = new Simulation();
     const people = require("./src/characters")(chatBrain, workBrain, reflector);
+    people.forEach((p) => fs.mkdirSync(workspacePathFor(p.name), { recursive: true }));
     people.forEach((p) => sim.addPerson(p));
 
     const byLocation = {};

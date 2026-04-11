@@ -79,6 +79,18 @@ describe("Person", () => {
       });
     });
 
+    it("receiveToken passes workspace cwd to brain based on person name", () => {
+      let receivedArgs;
+      const alice = new Person(testCharDef, (args) => {
+        receivedArgs = args;
+        return null;
+      });
+
+      alice.receiveToken([], "cubicle", () => {});
+
+      expect(receivedArgs.cwd).toMatch(/workspaces\/alice$/);
+    });
+
     it("receiveToken passes minutesRemaining at current location to brain", () => {
       let receivedArgs;
       const alice = new Person(testCharDef, (args) => {

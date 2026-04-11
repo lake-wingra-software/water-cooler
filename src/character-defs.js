@@ -14,7 +14,7 @@ const alice = {
     role: "Product Manager",
     goals: [],
   },
-  allowedTools: ["Read", "Grep", "Glob", "Bash(gh:*)", "WebFetch"],
+  allowedTools: ["Read", "Grep", "Glob", "Write", "Bash(gh:*)", "WebFetch"],
 };
 
 const bob = {
