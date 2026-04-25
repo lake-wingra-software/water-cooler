@@ -1,5 +1,6 @@
 const Person = require("./person");
 const yeahMan = require("./yeah-man");
+const noMan = require("./no-man");
 const makeRoutingBrain = require("./routing-brain");
 const { alice, bob, jim, ruby, yoder } = require("./character-defs");
 
