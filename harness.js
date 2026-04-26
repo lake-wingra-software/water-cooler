@@ -12,15 +12,13 @@ const fs = require("fs");
 const path = require("path");
 const Anthropic = require("@anthropic-ai/sdk");
 
-const makeCliBrain = require("./src/cli-brain");
-const makeLlmBrain = require("./src/llm-brain");
-const makeRoutingBrain = require("./src/routing-brain");
 const makeReflectionBrain = require("./src/reflection-brain");
 const Memory = require("./src/memory");
 const Person = require("./src/person");
 const Location = require("./src/location");
 const { workspacePathFor } = require("./src/workspace");
 const charDefs = require("./src/character-defs");
+const { makeBrainFor } = require("./src/characters");
 const { runChat } = require("./src/chat");
 
 function getFlag(name) {
@@ -52,9 +50,7 @@ const chatMode = process.argv.includes("--chat");
 const client = new Anthropic({ baseURL: process.env.ANTHROPIC_URL });
 const model = process.env.LLM_MODEL || "claude-haiku-4-5";
 const memory = new Memory();
-const workBrain = makeCliBrain({ model, memory });
-const chatBrain = makeLlmBrain({ client, model, memory });
-const brain = makeRoutingBrain({ chatBrain, workBrain });
+const brain = makeBrainFor(def, { client, model, memory });
 
 fs.mkdirSync(workspacePathFor(def.name), { recursive: true });
 
