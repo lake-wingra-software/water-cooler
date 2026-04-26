@@ -33,6 +33,20 @@ describe("chat", () => {
     );
   });
 
+  it("ends the conversation and runs reflection when the character says [done]", async () => {
+    const brain = jasmine.createSpy("brain").and.returnValue(
+      Promise.resolve({ to: [], message: "Good chat. [done]" })
+    );
+    const reflect = jasmine.createSpy("reflect").and.returnValue(Promise.resolve());
+    const readline = makeReadline(["hey alice"]);
+    const onMessage = jasmine.createSpy("onMessage");
+
+    await runChat({ brain, characterDef: { name: "alice" }, reflect, readline, onMessage });
+
+    expect(onMessage).toHaveBeenCalledWith("alice", "Good chat.");
+    expect(reflect).toHaveBeenCalled();
+  });
+
   it("calls the brain with the user's message and prints the response", async () => {
     const messages = [];
     const brain = jasmine.createSpy("brain").and.returnValue(

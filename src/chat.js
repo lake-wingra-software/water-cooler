@@ -18,8 +18,17 @@ async function runChat({ brain, characterDef, reflect, readline, onMessage }) {
 
     const action = await brain({ name: characterDef.name, character: characterDef.character, others: [ADVISOR_NAME], chat });
     if (action) {
-      chat.push({ from: characterDef.name, message: action.message });
-      onMessage(characterDef.name, action.message);
+      const done = /\[done\]/i.test(action.message);
+      const text = action.message.replace(/\[done\]/gi, "").trim();
+      if (text) {
+        chat.push({ from: characterDef.name, message: text });
+        onMessage(characterDef.name, text);
+      }
+      if (done) {
+        readline.close();
+        await reflect({ name: characterDef.name, chat });
+        break;
+      }
     }
   }
 }
