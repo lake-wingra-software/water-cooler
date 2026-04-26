@@ -47,6 +47,16 @@ describe("chat", () => {
     expect(reflect).toHaveBeenCalled();
   });
 
+  it("ends the conversation and runs reflection when the brain returns null", async () => {
+    const brain = jasmine.createSpy("brain").and.returnValue(Promise.resolve(null));
+    const reflect = jasmine.createSpy("reflect").and.returnValue(Promise.resolve());
+    const readline = makeReadline(["hey alice"]);
+
+    await runChat({ brain, characterDef: { name: "alice" }, reflect, readline, onMessage: () => {} });
+
+    expect(reflect).toHaveBeenCalled();
+  });
+
   it("calls the brain with the user's message and prints the response", async () => {
     const messages = [];
     const brain = jasmine.createSpy("brain").and.returnValue(
