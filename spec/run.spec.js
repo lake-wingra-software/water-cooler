@@ -40,12 +40,12 @@ describe("app", () => {
   });
 });
 
-describe("wc.js sim --reset", () => {
+describe("wc.js reset", () => {
   const characters = require("../src/characters");
   let tmpRoot, memoryDir, seedDir, workspacesDir;
 
   const runWc = (args = [], extraEnv = {}) =>
-    execFileSync("node", [path.join(__dirname, "..", "wc.js"), "sim", ...args], {
+    execFileSync("node", [path.join(__dirname, "..", "wc.js"), "reset", ...args], {
       encoding: "utf8",
       env: { ...process.env, ...extraEnv },
       stdio: ["pipe", "pipe", "pipe"],
@@ -74,7 +74,7 @@ describe("wc.js sim --reset", () => {
     fs.mkdirSync(aliceWorkspace);
     fs.writeFileSync(path.join(aliceWorkspace, "draft.md"), "leftover");
 
-    const output = runWc(["--reset"], {
+    const output = runWc([], {
       WC_MEMORY_DIR: memoryDir,
       WC_SEED_DIR: seedDir,
       WC_WORKSPACES_DIR: workspacesDir,

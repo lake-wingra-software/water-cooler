@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Usage:
-//   node wc.js sim [--days=N] [--reset]
+//   node wc.js sim [--days=N]
+//   node wc.js reset
 //   node wc.js work <character>
 //   node wc.js meet <character> <other> [--location <loc>] [--turns N]
 //   node wc.js chat <character>
@@ -16,7 +17,7 @@ const { runWork } = require("./src/work");
 const { runMeeting } = require("./src/meeting");
 const { runChat } = require("./src/chat");
 
-const COMMANDS = ["sim", "work", "meet", "chat"];
+const COMMANDS = ["sim", "reset", "work", "meet", "chat"];
 const characterNames = Object.keys(charDefs).join(", ");
 
 function help() {
@@ -24,9 +25,10 @@ function help() {
 Usage: node wc.js <command> [args]
 
 Commands:
-  sim [--days=N] [--reset]              Run the full simulation
+  sim [--days=N]                         Run the full simulation
+  reset                                  Restore seed memory and clear workspaces
   work <character>                       Run a cubicle work session
-  meet <character> <other>              Run a meeting (default location: conference room)
+  meet <character> <other>               Run a meeting (default location: conference room)
         [--location <loc>] [--turns N]
   chat <character>                       Chat interactively with a character
 
@@ -66,24 +68,25 @@ if (!COMMANDS.includes(command)) {
   process.exit(1);
 }
 
+// --- reset ---
+
+if (command === "reset") {
+  const path = require("path");
+  const characters = require("./src/characters");
+  const reset = require("./src/reset");
+  reset({
+    memoryDir: process.env.WC_MEMORY_DIR || path.join(__dirname, "memory"),
+    seedDir: process.env.WC_SEED_DIR || path.join(__dirname, "seed", "memory"),
+    workspacesDir: process.env.WC_WORKSPACES_DIR || path.join(__dirname, "workspaces"),
+    names: characters.names,
+  });
+  console.log(`reset complete: ${characters.names.join(", ")}`);
+  process.exit(0);
+}
+
 // --- sim ---
 
 if (command === "sim") {
-  const path = require("path");
-  const characters = require("./src/characters");
-
-  if (rest.includes("--reset")) {
-    const reset = require("./src/reset");
-    reset({
-      memoryDir: process.env.WC_MEMORY_DIR || path.join(__dirname, "memory"),
-      seedDir: process.env.WC_SEED_DIR || path.join(__dirname, "seed", "memory"),
-      workspacesDir: process.env.WC_WORKSPACES_DIR || path.join(__dirname, "workspaces"),
-      names: characters.names,
-    });
-    console.log(`reset complete: ${characters.names.join(", ")}`);
-    process.exit(0);
-  }
-
   const { main } = require("./src/app");
   const makeLlmBrain = require("./src/llm-brain");
   const makeCliBrain = require("./src/cli-brain");
