@@ -1,4 +1,7 @@
 const { execFile } = require("child_process");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
 const makeBrain = require("./make-brain");
 const { buildWorkSystemPrompt } = require("./system-prompt");
 
@@ -37,12 +40,14 @@ function makeCliBrain({ model, exec, memory }) {
     async transport({ name, others, chat, system, allowedTools, cwd }) {
       const prompt = buildPrompt(chat);
 
+      const systemFile = path.join(os.tmpdir(), `wc-system-${process.pid}-${Date.now()}.txt`);
       try {
+        fs.writeFileSync(systemFile, system, "utf8");
         const flags = [
           "-p",
           "--model", model,
           "--output-format", "text",
-          "--system-prompt", system,
+          "--system-prompt-file", systemFile,
         ];
         if (allowedTools && allowedTools.length > 0) {
           flags.push("--allowedTools", allowedTools.join(","));
@@ -57,6 +62,8 @@ function makeCliBrain({ model, exec, memory }) {
       } catch (err) {
         console.error(`[${name}] CLI error: ${err.message}`);
         return null;
+      } finally {
+        try { fs.unlinkSync(systemFile); } catch {}
       }
     },
   });

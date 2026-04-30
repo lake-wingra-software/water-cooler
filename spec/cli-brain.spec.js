@@ -3,7 +3,10 @@ const makeCliBrain = require("../src/cli-brain");
 const defaultCharacter = { traits: "friendly", role: "engineer" };
 
 function mockExec(stdout) {
+  const fs = require("fs");
   return jasmine.createSpy("exec").and.callFake((cmd, args, opts) => {
+    const systemFile = args.find((_, i, arr) => arr[i - 1] === "--system-prompt-file");
+    if (systemFile) args._systemPrompt = fs.readFileSync(systemFile, "utf8");
     return Promise.resolve({ stdout, stdin: opts && opts.input });
   });
 }
@@ -173,7 +176,7 @@ describe("CLI brain", () => {
     });
 
     expect(memory.read).toHaveBeenCalledWith("chad");
-    const systemPrompt = exec.calls.mostRecent().args[1].find((_, i, arr) => arr[i - 1] === "--system-prompt");
+    const systemPrompt = exec.calls.mostRecent().args[1]._systemPrompt;
     expect(systemPrompt).toContain("Working on: issue #18");
   });
 
