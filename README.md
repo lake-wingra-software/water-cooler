@@ -66,7 +66,7 @@ Output:
 ```
 Character: jim
 Workspace: /path/to/water-cooler/workspaces/jim
-Tools:     Read, Grep, Glob, Edit, Write, Bash(gh:*), Bash(npm test:*)
+Tools:     Read, Grep, Glob, Edit, Write, Bash(npm test:*)
 
 Running cubicle work session...
 
