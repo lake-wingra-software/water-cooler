@@ -16,7 +16,7 @@ const alice = {
     role: "Product Manager",
     goals: [],
   },
-  allowedTools: ["Read", "Grep", "Glob", "Write", "Bash(gh:*)", "WebFetch"],
+  allowedTools: ["Read", "Grep", "Glob", "Write", "WebFetch"],
 };
 
 const bob = {
@@ -46,7 +46,7 @@ const jim = {
     role: "software engineer",
     goals: [],
   },
-  allowedTools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash(gh:*)", "Bash(npm test:*)"],
+  allowedTools: ["Read", "Grep", "Glob", "Edit", "Write", "Bash(npm test:*)"],
 };
 
 const ruby = {
